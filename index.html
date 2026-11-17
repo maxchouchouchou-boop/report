@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>学生成长报告 · 评估报告（桌面端原型）</title>
+<meta name="cache-bust" content="desktop-v9-grade9">
+<!-- rollback baseline: main@3d204a2 / pre-grade9 -->
+<title>学生成长报告 · 评估报告（桌面端原型 · v9-grade9）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -593,16 +595,17 @@ body.report-fs-open{overflow:hidden}
 <div class="fs-backdrop" id="fsBackdrop" onclick="exitReportFullscreen()" hidden></div>
 
 <div class="proto-float" id="protoFloat">
-  <button type="button" class="proto-float-btn" id="protoFloatBtn" aria-expanded="false" aria-controls="protoFloatPanel" onclick="toggleProtoFloat(event)">原型 · 预览年级</button>
+  <button type="button" class="proto-float-btn" id="protoFloatBtn" aria-expanded="false" aria-controls="protoFloatPanel" onclick="toggleProtoFloat(event)">原型 · 预览年级 · v9</button>
   <div class="proto-float-panel" id="protoFloatPanel" role="dialog" aria-label="原型演示 · 预览年级" hidden>
-    <div class="proto-float-title">原型演示</div>
+    <div class="proto-float-title">原型演示 · desktop-v9-grade9</div>
     <label for="gradePreview">预览年级</label>
     <select id="gradePreview" onchange="onGradePreview(this.value)">
       <option value="5" selected>小学 · 五年级</option>
       <option value="7">初中 · 七年级</option>
+      <option value="9">九年级</option>
       <option value="10">高中 · 十年级</option>
     </select>
-    <p class="proto-float-hint">仅设计演示；正式环境按学生真实年级加载。切换年级会刷新报告结构与趋势口径。</p>
+    <p class="proto-float-hint">仅设计演示；正式环境按学生真实年级加载。切换年级会刷新报告结构与趋势口径。九年级与十年级同结构，但仅 1 门人文（无地理/生物/政治/历史）。</p>
   </div>
 </div>
 
@@ -621,7 +624,8 @@ const DOMAINS = [
 ];
 /* 高中目录/趋势学科（体育统一为「体育、健康与生活技能」一项） */
 const HS_SUBJECTS = {
-  9: ['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术'],
+  /* 九年级：与十年级同结构，但无地理/生物/政治/历史，仅 1 门人文 */
+  9: ['语文','英语','数学','人文','化学','物理','体育、健康与生活技能','艺术','技术'],
   10:['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术'],
   11:['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术'],
   12:['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术']
@@ -920,6 +924,9 @@ function mockHigh(includeSummary){
     '数学':{teacher:'林予安',self:'E',team:'M',writing:'M',
       selfList:[{label:'错题复盘',v:'E'}],teamList:[{label:'解题分享',v:'M'}],
       rows:[['函数与方程综合运用','A'],['空间几何推理','A-'],['概率统计建模','A']]},
+    '人文':{teacher:'何川行',self:'M',team:'E',writing:'M',
+      selfList:[{label:'材料研读',v:'M'}],teamList:[{label:'议题讨论',v:'E'}],
+      rows:[['理解人文社会基本概念','A'],['结合材料分析社会现象','A-'],['规范完成论述表达','A']]},
     '政治':{teacher:'何川行',self:'M',team:'E',writing:'M',
       selfList:[{label:'时政研读',v:'M'}],teamList:[{label:'议题辩论',v:'E'}],
       rows:[['理解基本政治概念与原理','A'],['结合材料分析社会现象','A-'],['规范完成论述题表达','A']]},
@@ -972,14 +979,20 @@ function mockHigh(includeSummary){
     text:'本学段出勤情况：缺勤0天，其中事假0天，病假0天；迟到1次，无故缺席3节课。'
   });
   if(includeSummary){
+    const summaryRows = state.grade === 9
+      ? [
+          ['语文','A'],['数学','A+'],['英语','A+'],
+          ['人文','A'],['物理','A+'],['化学','A+'],
+          ['技术','A'],['艺术','A+'],['体育与健康','A']
+        ]
+      : [
+          ['语文','A'],['数学','A+'],['英语','A+'],
+          ['物理','A+'],['化学','A+'],['生物','A+'],
+          ['技术','A'],['艺术','A+'],['体育与健康','A']
+        ];
     modules.push({
       id:'summary', title:'学术水平单科汇总',
-      // 演示：按参考打印版三列科目×等级排布
-      rows:[
-        ['语文','A'],['数学','A+'],['英语','A+'],
-        ['物理','A+'],['化学','A+'],['生物','A+'],
-        ['技术','A'],['艺术','A+'],['体育与健康','A']
-      ]
+      rows: summaryRows
     });
   }
   return {
