@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="v8.1-long-ind">
+<meta name="cache-bust" content="v8.2-trend-ui">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端原型 · v8.1 长指标压测）</title>
+<title>学生成长报告 · 评估报告（手机端原型 · v8.2 趋势交互）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -253,8 +253,22 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .legend-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:13px}
 
 /* trend */
-.trend-toolbar h3{margin:0 0 6px;font-size:16px}
+.trend-toolbar h3{margin:0 0 6px;font-size:16px;line-height:1.35}
 .trend-toolbar p{margin:0 0 12px;font-size:12px;color:#8a8f99;line-height:1.55}
+.trend-echo{
+  display:block;margin-top:4px;font-size:12px;font-weight:600;color:#5a6170;line-height:1.45;
+}
+.grade-tiles{
+  display:flex;flex-wrap:wrap;gap:8px;padding:0 0 12px;margin-bottom:4px;
+}
+.grade-tile{
+  flex:0 0 auto;min-width:46px;padding:8px 12px;border-radius:999px;
+  border:1px solid #e1e3e8;background:#fff;color:#5a6170;font-size:13px;font-weight:650;
+}
+.grade-tile.active{
+  border-color:var(--orange);background:var(--orange-soft);color:var(--orange);
+}
+.grade-tile .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:middle}
 .filters{
   background:transparent;border:0;border-radius:0;padding:0 0 12px;margin-bottom:4px;
   display:flex;flex-direction:row;align-items:center;gap:10px;
@@ -576,7 +590,8 @@ body:not(.in-report) .proto-float{display:none}
 <script>
 const ACADEMIC = ['A+','A','A-','B','C'];
 /* 趋势折线 / 图例：明亮配色 A+ A A- B C */
-const COLOR_HEX = ['#3B82F6','#22C55E','#FBBF24','#FB923C','#F472B6'];
+/* v8.2 折线低饱和；桌面端仍用高饱和 */
+const COLOR_HEX = ['#6B8CAE','#6F9E8C','#B8A56B','#C0926E','#B08A9E'];
 const DOMAINS = [
   '语言、文学与艺术领域',
   '数学与计算科学领域',
@@ -1530,8 +1545,20 @@ function renderTrend(){
   state._scopeChoices = scopeChoices;
   const scopeLabel = (scopeChoices.find(x=>x[0]===state.trendScope)||['overall','总体'])[1];
   const gradeLabel = ACADEMIC.filter(x=>state.trendGrades.has(x)).join(' · ') || '请选择';
+  const titleEcho = b==='primary'
+    ? `已选等级 ${gradeLabel}`
+    : `统计范围 ${scopeLabel} · 等级 ${gradeLabel}`;
+  // 小学：等级平铺；初高中：保留下拉，并把所选回显到标题
   const scopeFilter = b==='primary' ? '' : `<button type="button" class="filter-trigger" id="scopeTrigger" onclick="openScopeSheet(event)"><span>统计范围</span> <b>${scopeLabel}</b></button>`;
-  const gradeFilter = `<button type="button" class="filter-trigger" id="gradeTrigger" onclick="openGradeSheet(event)"><span>等级</span> <b>${gradeLabel}</b></button>`;
+  const gradeFilter = b==='primary'
+    ? ''
+    : `<button type="button" class="filter-trigger" id="gradeTrigger" onclick="openGradeSheet(event)"><span>等级</span> <b>${gradeLabel}</b></button>`;
+  const gradeTiles = b==='primary'
+    ? `<div class="grade-tiles" id="gradeTiles" role="group" aria-label="等级">${ACADEMIC.map((g,i)=>{
+        const on = state.trendGrades.has(g);
+        return `<button type="button" class="grade-tile${on?' active':''}" data-grade="${g}" onclick="toggleTrendGrade('${g}', ${on?'false':'true'})"><i class="dot" style="background:${COLOR_HEX[i]}"></i>${g}</button>`;
+      }).join('')}</div>`
+    : '';
 
   const chartHead = trendCompact ? '' : `<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:4px">
           <strong id="scopeTitle">总体等级分布</strong>
@@ -1569,11 +1596,12 @@ function renderTrend(){
   wrap.innerHTML = `
     <div class="trend-toolbar">
       <div>
-        <h3>「学术等级占比」学年趋势</h3>
+        <h3>「学术等级占比」学年趋势<span class="trend-echo" id="trendEcho">${titleEcho}</span></h3>
         <p>${subtitle}</p>
       </div>
     </div>
-    <div class="filters">
+    ${gradeTiles}
+    <div class="filters"${b==='primary'?' hidden':''}>
       ${scopeFilter}
       ${gradeFilter}
     </div>
@@ -1598,13 +1626,41 @@ function setTrendScope(v){
   closeAllSheets();
   renderTrend();
 }
+function selectedGradeLabel(){
+  return ACADEMIC.filter(x=>state.trendGrades.has(x)).join(' · ') || '请选择';
+}
+function selectedScopeLabel(){
+  const choices = state._scopeChoices || [['overall','总体']];
+  return (choices.find(x=>x[0]===state.trendScope)||['overall','总体'])[1];
+}
+function updateTrendEcho(){
+  const echo = document.getElementById('trendEcho');
+  if(!echo) return;
+  const grades = selectedGradeLabel();
+  if(band()==='primary'){
+    echo.textContent = `已选等级 ${grades}`;
+  } else {
+    echo.textContent = `统计范围 ${selectedScopeLabel()} · 等级 ${grades}`;
+  }
+}
+function syncGradeTiles(){
+  const tiles = document.getElementById('gradeTiles');
+  if(!tiles) return;
+  tiles.querySelectorAll('.grade-tile').forEach(btn=>{
+    const g = btn.getAttribute('data-grade');
+    const on = state.trendGrades.has(g);
+    btn.classList.toggle('active', on);
+    btn.setAttribute('onclick', `toggleTrendGrade('${g}', ${on?'false':'true'})`);
+  });
+}
 function toggleTrendGrade(g, on){
   if(on) state.trendGrades.add(g); else state.trendGrades.delete(g);
   const btn = document.getElementById('gradeTrigger');
   if(btn){
-    const ordered = ACADEMIC.filter(x=>state.trendGrades.has(x));
-    btn.innerHTML = `<span>等级</span> <b>${ordered.join(' · ') || '请选择'}</b>`;
+    btn.innerHTML = `<span>等级</span> <b>${selectedGradeLabel()}</b>`;
   }
+  updateTrendEcho();
+  syncGradeTiles();
   // keep sheet open; refresh checklist active state
   const sheet = document.getElementById('gradeSheet');
   if(sheet && sheet.classList.contains('open')) fillGradeSheet();
