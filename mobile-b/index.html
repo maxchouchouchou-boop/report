@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="mobile-B-v8.4-filters-below">
+<meta name="cache-bust" content="mobile-B-v8.6-summary">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>学生成长报告 · 评估报告（手机端-B · 筛选在图下）</title>
 <style>
@@ -238,6 +238,7 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .labor-box,.kv-block{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff}
 .labor-box{display:flex;align-items:center;justify-content:space-between}
 .labor-label{font-weight:650}
+#sec-summary .row .ind{font-size:14px;color:#3a4050;font-weight:650}
 .kv-block p{margin:0;font-size:14px;color:#3a4050;line-height:1.6}
 .empty-state{text-align:center;padding:48px 20px;background:#fff;border-radius:12px}
 .empty-illu{width:72px;height:72px;margin:0 auto 14px;border-radius:18px;background:linear-gradient(135deg,#fff5e8,#ffe0bd)}
@@ -891,7 +892,7 @@ function mockJunior(includeSummary){
   if(includeSummary){
     modules.push({
       id:'summary', title:'学术水平单科汇总',
-      rows:[['语文','A'],['数学','A'],['英语','A-'],['科学','A+'],['人文','A'],['艺术','A'],['体育与健康','A+']]
+      rows:[['语文','A'],['数学','A+'],['英语','A+'],['科学','A+'],['人文','A'],['体育与健康','A'],['艺术','A+'],['技术','A']]
     });
   }
   return {
@@ -979,7 +980,11 @@ function mockHigh(includeSummary){
   if(includeSummary){
     modules.push({
       id:'summary', title:'学术水平单科汇总',
-      rows: order.map((name,i)=>[name, ['A','A','A','A-','A','A+','A+','A','A-','A+','A','A+'][i] || 'A'])
+      rows:[
+        ['语文','A'],['数学','A+'],['英语','A+'],
+        ['物理','A+'],['化学','A+'],['生物','A+'],
+        ['技术','A'],['艺术','A+'],['体育与健康','A']
+      ]
     });
   }
   return {
@@ -1001,7 +1006,8 @@ function mockHigh(includeSummary){
 }
 
 function currentReport(){
-  const includeSummary = state.seg === 3;
+  // 与手机端-A / 桌面端一致：初中/高中出勤下方始终展示学术水平单科汇总
+  const includeSummary = true;
   if(band()==='primary') return mockPrimary();
   if(band()==='junior') return mockJunior(includeSummary);
   return mockHigh(includeSummary);
@@ -1369,7 +1375,7 @@ function renderReport(){
       html += `</section>`;
       return;
     }
-    html += `<h3>${m.title}${m.id==='summary'?'<span class="tag">学期末小学段</span>':''}</h3>`;
+    html += `<h3>${m.title}${m.id==='summary' && state.seg===3?'<span class="tag">学期末小学段</span>':''}</h3>`;
     if(m.abilityTable){
       html += renderAbilityTable(m.abilityTable);
       html += renderAbilityExtras(m.abilityExtras);
@@ -1387,7 +1393,7 @@ function renderReport(){
         html += `<div class="j-shorts-stack">${shorts.map(c=>renderShortCourseCard(c)).join('')}</div>`;
       }
     } else if(m.rows){
-      const plain = m.plain ? ' plain' : '';
+      const plain = (m.plain || m.id==='summary') ? ' plain' : '';
       html += `<div class="kv-block"><div class="rows" style="padding:0">${m.rows.map(r=>`<div class="row${plain}"><span class="ind">${r[0]}</span><span class="${gradeClass(r[1])}">${r[1]}</span></div>`).join('')}</div></div>`;
     } else if(m.text){
       html += `<div class="kv-block"><p>${m.text}</p></div>`;
