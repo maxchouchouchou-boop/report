@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端原型 · v3 UI）</title>
+<title>学生成长报告 · 评估报告（手机端原型 · v4 筛选）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -124,10 +124,14 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 }
 .subtabs button.active{color:var(--orange);border-bottom-color:var(--orange);font-weight:650}
 .toolbar{
-  flex-shrink:0;display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;
+  flex-shrink:0;display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:center;
   padding:10px 12px;background:#fff;border-bottom:1px solid var(--line);
 }
-.toolbar label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#9aa0aa;min-width:0}
+.toolbar select{
+  width:100%;min-width:0;border:0!important;border-bottom:1px solid #d9dbe1!important;border-radius:0!important;
+  background-color:#fff!important;padding:10px 28px 10px 2px!important;font-size:14px;color:var(--text);
+  box-shadow:none!important;
+}
 .btn-pdf{
   height:40px;padding:0 12px;border-radius:8px;background:var(--orange);color:#fff;font-size:13px;font-weight:600;
   white-space:nowrap;
@@ -228,36 +232,28 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .trend-toolbar p{margin:0 0 12px;font-size:12px;color:#8a8f99;line-height:1.55}
 .filters{
   background:transparent;border:0;border-radius:0;padding:0 0 12px;margin-bottom:4px;
-  display:flex;flex-direction:column;gap:8px;
+  display:flex;flex-direction:row;align-items:center;gap:10px;
 }
-.filter-line{display:flex;align-items:center;gap:8px;margin:0;font-size:13px}
-.filter-line strong{flex:0 0 auto;width:auto;font-size:13px;color:#6b7180;font-weight:500}
-.filter-line label{display:inline-flex;align-items:center;gap:5px;padding:0;border-radius:0;background:transparent}
-.filter-line input{accent-color:var(--orange)}
-.dd-plain{
-  flex:1;min-width:0;border:0!important;border-bottom:1px solid #d9dbe1!important;border-radius:0!important;
-  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8f99' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 4px center!important;
-  padding:8px 28px 8px 4px!important;font-size:14px;color:var(--text);box-shadow:none!important;
+.filter-trigger{
+  flex:1;min-width:0;text-align:left;border:0;border-bottom:1px solid #d9dbe1;border-radius:0;
+  background:#fff;padding:8px 22px 8px 2px;font-size:13px;color:var(--text);position:relative;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.grade-dd{position:relative;flex:1;min-width:0}
-.grade-dd-btn{
-  width:100%;text-align:left;border:0;border-bottom:1px solid #d9dbe1;border-radius:0;
-  background:#fff;padding:8px 28px 8px 4px;font-size:14px;color:var(--text);position:relative;
-}
-.grade-dd-btn::after{
-  content:"";position:absolute;right:6px;top:50%;width:10px;height:6px;transform:translateY(-40%);
+.filter-trigger::after{
+  content:"";position:absolute;right:4px;top:50%;width:10px;height:6px;transform:translateY(-40%);
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8f99' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") center/contain no-repeat;
 }
-.grade-dd-panel{
-  display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:8;
-  background:#fff;border-radius:10px;box-shadow:0 8px 24px rgba(20,24,40,.14);padding:8px;
+.filter-trigger b{font-weight:650}
+.filter-sheet-list{display:flex;flex-direction:column;gap:2px;max-height:50vh;overflow:auto}
+.filter-sheet-list button,.filter-sheet-list label{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;text-align:left;padding:14px 4px;border:0;border-top:1px solid #f0f1f4;
+  background:transparent;font-size:15px;color:var(--text);
 }
-.grade-dd.open .grade-dd-panel{display:block}
-.grade-dd-panel label{
-  display:flex!important;align-items:center;gap:8px;padding:10px 8px!important;border-radius:8px!important;
-  background:transparent!important;width:100%;font-size:14px;
-}
-.grade-dd-panel label:active{background:#f5f6f8!important}
+.filter-sheet-list button:first-child,.filter-sheet-list label:first-child{border-top:0}
+.filter-sheet-list button.active{color:var(--orange);font-weight:650}
+.filter-sheet-list label{justify-content:flex-start}
+.filter-sheet-list input{accent-color:var(--orange);width:18px;height:18px}
 .swatch{display:inline-block;width:10px;height:10px;border-radius:2px}
 .chart-card{background:#fff;border-radius:12px;padding:12px;border:1px solid var(--line);margin-bottom:12px;position:relative}
 .chart-scroll{
@@ -399,12 +395,8 @@ body:not(.in-report) .proto-float{display:none}
     <span id="metaSid">学号：000000000</span>
   </div>
   <div class="toolbar" id="historySelectors">
-    <label>学年学期
-      <select id="selYearTerm" onchange="onHistoryChange()"></select>
-    </label>
-    <label>小学段
-      <select id="selSeg" onchange="onHistoryChange()"></select>
-    </label>
+    <select id="selYearTerm" aria-label="学年学期" onchange="onHistoryChange()"></select>
+    <select id="selSeg" aria-label="小学段" onchange="onHistoryChange()"></select>
     <button type="button" class="btn-pdf" id="btnPdf" onclick="downloadPdf()">下载 PDF</button>
   </div>
   <div class="subtabs" role="tablist">
@@ -420,7 +412,9 @@ body:not(.in-report) .proto-float{display:none}
   <div id="trendView" hidden></div>
 </div>
 
-<div class="sheet-mask" id="sheetMask" hidden onclick="closePopovers()"></div>
+<div class="sheet-mask" id="sheetMask" hidden onclick="closeAllSheets()"></div>
+<div class="popover filter-sheet" id="scopeSheet" role="dialog" aria-label="统计范围"></div>
+<div class="popover filter-sheet" id="gradeSheet" role="dialog" aria-label="等级"></div>
 
 <div class="proto-float" id="protoFloat">
   <button type="button" class="proto-float-btn" id="protoFloatBtn" aria-expanded="false" aria-controls="protoFloatPanel" onclick="toggleProtoFloat(event)">原型 · 预览年级</button>
@@ -1278,13 +1272,11 @@ function renderTrend(){
   const trendCompact = b==='primary' || b==='junior' || b==='high';
   const wrap = document.getElementById('trendView');
   const scopeChoices = [['overall','总体']].concat(b==='primary' ? [] : series.map(s=>[s.name, s.name]));
-  const scopeLabel = scopeChoices.find(x=>x[0]===state.trendScope)?.[1] || '总体';
-  const scopeFilter = b==='primary' ? '' : `<div class="filter-line">
-        <strong>统计范围</strong>
-        <select class="dd-plain" aria-label="统计范围" onchange="setTrendScope(this.value)">
-          ${scopeChoices.map(([v,lab])=>`<option value="${v}" ${state.trendScope===v?'selected':''}>${lab}</option>`).join('')}
-        </select>
-      </div>`;
+  state._scopeChoices = scopeChoices;
+  const scopeLabel = (scopeChoices.find(x=>x[0]===state.trendScope)||['overall','总体'])[1];
+  const gradeLabel = ACADEMIC.filter(x=>state.trendGrades.has(x)).join(' · ') || '请选择';
+  const scopeFilter = b==='primary' ? '' : `<button type="button" class="filter-trigger" id="scopeTrigger" onclick="openScopeSheet(event)"><span>统计范围</span> <b>${scopeLabel}</b></button>`;
+  const gradeFilter = `<button type="button" class="filter-trigger" id="gradeTrigger" onclick="openGradeSheet(event)"><span>等级</span> <b>${gradeLabel}</b></button>`;
 
   const chartHead = trendCompact ? '' : `<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:4px">
           <strong id="scopeTitle">总体等级分布</strong>
@@ -1328,15 +1320,7 @@ function renderTrend(){
     </div>
     <div class="filters">
       ${scopeFilter}
-      <div class="filter-line">
-        <strong>等级</strong>
-        <div class="grade-dd" id="gradeDd">
-          <button type="button" class="grade-dd-btn" onclick="toggleGradeDd(event)">${[...state.trendGrades].sort((a,b)=>ACADEMIC.indexOf(a)-ACADEMIC.indexOf(b)).join(' · ') || '请选择等级'}</button>
-          <div class="grade-dd-panel" role="listbox">
-            ${ACADEMIC.map((g,i)=>`<label><input type="checkbox" value="${g}" ${state.trendGrades.has(g)?'checked':''} onchange="toggleTrendGrade('${g}',this.checked)"><span class="swatch" style="background:${COLOR_HEX[i]}"></span>${g}</label>`).join('')}
-          </div>
-        </div>
-      </div>
+      ${gradeFilter}
     </div>
     <div class="chart-grid${trendCompact?' stack':''}">
       <section class="chart-card${trendCompact?' compact':''}">
@@ -1354,28 +1338,65 @@ function renderTrend(){
   drawChart(series);
 }
 
-function setTrendScope(v){ state.trendScope = v; renderTrend(); }
+function setTrendScope(v){
+  state.trendScope = v;
+  closeAllSheets();
+  renderTrend();
+}
 function toggleTrendGrade(g, on){
   if(on) state.trendGrades.add(g); else state.trendGrades.delete(g);
-  const btn = document.querySelector('.grade-dd-btn');
+  const btn = document.getElementById('gradeTrigger');
   if(btn){
     const ordered = ACADEMIC.filter(x=>state.trendGrades.has(x));
-    btn.textContent = ordered.join(' · ') || '请选择等级';
+    btn.innerHTML = `<span>等级</span> <b>${ordered.join(' · ') || '请选择'}</b>`;
   }
+  // keep sheet open; refresh checklist active state
+  const sheet = document.getElementById('gradeSheet');
+  if(sheet && sheet.classList.contains('open')) fillGradeSheet();
   drawChart(buildTrendSeries());
 }
-function toggleGradeDd(ev){
-  ev.stopPropagation();
-  const dd = document.getElementById('gradeDd');
-  if(!dd) return;
-  dd.classList.toggle('open');
+function closeAllSheets(){
+  document.querySelectorAll('.popover.open,.filter-sheet.open').forEach(p=>p.classList.remove('open'));
+  state.openPopover = null;
+  const mask = document.getElementById('sheetMask');
+  if(mask) mask.hidden = true;
 }
-document.addEventListener('click', (e)=>{
-  const dd = document.getElementById('gradeDd');
-  if(!dd || !dd.classList.contains('open')) return;
-  if(e.target.closest && e.target.closest('#gradeDd')) return;
-  dd.classList.remove('open');
-});
+function openScopeSheet(ev){
+  if(ev) ev.stopPropagation();
+  const choices = state._scopeChoices || [['overall','总体']];
+  const sheet = document.getElementById('scopeSheet');
+  const mask = document.getElementById('sheetMask');
+  if(!sheet) return;
+  closeAllSheets();
+  sheet.innerHTML = `<div class="sheet-handle"></div><div class="sheet-title">统计范围</div>
+    <div class="filter-sheet-list">` + choices.map(([v,lab])=>{
+      const active = state.trendScope===v;
+      return `<button type="button" class="${active?'active':''}" data-scope="${v}">${lab}${active?' ✓':''}</button>`;
+    }).join('') + `</div>`;
+  sheet.querySelectorAll('[data-scope]').forEach(btn=>{
+    btn.addEventListener('click', ()=>setTrendScope(btn.getAttribute('data-scope')));
+  });
+  sheet.classList.add('open');
+  if(mask) mask.hidden = false;
+}
+function fillGradeSheet(){
+  const sheet = document.getElementById('gradeSheet');
+  if(!sheet) return;
+  sheet.innerHTML = `<div class="sheet-handle"></div><div class="sheet-title">等级</div>
+    <div class="filter-sheet-list">
+      ${ACADEMIC.map((g,i)=>`<label><input type="checkbox" ${state.trendGrades.has(g)?'checked':''} onchange="toggleTrendGrade('${g}',this.checked)"><span class="swatch" style="background:${COLOR_HEX[i]};margin:0 8px 0 4px"></span>${g}</label>`).join('')}
+    </div>`;
+}
+function openGradeSheet(ev){
+  if(ev) ev.stopPropagation();
+  const sheet = document.getElementById('gradeSheet');
+  const mask = document.getElementById('sheetMask');
+  if(!sheet) return;
+  closeAllSheets();
+  fillGradeSheet();
+  sheet.classList.add('open');
+  if(mask) mask.hidden = false;
+}
 
 function showChartTip(ev, seg, grade, count, total, pct){
   const tip = document.getElementById('chartTip');
@@ -1481,7 +1502,7 @@ function toggleSoftPopover(ev, id){
   const el = document.getElementById(id);
   const mask = document.getElementById('sheetMask');
   const willOpen = !el.classList.contains('open');
-  closePopovers();
+  closeAllSheets();
   if(willOpen){
     el.classList.add('open');
     state.openPopover = id;
@@ -1489,11 +1510,8 @@ function toggleSoftPopover(ev, id){
   }
 }
 function closePopovers(e){
-  if(e && e.target.closest && e.target.closest('.soft-item')) return;
-  document.querySelectorAll('.popover.open').forEach(p=>p.classList.remove('open'));
-  state.openPopover = null;
-  const mask = document.getElementById('sheetMask');
-  if(mask) mask.hidden = true;
+  if(e && e.target.closest && (e.target.closest('.soft-item') || e.target.closest('.filter-sheet') || e.target.closest('.filter-trigger'))) return;
+  closeAllSheets();
 }
 document.addEventListener('click', closePopovers);
 
