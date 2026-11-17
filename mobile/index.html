@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="v7.1-pdf-preview">
+<meta name="cache-bust" content="v8-ability-3cols">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端原型 · v7.1 PDF预览）</title>
+<title>学生成长报告 · 评估报告（手机端原型 · v8 能力三列）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -195,43 +195,41 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .sc-ind{font-size:14px;font-weight:650}
 .j-shorts-stack{display:flex;flex-direction:column;gap:0}
 
+/* v8-ability-3cols: fit 学术水平/自主学习/参与与合作 in one phone width (rollback: v7.1-pdf-preview) */
+.ability-teachers{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;
+  margin:0 0 8px;font-size:12px;line-height:1.4;color:#8a8f99;
+}
+.ability-teachers b{color:#3a4050;font-weight:650}
 .ability-wrap{
-  overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;
-  margin:0 -2px 10px;padding:0 2px 6px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  margin:0 0 10px;padding:0 0 2px;
 }
 .ability-table{
-  width:max-content;min-width:100%;border-collapse:separate;border-spacing:0;
+  width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;
   font-size:12px;border:1px solid var(--line);border-radius:10px;
-  /* overflow:hidden breaks position:sticky */
 }
-.ability-table .c-ind{width:248px}
-.ability-table .c-ac{width:68px}
-.ability-table .c-self{width:92px}
-.ability-table .c-team{width:92px}
+.ability-table .c-ind{width:38%}
+.ability-table .c-ac,.ability-table .c-self,.ability-table .c-team{width:20.666%}
 .ability-table th,.ability-table td{
   border-bottom:1px solid var(--line);border-right:1px solid var(--line);
-  padding:8px 6px;vertical-align:middle;background:#fff;
+  padding:7px 4px;vertical-align:middle;background:#fff;
+  word-break:break-word;
 }
 .ability-table th:last-child,.ability-table td:last-child{border-right:1px solid var(--line)}
 .ability-table tr:last-child td{border-bottom:1px solid var(--line)}
-.ability-table thead th{background:#f7f8fa;font-weight:650;text-align:center;font-size:11px;line-height:1.35}
-.th-teachers{text-align:left!important}
-.th-label{font-size:11px;color:#9aa0aa;font-weight:500}
-.th-names{margin-top:4px;font-size:11px;color:#3a4050;font-weight:650;line-height:1.35}
-.ind-cell{text-align:left;line-height:1.4;min-width:248px;max-width:248px}
-.ind-cell .mark{color:#2f333c;margin-right:4px}
-.center{text-align:center}
-/* sticky indicator column while scrolling to soft grades */
-.ability-table thead th:first-child,
-.ability-table tbody td.ind-cell{
-  position:sticky;left:0;z-index:3;
-  box-shadow:2px 0 0 var(--line);
+.ability-table thead th{
+  background:#f7f8fa;font-weight:650;text-align:center;
+  font-size:11px;line-height:1.3;padding:8px 3px;
 }
-.ability-table thead th:first-child{z-index:4;background:#f7f8fa}
-.ability-table tbody td.ind-cell{background:#fff}
-.ability-table td.center{min-width:72px}
-.ability-table td.center .cell-grade,
-.ability-table td.center .grade{margin:0 auto}
+.ability-table thead th.th-ind{text-align:left;padding-left:8px;color:#8a8f99;font-weight:600}
+.ind-cell{text-align:left;line-height:1.4;font-size:12px;padding-left:8px!important;padding-right:6px!important}
+.ind-cell .mark{color:#2f333c;margin-right:3px}
+.center{text-align:center}
+.ability-table td.center{padding-left:2px;padding-right:2px}
+.ability-table .cell-grade,.ability-table .grade{
+  min-width:28px;height:24px;padding:0 5px;font-size:12px;margin:0 auto;
+}
 
 .ability-extras{display:flex;flex-direction:column;gap:10px}
 .extra-block{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff}
@@ -1204,13 +1202,13 @@ function chip(g){
   return `<span class="cell-grade ${gradeClass(g).replace('grade ','').trim()}">${g}</span>`;
 }
 
-/** 小学能力维度主表：左表头展示任课教师；无右侧教师列 */
+/** 小学能力维度主表（v8）：一屏完整展示 学术水平 / 自主学习 / 参与与合作 */
 function renderAbilityTable(table){
   const blocks = table.blocks || [];
   const teachers = table.teachers || [];
   let body = '';
 
-  // 手机端：每行补齐四格（不用 rowspan），边框稳定；左列 sticky，学术列初始完整可见
+  // 每行四格（不用 rowspan），边框稳定；三列等级同屏可见，无需横滑才能看见软性等级
   blocks.forEach(block=>{
     block.groups.forEach((g)=>{
       g.texts.forEach((text)=>{
@@ -1230,21 +1228,18 @@ function renderAbilityTable(table){
     }
   });
 
-  const teacherHead = `<th class="th-teachers" scope="col">
-      <div class="th-label">任课教师</div>
-      <div class="th-names">${teachers.join(' · ') || '—'}</div>
-    </th>`;
+  const teacherLine = `<div class="ability-teachers">任课教师 <b>${teachers.join(' · ') || '—'}</b></div>`;
 
-  return `<div class="ability-wrap"><table class="ability-table" aria-label="能力维度">
+  return `${teacherLine}<div class="ability-wrap"><table class="ability-table" aria-label="能力维度">
     <colgroup>
       <col class="c-ind"><col class="c-ac"><col class="c-self"><col class="c-team">
     </colgroup>
     <thead>
       <tr>
-        ${teacherHead}
-        <th>学术水平</th>
-        <th>自主学习</th>
-        <th>参与与合作</th>
+        <th class="th-ind" scope="col">指标</th>
+        <th scope="col">学术水平</th>
+        <th scope="col">自主学习</th>
+        <th scope="col">参与与合作</th>
       </tr>
     </thead>
     <tbody>${body}</tbody>
