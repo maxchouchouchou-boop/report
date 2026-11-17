@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学生成长报告 · 评估报告（桌面端原型）</title>
+<style>
+:root{
+  --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
+  --text:#2f333c;--muted:#8a8f99;--line:#e6e7eb;--bg:#f3f4f6;--panel:#fff;
+  --g0:#4f6f97;--g1:#4ea398;--g2:#b49d4f;--g3:#c47f55;--g4:#9a7a98;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font:14px/1.55 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--text);background:#e8eaee;overflow:hidden;
+}
+button,select{font:inherit;cursor:pointer}
+button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:7px 12px;color:var(--text)}
+button:hover{background:#fafafa}
+button:disabled{opacity:.45;cursor:not-allowed}
+select{border:1px solid #d9dbe1;border-radius:6px;padding:7px 10px;background:#fff;color:#444}
+[hidden]{display:none!important}
+
+/* —— 平台外壳（仅包装，不改报告正文） —— */
+.platform{height:100%;display:flex;flex-direction:column;min-height:0}
+.plat-top{
+  flex-shrink:0;height:52px;background:#333e50;color:#fff;
+  display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:16px;
+}
+.plat-brand{display:flex;align-items:center;gap:10px;min-width:0}
+.plat-logo{
+  width:28px;height:28px;border-radius:6px;background:#fff;color:#333e50;
+  display:grid;place-items:center;font-weight:800;font-size:14px;flex-shrink:0;
+}
+.plat-brand-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plat-workbench{
+  border:0;background:#fff;color:#333e50;border-radius:999px;padding:7px 22px;
+  font-size:14px;font-weight:600;cursor:default;
+}
+.plat-top-right{display:flex;align-items:center;gap:18px;flex-shrink:0}
+.plat-dl{display:inline-flex;align-items:center;gap:6px;color:#fff;font-size:13px;opacity:.95;cursor:default}
+.plat-user{display:inline-flex;align-items:center;gap:8px;font-size:13px}
+.plat-avatar{
+  width:28px;height:28px;border-radius:50%;background:#4b7bec;display:grid;place-items:center;
+  font-size:11px;font-weight:650;
+}
+.plat-body{flex:1;min-height:0;display:flex}
+.plat-sider{
+  width:210px;flex-shrink:0;background:#f4f5f7;border-right:1px solid #e2e4e8;
+  display:flex;flex-direction:column;position:relative;transition:width .2s ease;
+}
+.platform.sider-collapsed .plat-sider{width:0;overflow:hidden;border-right:0}
+.plat-collapse{
+  position:absolute;top:14px;right:-12px;z-index:5;width:24px;height:24px;border-radius:50%;
+  border:1px solid #d9dbe1;background:#fff;color:#8a8f99;padding:0;font-size:12px;
+  display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.platform.sider-collapsed .plat-collapse{right:-12px;left:8px}
+.plat-nav{padding:14px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.plat-nav-item{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:6px;
+  border:0;background:transparent;color:#4a5060;font-size:14px;text-align:left;width:100%;
+  cursor:default;
+}
+.plat-nav-item.active{background:var(--orange-soft);color:var(--orange);font-weight:600}
+.plat-nav-ico{width:16px;opacity:.75}
+.plat-section{padding:8px 14px 6px;font-size:12px;color:#9aa0aa}
+.plat-classes{flex:1;min-height:0;overflow:auto;padding:0 8px 8px}
+.plat-class{
+  display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:4px;
+  color:#555b68;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.plat-sider-foot{flex-shrink:0;padding:10px;border-top:1px solid #e6e7eb}
+.plat-app-center{
+  display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;
+  border:1px dashed #f0c89a;border-radius:6px;color:var(--orange);font-size:13px;margin-bottom:10px;
+}
+.plat-term{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:11px;color:#6b7180;line-height:1.4;padding:4px 2px;
+}
+.plat-term button{border:0;background:transparent;color:#8a8f99;padding:2px 4px;font-size:14px}
+.plat-main{
+  flex:1;min-width:0;min-height:0;padding:12px;background:#eef0f3;overflow:hidden;
+}
+
+.app{
+  height:100%;display:flex;flex-direction:column;background:#f7f8fa;
+  max-width:none;margin:0;border-radius:8px;
+  box-shadow:0 0 0 1px #e2e4e8,0 8px 24px rgba(30,35,50,.06);
+}
+.topbar{
+  flex-shrink:0;height:52px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;background:#fff;border-bottom:1px solid var(--line);
+}
+.topbar h1{margin:0;font-size:16px;font-weight:600;letter-spacing:.02em}
+.icon-btn{
+  width:32px;height:32px;border:0;border-radius:6px;background:transparent;
+  color:#8b909a;font-size:20px;line-height:1;display:grid;place-items:center;
+}
+.icon-btn:hover{background:#f3f4f6;color:#555}
+
+.student-head{
+  flex-shrink:0;background:#fff;padding:18px 28px 8px;display:flex;gap:16px;align-items:flex-start;
+}
+.avatar{
+  width:64px;height:64px;border-radius:8px;background:#d8d9de;color:#fff;
+  display:grid;place-items:center;font-size:18px;font-weight:600;flex-shrink:0;
+}
+.student-meta h2{margin:2px 0 8px;font-size:22px;font-weight:700}
+.meta-row{display:flex;flex-wrap:wrap;gap:18px;color:#6b707a;font-size:13px}
+.meta-gender{margin-top:6px;color:#6b707a;font-size:13px}
+
+.tabs{
+  flex-shrink:0;background:#fff;display:flex;gap:36px;padding:0 28px;
+  border-bottom:1px solid var(--line);
+}
+.tabs button{
+  border:0;background:transparent;padding:14px 0 12px;color:#555;border-radius:0;
+  border-bottom:3px solid transparent;font-size:14px;
+}
+.tabs button.active{color:var(--orange);font-weight:600;border-bottom-color:var(--orange)}
+.tabs button:not(.active):hover{color:#222}
+
+.panel-wrap{flex:1;min-height:0;padding:14px 16px 16px;background:#f0f1f4}
+.panel{
+  height:100%;background:var(--panel);border-radius:10px;border:1px solid #e4e5ea;
+  box-shadow:0 1px 2px rgba(20,25,40,.03);display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* 原型年级切换：浮动右上角，不占用报告正文流 */
+.proto-float{
+  position:fixed;top:16px;right:16px;z-index:90;
+  font-family:inherit;
+}
+.proto-float-btn{
+  border:1px solid var(--orange);background:var(--orange);color:#fff;
+  padding:9px 14px;border-radius:8px;font-size:13px;font-weight:700;
+  box-shadow:0 8px 20px rgba(235,105,0,.35);cursor:pointer;
+}
+.proto-float-btn:hover{background:#d45f00;border-color:#d45f00;color:#fff}
+.proto-float-btn[aria-expanded="true"]{background:#c45600;border-color:#c45600;color:#fff}
+.proto-float-panel{
+  position:absolute;top:calc(100% + 8px);right:0;width:260px;
+  background:#fff;border:1px solid #e7e8ed;border-radius:10px;
+  box-shadow:0 12px 28px rgba(20,25,40,.16);padding:12px 14px;
+}
+.proto-float-panel[hidden]{display:none}
+.proto-float-title{font-size:12px;font-weight:650;color:#a05a12;margin:0 0 8px}
+.proto-float-panel label{display:block;font-size:12px;color:#6d7380;margin-bottom:6px}
+.proto-float-panel select{
+  width:100%;padding:7px 8px;font-size:13px;border:1px solid #e3e5ea;border-radius:6px;background:#fff;
+}
+.proto-float-hint{margin:8px 0 0;font-size:11px;line-height:1.45;color:#8a909b}
+
+.report-chrome{
+  flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding:14px 18px 10px;border-bottom:1px solid #f0f1f4;
+}
+.chrome-left{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap}
+.subtabs{display:inline-flex;background:#f4f5f7;border-radius:8px;padding:3px}
+.subtabs button{
+  border:0;background:transparent;padding:8px 16px;border-radius:6px;color:#666;font-size:13px;
+}
+.subtabs button.active{background:#fff;color:var(--orange);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.fs-btn{
+  width:34px;height:34px;display:inline-grid;place-items:center;padding:0;
+  border:1px solid #e3e5ea;background:#fff;border-radius:8px;color:#5a6170;
+  font-size:16px;line-height:1;cursor:pointer;
+}
+.fs-btn:hover{border-color:#f0c89a;color:var(--orange);background:#fff8f0}
+.fs-close-btn{
+  display:none;align-items:center;gap:6px;height:34px;padding:0 12px;
+  border:1px solid #e3e5ea;background:#fff;border-radius:8px;color:#5a6170;
+  font-size:12px;font-weight:600;cursor:pointer;
+}
+.fs-close-btn:hover{border-color:#f0c89a;color:var(--orange)}
+.selectors{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.selectors label{display:flex;align-items:center;gap:6px;font-size:12px;color:#777}
+
+/* 报告面板全屏：tabs + filters + TOC + content + download */
+.fs-backdrop{
+  position:fixed;inset:0;z-index:70;background:rgba(20,25,40,.45);
+  opacity:0;pointer-events:none;transition:opacity .15s ease;
+}
+.fs-backdrop.show{opacity:1;pointer-events:auto}
+.panel.report-fs{
+  position:fixed;inset:16px;z-index:71;width:auto;height:auto;max-width:none;
+  border-radius:12px;box-shadow:0 20px 48px rgba(20,25,40,.28);
+}
+.panel.report-fs .fs-btn{display:none}
+.panel.report-fs .fs-close-btn{display:inline-flex}
+body.report-fs-open{overflow:hidden}
+.btn-pdf{
+  background:var(--orange-soft);border-color:var(--orange-line);color:var(--orange);font-weight:600;
+}
+.btn-pdf:hover{background:#ffefd8}
+
+.body-split{flex:1;min-height:0;display:grid;grid-template-columns:200px minmax(0,1fr)}
+.side-nav{
+  border-right:1px solid var(--line);overflow:auto;padding:12px 10px;background:#fafbfc;
+}
+.side-nav .group{font-size:11px;color:#9aa0aa;padding:8px 10px 6px;letter-spacing:.04em}
+.side-nav a{
+  display:block;padding:9px 10px;border-radius:6px;color:#4a5060;text-decoration:none;
+  font-size:13px;margin-bottom:2px;
+}
+.side-nav a:hover{background:#f3f4f6}
+.side-nav a.active{background:var(--orange-soft);color:var(--orange);font-weight:600}
+
+.content{overflow:auto;padding:18px 22px 40px;scroll-behavior:smooth}
+.section{scroll-margin-top:12px;margin-bottom:28px}
+.section>h3{
+  margin:0 0 12px;font-size:16px;font-weight:650;padding-bottom:8px;
+  border-bottom:1px solid #eee;display:flex;align-items:center;gap:8px;
+}
+.section>h3 .tag{
+  font-size:11px;font-weight:500;color:#888;background:#f3f4f6;padding:2px 8px;border-radius:999px;
+}
+
+.course{
+  border:1px solid #e7e8ed;border-radius:8px;margin-bottom:12px;overflow:hidden;background:#fff;
+}
+.course-head{
+  display:flex;justify-content:space-between;gap:16px;align-items:flex-start;
+  padding:14px 16px;background:#fcfcfd;border-bottom:1px solid #f0f1f4;
+}
+.course-title{font-size:15px;font-weight:650}
+.course-sub{margin-top:4px;font-size:12px;color:#9196a0}
+.course-head .course-sub.teacher-only{margin-top:0}
+.soft-badges{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.soft-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#6d7380;position:relative}
+.soft-val{
+  min-width:28px;height:28px;display:grid;place-items:center;border-radius:5px;
+  background:#f1f3f7;color:#556274;font-weight:650;font-size:13px;
+}
+.chev{
+  border:0;background:transparent;padding:2px 4px;color:#9aa0aa;font-size:12px;line-height:1;
+}
+.chev:hover{color:var(--orange)}
+.popover{
+  position:absolute;top:calc(100% + 6px);right:0;z-index:20;min-width:220px;
+  background:#fff;border:1px solid #e3e5ea;border-radius:8px;
+  box-shadow:0 10px 28px rgba(25,30,45,.12);padding:8px;display:none;
+}
+.popover.open{display:block}
+.popover .pop-row{
+  display:flex;justify-content:space-between;gap:12px;padding:8px;border-radius:5px;font-size:12px;
+}
+.popover .pop-row:hover{background:#f7f8fa}
+.popover .pop-row b{color:#556274}
+
+.rows{padding:0 16px}
+.row{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start;
+  padding:12px 0;border-bottom:1px solid #f1f2f5;font-size:13px;color:#4a5160;
+}
+.row:last-child{border-bottom:0}
+.row .ind::before{content:"◇ ";color:#b0b4bd}
+.row.plain .ind::before{content:none}
+.grade{
+  min-width:36px;text-align:center;padding:3px 8px;border-radius:5px;
+  background:#edf3fb;color:#4f6f97;font-weight:650;font-size:13px;
+}
+.grade.emnu{background:#f4f5f7;color:#5c6575}
+/* B/C 与 A+/A/A- 同款浅蓝徽章，不再用 warn 橙底 */
+
+/* 小学能力维度：产品风合并关系表（非 A3 灰表克隆） */
+.ability-wrap{
+  border:1px solid #e7e8ed;border-radius:8px;overflow:auto;background:#fff;margin-bottom:12px;
+}
+.ability-table{
+  width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:13px;min-width:720px;
+}
+.ability-table th{
+  background:#f7f8fa;color:#5a6170;font-weight:600;padding:11px 10px;text-align:center;
+  border-bottom:1px solid #e7e8ed;font-size:12px;
+}
+.ability-table th+th,.ability-table td+td{border-left:1px solid #f0f1f4}
+.ability-table td{
+  padding:11px 12px;vertical-align:middle;color:#3a4150;border-bottom:1px solid #f0f1f4;
+  background:#fff;
+}
+.ability-table tr:last-child td{border-bottom:0}
+.ability-table td.ind-cell{text-align:left;line-height:1.5}
+.ability-table td.ind-cell .mark{color:#9aa1ad;margin-right:4px}
+.ability-table td.center{text-align:center}
+.ability-table th.th-teachers{
+  text-align:left;vertical-align:middle;padding:10px 12px;
+}
+.ability-table th.th-teachers .th-label{
+  font-size:11px;font-weight:500;color:#8a909b;margin-bottom:4px;
+}
+.ability-table th.th-teachers .th-names{
+  font-size:12px;font-weight:600;color:#4a5160;line-height:1.55;
+}
+.ability-table .cell-grade{
+  display:inline-grid;place-items:center;min-width:32px;height:28px;padding:0 8px;
+  border-radius:5px;font-weight:650;font-size:13px;background:#edf3fb;color:#4f6f97;
+}
+.ability-table .cell-grade.emnu{background:#f4f5f7;color:#5c6575}
+.cell-grade{display:inline-grid;place-items:center;min-width:32px;height:28px;padding:0 8px;border-radius:5px;font-weight:650;font-size:13px;background:#edf3fb;color:#4f6f97}
+.cell-grade.emnu{background:#f4f5f7;color:#5c6575}
+.ability-table col.c-ind{width:auto}
+.ability-table col.c-ac{width:88px}
+.ability-table col.c-self{width:88px}
+.ability-table col.c-team{width:96px}
+
+.ability-extras{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+/* 初中艺技体短周课夹层：卡片之间正常竖向间距 */
+.j-shorts-stack{display:flex;flex-direction:column;gap:10px}
+.extra-block{
+  border:1px solid #e7e8ed;border-radius:8px;background:#fff;overflow:hidden;
+}
+.extra-block .extra-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px;background:#fcfcfd;border-bottom:1px solid #f0f1f4;
+}
+.extra-block .extra-head.simple{border-bottom:0}
+/* 小学劳动/体质/食育/服育：白底（非浅灰） */
+.ability-extras .extra-head.simple{background:#fff}
+/* 初中体质体能：白底 */
+.fitness-block .extra-head.simple{background:#fff}
+.extra-block .extra-title{font-size:14px;font-weight:600;color:#3a4150}
+.extra-block .extra-sub{font-size:12px;color:#9196a0;margin-top:2px}
+
+/* 艺技体短课：独立课程卡片（参考样张） */
+.short-course{
+  border:1px solid #e7e8ed;border-radius:8px;background:#fff;overflow:hidden;
+}
+.short-course .sc-head{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  padding:14px 16px;border-bottom:1px solid #f0f1f4;
+}
+.short-course .sc-name{font-size:15px;font-weight:650;color:#2f333c}
+.short-course .sc-teacher{margin-top:0;font-size:12px;color:#9196a0}
+.short-course .sc-soft{
+  display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12px;color:#6d7380;
+}
+.short-course .sc-soft .soft-item{display:inline-flex;align-items:center;gap:6px}
+.short-course .sc-body{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding:12px 16px;font-size:13px;color:#4a5160;
+}
+/* 底栏课程名：与食育/服育标题同级大号粗黑（小学 ability-extras / 初中领域内共用） */
+.short-course .sc-ind{
+  font-size:14px;font-weight:600;color:#3a4150;
+}
+.ability-extras .short-course .sc-ind{
+  font-size:14px;font-weight:600;color:#3a4150;
+}
+
+.kv-block{
+  border:1px solid #e7e8ed;border-radius:8px;padding:14px 16px;background:#fff;
+}
+.kv-block p{margin:0 0 8px;color:#555}
+.kv-block p:last-child{margin:0}
+
+.labor-box{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border:1px solid #e7e8ed;border-radius:8px;padding:14px 16px;background:#fff;
+}
+.labor-box .labor-label{font-size:14px;color:#3a4150;font-weight:500}
+
+.legend{
+  margin-top:16px;border:1px solid #e7e8ed;border-radius:8px;background:#fff;overflow:hidden;
+}
+.legend>summary{
+  list-style:none;cursor:pointer;padding:14px 16px;font-size:14px;font-weight:650;color:#3a4150;
+  background:#fcfcfd;border-bottom:1px solid transparent;user-select:none;
+}
+.legend>summary::-webkit-details-marker{display:none}
+.legend>summary::after{content:"▾";float:right;color:#9aa0aa;font-weight:400}
+.legend[open]>summary{border-bottom-color:#f0f1f4}
+.legend[open]>summary::after{content:"▴"}
+.legend-body{padding:14px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:900px){.legend-body{grid-template-columns:1fr}}
+.legend-card{
+  border:1px solid #eceef2;border-radius:8px;background:#fafbfc;padding:12px 14px;
+}
+.legend-card h4{
+  margin:0 0 10px;font-size:13px;font-weight:650;color:#4a5160;
+}
+.legend-soft-title{
+  margin:0 0 10px;font-size:13px;font-weight:650;color:#4a5160;
+  display:flex;flex-direction:column;gap:3px;line-height:1.35;
+}
+.legend-soft-title span{display:block}
+.legend-row{
+  display:flex;align-items:center;gap:10px;padding:7px 0;
+  border-top:1px solid #eef0f3;font-size:12px;color:#5a6170;line-height:1.45;
+}
+.legend-row:first-of-type{border-top:0;padding-top:0}
+.legend-row .cell-grade,.legend-row .soft-val{flex-shrink:0}
+
+.empty-state{
+  min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#9399a5;gap:10px;padding:40px;
+}
+.empty-illu{
+  width:120px;height:90px;border-radius:12px;background:linear-gradient(135deg,#eceef2,#f7f8fa);
+  border:1px solid #e4e6eb;position:relative;margin-bottom:8px;
+}
+.empty-illu::before,.empty-illu::after{
+  content:"";position:absolute;background:#fff;border:1px solid #dde0e6;border-radius:4px;
+}
+.empty-illu::before{width:48px;height:58px;left:22px;top:16px;transform:rotate(-8deg)}
+.empty-illu::after{width:48px;height:58px;right:22px;top:12px;transform:rotate(10deg);background:#f3f5f8}
+.empty-state h4{margin:0;font-size:16px;font-weight:600;color:#6b7180}
+.empty-state p{margin:0;font-size:13px}
+
+.trend-wrap{padding:18px 22px 36px;overflow:auto;height:100%}
+.trend-toolbar{
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end;
+  margin-bottom:14px;
+}
+.trend-toolbar h3{margin:0 0 4px;font-size:17px}
+.trend-toolbar p{margin:0;font-size:12px;color:#8a909b}
+.filters{
+  background:#fafbfc;border:1px solid #e7e8ed;border-radius:8px;padding:12px 14px;margin-bottom:14px;
+}
+.filter-line{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:6px 0;font-size:13px}
+.filter-line strong{font-size:12px;color:#777;min-width:64px}
+.filter-line label{display:inline-flex;align-items:center;gap:5px;color:#555}
+.filter-line input{accent-color:var(--orange)}
+.swatch{width:10px;height:10px;border-radius:50%;display:inline-block}
+.chart-grid{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:14px}
+.chart-grid.stack{grid-template-columns:1fr}
+.chart-card,.notes-card{
+  background:#fff;border:1px solid #e7e8ed;border-radius:8px;padding:16px;
+}
+.chart-card{position:relative}
+.chart-card svg{
+  width:100%;height:auto;display:block;margin-top:2px;max-height:none;
+}
+.chart-card.compact{padding:10px 12px}
+.chart-card.compact #chart{width:100%}
+.chart-card.compact svg{min-height:0}
+.notes-card.below{padding:12px 14px}
+.notes-card.below h4{margin-bottom:8px}
+.notes-card.below .notes-legend-row{margin-bottom:8px}
+.trend-wrap.compact{padding:10px 16px 14px}
+.trend-wrap.compact .trend-toolbar{margin-bottom:6px}
+.trend-wrap.compact .trend-toolbar > div{
+  display:flex;align-items:baseline;gap:12px;width:100%;flex-wrap:wrap;
+}
+.trend-wrap.compact .trend-toolbar h3{font-size:16px;margin:0;flex-shrink:0}
+.trend-wrap.compact .trend-toolbar p{font-size:12px;margin:0;flex:1;min-width:200px;line-height:1.45}
+.trend-wrap.compact .filters{margin-bottom:8px;padding:8px 10px}
+.chart-tooltip{
+  position:absolute;z-index:8;min-width:160px;max-width:240px;padding:10px 12px;
+  background:#2f333c;color:#fff;border-radius:8px;font-size:12px;line-height:1.45;
+  box-shadow:0 8px 20px rgba(20,25,40,.18);pointer-events:none;opacity:0;
+  transform:translate(-50%,-110%);transition:opacity .12s ease;
+}
+.chart-tooltip.show{opacity:1}
+.chart-tooltip strong{font-weight:650}
+.notes-card h4{margin:0 0 10px;font-size:14px}
+.notes-card p{margin:0 0 8px;font-size:12px;color:#7a8290}
+.notes-card p:last-child{margin-bottom:0}
+.notes-card hr{border:0;border-top:1px solid #eceef2;margin:12px 0}
+.notes-card.below .notes-legend-row{
+  display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;margin-bottom:12px;
+}
+.notes-card.below .notes-legend-row span{
+  display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#4a5160;
+}
+
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+  background:#2f333c;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;
+  opacity:0;pointer-events:none;transition:.22s ease;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.18);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:980px){
+  .body-split{grid-template-columns:168px minmax(0,1fr)}
+  .chart-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="platform" id="platform">
+  <header class="plat-top" aria-label="平台顶栏">
+    <div class="plat-brand">
+      <div class="plat-logo" aria-hidden="true">1</div>
+      <div class="plat-brand-name">云天学院教育教学平台</div>
+    </div>
+    <button type="button" class="plat-workbench" tabindex="-1">工作台</button>
+    <div class="plat-top-right">
+      <span class="plat-dl" title="原型示意">⬇ 下载中心</span>
+      <span class="plat-user"><span class="plat-avatar">勒腾</span>艾丝露·阿勒腾</span>
+    </div>
+  </header>
+  <div class="plat-body">
+    <aside class="plat-sider" aria-label="平台侧栏">
+      <button type="button" class="plat-collapse" title="收起/展开侧栏" aria-label="收起侧栏" onclick="document.getElementById('platform').classList.toggle('sider-collapsed')">‹</button>
+      <nav class="plat-nav">
+        <button type="button" class="plat-nav-item" disabled title="本原型不实现"><span class="plat-nav-ico">⌂</span>首页</button>
+        <button type="button" class="plat-nav-item active"><span class="plat-nav-ico">▤</span>成长报告</button>
+      </nav>
+      <div class="plat-section">课程班 (33)</div>
+      <div class="plat-classes">
+        <div class="plat-class">▣ 14-01/02-1</div>
+        <div class="plat-class">▣ 14-01/02-2</div>
+        <div class="plat-class">▣ 14-01/03-1</div>
+        <div class="plat-class">▣ 14-02/01-1</div>
+        <div class="plat-class">▣ 14-02/01-2</div>
+        <div class="plat-class">▣ 15-01/01-1</div>
+        <div class="plat-class">▣ 15-01/02-1</div>
+        <div class="plat-class">▣ 乒乓球-基础动作</div>
+        <div class="plat-class">▣ 自习11</div>
+        <div class="plat-class">▣ 自习23</div>
+      </div>
+      <div class="plat-sider-foot">
+        <div class="plat-app-center">⊞ 应用中心</div>
+        <div class="plat-term">
+          <span>2026—2027学年第一学期<br>第二学段</span>
+          <button type="button" title="切换学期（示意）" tabindex="-1">⇄</button>
+        </div>
+      </div>
+    </aside>
+    <main class="plat-main">
+<div class="app" id="app">
+  <header class="topbar">
+    <h1>学生成长报告</h1>
+    <button class="icon-btn" type="button" title="关闭" aria-label="关闭" onclick="toast('原型：关闭弹窗（演示）')">×</button>
+  </header>
+
+  <section class="student-head">
+    <div class="avatar" id="avatarText">勒腾</div>
+    <div class="student-meta">
+      <h2 id="studentName">艾丝露·阿勒腾</h2>
+      <div class="meta-row">
+        <span id="metaCohort">2033届</span>
+        <span id="metaGrade">五年级</span>
+        <span>云天学院</span>
+        <span id="metaSid">学号：202404159</span>
+      </div>
+      <div class="meta-gender">女</div>
+    </div>
+  </section>
+
+  <nav class="tabs" aria-label="成长报告栏目">
+    <button type="button" disabled title="本原型不实现">学生资料</button>
+    <button type="button" disabled title="本原型不实现">考勤请假</button>
+    <button type="button" disabled title="本原型不实现">学习任务</button>
+    <button type="button" disabled title="本原型不实现">过评报告</button>
+    <button type="button" class="active">评估报告</button>
+  </nav>
+
+  <div class="panel-wrap">
+    <div class="panel">
+      <div class="report-chrome">
+        <div class="chrome-left">
+          <div class="subtabs" role="tablist">
+            <button type="button" id="tabReport" class="active" role="tab" aria-selected="true" onclick="setMode('report')">学段报告</button>
+            <button type="button" id="tabTrend" role="tab" aria-selected="false" onclick="setMode('trend')">学年趋势</button>
+          </div>
+          <button type="button" class="fs-btn" id="btnFullscreen" title="全屏查看报告" aria-label="全屏查看报告" onclick="enterReportFullscreen()">⛶</button>
+          <button type="button" class="fs-close-btn" id="btnFsClose" title="退出全屏" aria-label="退出全屏" onclick="exitReportFullscreen()">✕ 退出全屏</button>
+        </div>
+        <div class="selectors" id="historySelectors">
+          <label>学年学期
+            <select id="selYearTerm" onchange="onHistoryChange()"></select>
+          </label>
+          <label>小学段
+            <select id="selSeg" onchange="onHistoryChange()"></select>
+          </label>
+          <button type="button" class="btn-pdf" id="btnPdf" onclick="downloadPdf()">下载 PDF</button>
+        </div>
+      </div>
+
+      <div id="reportView" class="body-split">
+        <aside class="side-nav" id="sideNav" aria-label="目录"></aside>
+        <main class="content" id="reportContent"></main>
+      </div>
+
+      <div id="trendView" class="trend-wrap" hidden></div>
+    </div>
+  </div>
+</div>
+    </main>
+  </div>
+</div>
+
+<div class="fs-backdrop" id="fsBackdrop" onclick="exitReportFullscreen()" hidden></div>
+
+<div class="proto-float" id="protoFloat">
+  <button type="button" class="proto-float-btn" id="protoFloatBtn" aria-expanded="false" aria-controls="protoFloatPanel" onclick="toggleProtoFloat(event)">原型 · 预览年级</button>
+  <div class="proto-float-panel" id="protoFloatPanel" role="dialog" aria-label="原型演示 · 预览年级" hidden>
+    <div class="proto-float-title">原型演示</div>
+    <label for="gradePreview">预览年级</label>
+    <select id="gradePreview" onchange="onGradePreview(this.value)">
+      <option value="5" selected>小学 · 五年级</option>
+      <option value="7">初中 · 七年级</option>
+      <option value="10">高中 · 十年级</option>
+    </select>
+    <p class="proto-float-hint">仅设计演示；正式环境按学生真实年级加载。切换年级会刷新报告结构与趋势口径。</p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const ACADEMIC = ['A+','A','A-','B','C'];
+/* 趋势折线 / 图例：明亮配色 A+ A A- B C */
+const COLOR_HEX = ['#3B82F6','#22C55E','#FBBF24','#FB923C','#F472B6'];
+const DOMAINS = [
+  '语言、文学与艺术领域',
+  '数学与计算科学领域',
+  '道德与人文、社会领域',
+  '科学、技术与工程领域',
+  '体育、健康与生活技能领域'
+];
+/* 高中目录/趋势学科（体育统一为「体育、健康与生活技能」一项） */
+const HS_SUBJECTS = {
+  9: ['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术'],
+  10:['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术'],
+  11:['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术'],
+  12:['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术']
+};
+
+const state = {
+  mode: 'report',
+  grade: 5,
+  year: '2025—2026',
+  term: 1,
+  seg: 1,
+  activeNav: '',
+  openPopover: null,
+  trendScope: 'overall',
+  trendGrades: new Set(ACADEMIC),
+  trendTermContext: 1,
+  reportFs: false
+};
+
+const YEARS = ['2025—2026','2024—2025'];
+
+const availability = {
+  '2025—2026|1': 'ok',
+  '2025—2026|2': 'ok',
+  '2025—2026|3': 'empty',
+  '2025—2026|4': 'empty',
+  '2025—2026|5': 'empty',
+  '2025—2026|6': 'empty',
+  '2024—2025|1': 'ok',
+  '2024—2025|2': 'ok',
+  '2024—2025|3': 'ok',
+  '2024—2025|4': 'ok',
+  '2024—2025|5': 'ok',
+  '2024—2025|6': 'ok'
+};
+
+function yearSeg(){ return (state.term - 1) * 3 + state.seg; }
+function band(){ return state.grade <= 5 ? 'primary' : state.grade <= 8 ? 'junior' : 'high'; }
+function gradeLabel(g){
+  const map = {1:'一年级',2:'二年级',3:'三年级',4:'四年级',5:'五年级',6:'六年级',7:'七年级',8:'八年级',9:'九年级',10:'十年级',11:'十一年级',12:'十二年级'};
+  return map[g] || g + '年级';
+}
+function cohortFor(g){ return String(2038 - g); }
+function termLabel(t){ return t===1 ? '上学期' : '下学期'; }
+
+/* ========== 小学能力维度 mock（主表 + 附属块） ========== */
+function primaryAbilityTable(){
+  const teachers = ['杨睿','田晓婕','索庭尧','魏文佳','刘雅楠'];
+  if(state.grade === 3){
+    return {
+      teachers,
+      blocks: [
+        {
+          self:'M', team:'E',
+          groups:[
+            {academic:'A', texts:['汉字认读与书写；能按笔顺正确书写本学段汉字','能借助拼音阅读短文并说出主要意思']},
+            {academic:'A-', texts:['能用完整句子表达见闻与感受']},
+            {academic:'B', texts:['能倾听同伴发言并做简单回应']}
+          ],
+          writing:'M'
+        },
+        {
+          self:'E', team:'M',
+          groups:[
+            {academic:'A', texts:['认识万以内数；能进行加减运算','能解决简单实际问题']},
+            {academic:'A-', texts:['能用图形直观描述位置与方向']}
+          ],
+          writing:'M'
+        },
+        {
+          self:'N', team:'M',
+          groups:[
+            {academic:'B', texts:['能听懂课堂指令并用简单英语回应']},
+            {academic:'A-', texts:['能认读常见单词与短语','能跟读儿歌与短对话']}
+          ],
+          writing:'N'
+        },
+        {
+          self:'M', team:'M',
+          groups:[
+            {academic:'A', texts:['能观察身边自然现象并记录发现']},
+            {academic:'A-', texts:['能提出简单问题并尝试验证']}
+          ],
+          writing:'M'
+        }
+      ]
+    };
+  }
+  return {
+    teachers,
+    blocks: [
+      {
+        self:'N', team:'U',
+        groups:[
+          {academic:'B', texts:['汉字读写与运用；古诗文积累与理解','能联系语境辨析词语表达效果']},
+          {academic:'C', texts:['听故事、读文本并能概括主要意思','能抓住关键信息复述内容']},
+          {academic:'B', texts:['围绕一个话题有条理地口头表达']},
+          {academic:'B', texts:['能根据提示完成简单书面表达']}
+        ],
+        writing:'M'
+      },
+      {
+        self:'M', team:'U',
+        groups:[
+          {academic:'B', texts:['小数运算与简单问题解决']},
+          {academic:'B', texts:['能用方程表示数量关系并求解']},
+          {academic:'C', texts:['能读懂统计图表并说明结论']}
+        ],
+        writing:'M'
+      },
+      {
+        self:'M', team:'U',
+        groups:[
+          {academic:'B', texts:['借助情境积累常用单词、短语与句型']},
+          {academic:'B', texts:['听懂语速适中的音频并获取关键信息']},
+          {academic:'B', texts:['能提炼文本信息并做简要归纳']},
+          {academic:'C', texts:['能在情境中完成简单写作']}
+        ],
+        writing:'M'
+      },
+      {
+        self:'N', team:'U',
+        groups:[
+          {academic:'C', texts:['观察现象并提出可验证的猜想']},
+          {academic:'C', texts:['能记录实验过程中的关键变量']},
+          {academic:'B', texts:['能用图示说明简单科学原理']}
+        ],
+        writing:'U'
+      },
+      {
+        self:'N', team:'U',
+        groups:[
+          {academic:'C', texts:['能从材料中提取关键信息']},
+          {academic:'C', texts:['能比较不同观点并说明理由']},
+          {academic:'C', texts:['能完成简单探究任务并汇报']}
+        ],
+        writing:'N'
+      }
+    ]
+  };
+}
+
+function primaryAbilityExtras(){
+  const g3 = state.grade === 3;
+  const shorts = g3
+    ? [
+        {name:'工笔花鸟画', weeks:'1-8周', teacher:'刘雅楠', self:'E', team:'M',
+          indicator:'工笔技法练习与作品完成', academic:'A'},
+        {name:'书法提包', weeks:'1-8周', teacher:'索庭尧', self:'M', team:'M',
+          indicator:'笔法临摹与作品提包完成', academic:'A-'},
+        {name:'游泳', weeks:'1-8周', teacher:'刘昀松', self:'E', team:'E',
+          indicator:'泳姿技术优化与综合能力提升', academic:'A+'}
+      ]
+    : [
+        {name:'工笔花鸟画', weeks:'1-8周', teacher:'刘雅楠', self:'E', team:'M',
+          indicator:'工笔技法练习与作品完成', academic:'A'},
+        {name:'书法提包', weeks:'1-8周', teacher:'索庭尧', self:'M', team:'U',
+          indicator:'笔法临摹与作品提包完成', academic:'B'},
+        {name:'游泳', weeks:'1-8周', teacher:'刘昀松', self:'E', team:'E',
+          indicator:'泳姿技术优化与综合能力提升', academic:'A+'},
+        {name:'跆拳道', weeks:'1-8周', teacher:'魏文佳', self:'E', team:'E',
+          indicator:'基本腿法与礼仪规范', academic:'A-'}
+      ];
+  return [
+    { kind:'simple', label:'劳动教育', grade: g3 ? 'E' : 'M' },
+    { kind:'simple', label:'体质体能', text: g3 ? '良好' : '及格（72）' },
+    { kind:'simple', label:'食育', grade: g3 ? 'M' : 'E' },
+    { kind:'simple', label:'服育', grade: g3 ? 'E' : 'M' },
+    { kind:'shorts', items: shorts }
+  ];
+}
+
+function mockPrimary(){
+  return {
+    modules: [
+      {
+        id:'ability',
+        title:'能力维度',
+        abilityTable: primaryAbilityTable(),
+        abilityExtras: primaryAbilityExtras()
+      },
+      {
+        id:'cognition', title:'认知规律与思维能力', plain:true,
+        rows:[
+          ['能对材料进行归纳并建立联系','M'],
+          ['能在熟悉情境中选择合适策略','E'],
+          ['能用图示或模型表达思路','N']
+        ]
+      },
+      {
+        id:'social', title:'社会性与情感发展', plain:true,
+        rows:[
+          ['能坚持完成约定的习惯目标','M'],
+          ['能在冲突情境中表达感受并倾听他人','N'],
+          ['能与同伴分工完成小组任务','E']
+        ]
+      },
+      {
+        id:'attendance', title:'出勤情况',
+        text:'缺勤 1 天，其中事假 1 天、病假 0 天；迟到 0 次，无故缺席 0 节课。'
+      }
+      // 小学：劳动教育不进左侧目录，挂在能力维度附属块
+    ],
+    legendAcademic:[
+      ['A+','超出本学段水平要求'],
+      ['A','能够达到本学段水平要求'],
+      ['A-','在老师的适度帮助下能够达到'],
+      ['B','在老师的大量帮助下能够达到'],
+      ['C','在老师的大量帮助下尚不能达到']
+    ],
+    legendSoft:[
+      ['E','超出预期'],
+      ['M','达到预期'],
+      ['N','接近预期'],
+      ['U','低于预期']
+    ]
+  };
+}
+
+function mockJunior(includeSummary){
+  // 单科领域（数学 / 道德与人文、社会 / 科学、技术与工程）：课程头不重复领域/学科名，仅任课教师
+  const courses = [
+    {domain:0,name:'语文',teacher:'朱灵',self:'E',team:'M',writing:'M',
+      selfList:[{label:'阅读与写作',v:'E'}],teamList:[{label:'课堂讨论',v:'M'},{label:'小组项目',v:'E'}],
+      rows:[['准确辨析词语与修辞的表达效果','A'],['调用表达策略完成文段写作','A+'],['古诗文背诵与理解','A-'],['倾听并补充同伴发言','A']]},
+    {domain:0,name:'英语',teacher:'苏心怡',self:'N',team:'M',writing:'M',
+      selfList:[{label:'听说读写',v:'N'}],teamList:[{label:'合作任务',v:'M'}],
+      rows:[['积累常用词汇与句型','B'],['听懂语速适中的音频并回应','A-'],['提炼文本关键信息','A-'],['情境写作表达观点','A']]},
+    {domain:1,name:'数学',teacher:'聂江毅',self:'M',team:'M',writing:'M',hideCourseTitle:true,
+      selfList:[{label:'练习与订正',v:'M'}],teamList:[{label:'同伴互评',v:'M'}],
+      rows:[['理解不等式与实数概念','A'],['坐标系表示点与图形','A'],['规范完成求解与化简','A-'],['建立不等式模型并解释','A']]},
+    {domain:2,name:'道德与人文、社会',teacher:'熊千志',self:'E',team:'M',writing:'M',hideCourseTitle:true,
+      selfList:[{label:'材料研读',v:'E'}],teamList:[{label:'议题讨论',v:'M'}],
+      rows:[['在简单场景中调用能力','A+'],['准确表述熟悉场景','A+'],['提取有效信息','A+'],['多环节递进式分析','A']]},
+    {domain:3,name:'科学、技术与工程',teacher:'刘一琛',self:'M',team:'E',writing:'E',hideCourseTitle:true,
+      selfList:[{label:'实验预习',v:'M'}],teamList:[{label:'实验协作',v:'E'}],
+      rows:[['辨识运动与光学基本概念','A+'],['抽象运动过程并计算','A+'],['规范开展实验并分析误差','A+'],['从图表中提取规律','A+']]},
+    // 初中游泳：与小学艺技体短周课同款卡片（非普通课程卡）
+    {domain:4,name:'游泳',weeks:'1-8周',teacher:'刘昀松',self:'E',team:'E',academic:'A+',shortCourse:true}
+  ];
+  const modules = DOMAINS.map((title,i)=>{
+    const mod = {id:'d'+i, title, courses: courses.filter(c=>c.domain===i)};
+    // 体育、健康与生活技能：领域标题下单独展示体质体能
+    if(i===4) mod.fitness = '良好（85.5）';
+    return mod;
+  });
+  // 数学与计算科学领域之前：插入 2 门艺技体短周课（不进目录）
+  const mathIdx = modules.findIndex(m=>m.id==='d1');
+  modules.splice(mathIdx < 0 ? 1 : mathIdx, 0, {
+    id:'j-shorts',
+    bareShorts:true,
+    shortCourses:[
+      {name:'陶艺创作', weeks:'1-8周', teacher:'周明远', self:'E', team:'M', academic:'A'},
+      {name:'管乐团', weeks:'1-8周', teacher:'林晓萱', self:'M', team:'E', academic:'A-'}
+    ]
+  });
+  modules.push({id:'labor',title:'劳动教育',laborGrade:'M'});
+  modules.push({
+    id:'attendance', title:'出勤情况',
+    text:'缺勤 1 天，其中事假 1 天、病假 0 天；迟到 0 次，无故缺席 0 节课。'
+  });
+  if(includeSummary){
+    modules.push({
+      id:'summary', title:'学术水平单科汇总',
+      rows:[['语文','A'],['数学','A'],['英语','A-'],['科学','A+'],['人文','A'],['艺术','A'],['体育与健康','A+']]
+    });
+  }
+  return {
+    modules,
+    legendAcademic:[
+      ['A+','超出预期'],
+      ['A','达到预期'],
+      ['A-','接近预期'],
+      ['B','部分达到预期'],
+      ['C','尚未达到预期']
+    ],
+    legendSoft:[
+      ['E','超出预期'],
+      ['M','达到预期'],
+      ['N','接近预期'],
+      ['U','低于预期']
+    ]
+  };
+}
+
+function mockHigh(includeSummary){
+  // 与目录一致：语文…地理 → 体育、健康与生活技能 → 艺术 → 技术 → 劳动教育 → 出勤情况
+  // 九大学科：课程头仅小灰任课教师（不重复学科名）
+  const academic = {
+    '语文':{teacher:'王宁',self:'M',team:'E',writing:'M',
+      selfList:[{label:'整本书阅读',v:'M'}],teamList:[{label:'专题研讨',v:'E'}],
+      rows:[['文本细读与观点论证','A'],['书面表达结构完整、论据充分','A+'],['古诗文理解与迁移','A-']]},
+    '英语':{teacher:'陈可',self:'N',team:'M',writing:'E',
+      selfList:[{label:'词汇积累',v:'N'},{label:'听力训练',v:'M'}],teamList:[{label:'口语合作',v:'M'}],
+      rows:[['听读获取关键信息','A'],['口头阐述观点','A-'],['议论文写作','A']]},
+    '数学':{teacher:'赵衡',self:'E',team:'M',writing:'M',
+      selfList:[{label:'错题复盘',v:'E'}],teamList:[{label:'解题分享',v:'M'}],
+      rows:[['函数与方程综合运用','A'],['空间几何推理','A-'],['概率统计建模','A']]},
+    '政治':{teacher:'沈岚',self:'M',team:'E',writing:'M',
+      selfList:[{label:'时政研读',v:'M'}],teamList:[{label:'议题辩论',v:'E'}],
+      rows:[['理解基本政治概念与原理','A'],['结合材料分析社会现象','A-'],['规范完成论述题表达','A']]},
+    '化学':{teacher:'林予',self:'M',team:'M',writing:'',
+      selfList:[{label:'方程式练习',v:'M'}],teamList:[{label:'实验安全协作',v:'M'}],
+      rows:[['物质组成与变化','A'],['定量计算','A-'],['实验操作规范','A']]},
+    '历史':{teacher:'何川',self:'E',team:'M',writing:'M',
+      selfList:[{label:'史料整理',v:'E'}],teamList:[{label:'小组探究',v:'M'}],
+      rows:[['梳理重要历史线索','A'],['比较不同史料并说明依据','A+'],['完成专题小论文结构','A-']]},
+    '物理':{teacher:'周启',self:'M',team:'E',writing:'',
+      selfList:[{label:'实验报告',v:'M'}],teamList:[{label:'实验协作',v:'E'}],
+      rows:[['力学概念与模型','A+'],['实验设计与误差分析','A'],['图像与公式互译','A']]},
+    '生物':{teacher:'许晴',self:'M',team:'M',writing:'',
+      selfList:[{label:'概念图整理',v:'M'}],teamList:[{label:'实验观察协作',v:'M'}],
+      rows:[['细胞与遗传基本概念','A'],['读懂实验与图表信息','A-'],['说明生命活动调节机制','A']]},
+    '地理':{teacher:'戴远',self:'N',team:'M',writing:'M',
+      selfList:[{label:'图册标注',v:'N'}],teamList:[{label:'区域案例讨论',v:'M'}],
+      rows:[['判读常见地理图表','A-'],['分析区域特征与成因','A'],['提出合理的人地协调建议','A']]}
+  };
+  const peShorts = [
+    {name:'攀岩基础', weeks:'1-8周', teacher:'韩川', self:'E', team:'M', academic:'A+', shortCourse:true},
+    {name:'羽毛球专项', weeks:'1-8周', teacher:'陆行', self:'M', team:'E', academic:'A', shortCourse:true}
+  ];
+  const artShorts = [
+    {name:'油画写生', weeks:'1-8周', teacher:'乔安', self:'E', team:'M', academic:'A', shortCourse:true},
+    {name:'戏剧工作坊', weeks:'1-8周', teacher:'阮清', self:'M', team:'E', academic:'A-', shortCourse:true}
+  ];
+  const techShorts = [
+    {name:'机器人设计', weeks:'1-8周', teacher:'穆森', self:'M', team:'E', academic:'A+', shortCourse:true},
+    {name:'3D建模', weeks:'1-8周', teacher:'纪川', self:'E', team:'M', academic:'A', shortCourse:true}
+  ];
+  const order = (HS_SUBJECTS[state.grade] || HS_SUBJECTS[10]).slice();
+  const modules = order.map((name,i)=>{
+    if(name === '体育、健康与生活技能'){
+      return {id:'s'+i, title:name, fitness:'90（优秀）', courses:peShorts.slice()};
+    }
+    if(name === '艺术'){
+      return {id:'s'+i, title:name, courses:artShorts.slice()};
+    }
+    if(name === '技术'){
+      return {id:'s'+i, title:name, courses:techShorts.slice()};
+    }
+    const base = academic[name] || {teacher:'—',self:'M',team:'M',writing:'',rows:[['学习目标达成','A']]};
+    const course = Object.assign({name, hideCourseTitle:true}, base);
+    return {id:'s'+i, title:name, courses:[course]};
+  });
+  modules.push({id:'labor',title:'劳动教育',laborGrade:'E'});
+  modules.push({
+    id:'attendance', title:'出勤情况',
+    text:'缺勤 0 天；迟到 1 次，早退 0 次；无故缺席 0 节课。'
+  });
+  if(includeSummary){
+    modules.push({
+      id:'summary', title:'学术水平单科汇总',
+      rows: order.map((name,i)=>[name, ['A','A','A','A-','A','A+','A+','A','A-','A+','A','A+'][i] || 'A'])
+    });
+  }
+  return {
+    modules,
+    legendAcademic:[
+      ['A+','超出预期'],
+      ['A','达到预期'],
+      ['A-','接近预期'],
+      ['B','部分达到预期'],
+      ['C','尚未达到预期']
+    ],
+    legendSoft:[
+      ['E','超出预期'],
+      ['M','达到预期'],
+      ['N','接近预期'],
+      ['U','低于预期']
+    ]
+  };
+}
+
+function currentReport(){
+  const includeSummary = state.seg === 3;
+  if(band()==='primary') return mockPrimary();
+  if(band()==='junior') return mockJunior(includeSummary);
+  return mockHigh(includeSummary);
+}
+
+function hasData(){
+  return availability[`${state.year}|${yearSeg()}`] === 'ok';
+}
+
+function buildTrendSeries(){
+  const b = band();
+  let names;
+  if(b==='primary') names = ['整体'];
+  else if(b==='junior') names = DOMAINS.slice();
+  else names = (HS_SUBJECTS[state.grade] || HS_SUBJECTS[10]).slice();
+  const seed = [
+    [2,3,1,0,0],[3,2,1,0,0],[2,2,2,0,0],[1,3,1,1,0],[3,1,1,0,0],[2,2,1,0,0]
+  ];
+  return names.map((name,i)=>{
+    const v = [];
+    for(let t=1;t<=6;t++){
+      const key = `${state.year}|${t}`;
+      if(availability[key] !== 'ok'){ v.push(null); continue; }
+      const base = seed[(i + t) % seed.length].slice();
+      base[i % 5] = Math.max(0, base[i % 5] + ((i+t)%2));
+      v.push(base);
+    }
+    return {name, v};
+  });
+}
+
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+function closePopovers(e){
+  if(e && e.target.closest && e.target.closest('.soft-item')) return;
+  document.querySelectorAll('.popover.open').forEach(p=>p.classList.remove('open'));
+  state.openPopover = null;
+}
+document.addEventListener('click', closePopovers);
+
+function softBadge(label, value, list, key){
+  const multi = list && list.length > 1;
+  const id = 'pop-' + key;
+  return `<span class="soft-item">
+    ${label}<b class="soft-val">${value || '—'}</b>
+    ${multi ? `<button type="button" class="chev" aria-expanded="false" aria-controls="${id}" onclick="toggleSoftPopover(event,'${id}')" title="查看全部">▾</button>
+      <div class="popover" id="${id}" role="dialog">${list.map(x=>`<div class="pop-row"><span>${x.label}</span><b>${x.v}</b></div>`).join('')}</div>` : ''}
+  </span>`;
+}
+
+function toggleSoftPopover(ev, id){
+  ev.stopPropagation();
+  const el = document.getElementById(id);
+  const willOpen = !el.classList.contains('open');
+  closePopovers();
+  if(willOpen){
+    el.classList.add('open');
+    state.openPopover = id;
+  }
+}
+
+function gradeClass(g){
+  // 学术 A+/A/A-/B/C 统一浅蓝徽章；非学术 E/M/N/U 用灰底
+  if(['E','M','N','U'].includes(g)) return 'grade emnu';
+  return 'grade';
+}
+
+/* ========== 选择器：学年学期合并 ========== */
+function fillSelectors(){
+  const yt = document.getElementById('selYearTerm');
+  const opts = [];
+  YEARS.forEach(y=>{
+    [1,2].forEach(t=>{
+      const val = `${y}|${t}`;
+      const label = `${y}学年 ${termLabel(t)}`;
+      opts.push(`<option value="${val}" ${state.year===y && state.term===t?'selected':''}>${label}</option>`);
+    });
+  });
+  yt.innerHTML = opts.join('');
+  const seg = document.getElementById('selSeg');
+  seg.innerHTML = [1,2,3].map(n=>{
+    const ys = (state.term-1)*3 + n;
+    const empty = availability[`${state.year}|${ys}`] !== 'ok';
+    return `<option value="${n}" ${n===state.seg?'selected':''}>第${n}小学段${empty?'（未同步）':''}</option>`;
+  }).join('');
+}
+
+function onHistoryChange(){
+  const [y,t] = document.getElementById('selYearTerm').value.split('|');
+  state.year = y;
+  state.term = Number(t);
+  state.seg = Number(document.getElementById('selSeg').value);
+  state.trendTermContext = state.term;
+  fillSelectors();
+  if(state.mode==='report') renderReport();
+  else renderTrend();
+}
+
+function onGradePreview(v){
+  state.grade = Number(v);
+  state.trendScope = 'overall';
+  state.activeNav = '';
+  const sel = document.getElementById('gradePreview');
+  if(sel && String(sel.value) !== String(v)) sel.value = String(v);
+  document.getElementById('metaGrade').textContent = gradeLabel(state.grade);
+  document.getElementById('metaCohort').textContent = cohortFor(state.grade) + '届';
+  if(state.mode==='report') renderReport();
+  else renderTrend();
+}
+
+function toggleProtoFloat(ev){
+  ev.stopPropagation();
+  const panel = document.getElementById('protoFloatPanel');
+  const btn = document.getElementById('protoFloatBtn');
+  const open = panel.hasAttribute('hidden');
+  if(open){
+    panel.removeAttribute('hidden');
+    btn.setAttribute('aria-expanded','true');
+    const sel = document.getElementById('gradePreview');
+    if(sel) sel.value = String(state.grade);
+  } else {
+    panel.setAttribute('hidden','');
+    btn.setAttribute('aria-expanded','false');
+  }
+}
+function closeProtoFloat(e){
+  if(e && e.target.closest && e.target.closest('#protoFloat')) return;
+  const panel = document.getElementById('protoFloatPanel');
+  const btn = document.getElementById('protoFloatBtn');
+  if(!panel || panel.hasAttribute('hidden')) return;
+  panel.setAttribute('hidden','');
+  if(btn) btn.setAttribute('aria-expanded','false');
+}
+document.addEventListener('click', closeProtoFloat);
+
+function enterReportFullscreen(){
+  const panel = document.querySelector('.panel-wrap > .panel');
+  const backdrop = document.getElementById('fsBackdrop');
+  if(!panel) return;
+  panel.classList.add('report-fs');
+  document.body.classList.add('report-fs-open');
+  if(backdrop){
+    backdrop.hidden = false;
+    requestAnimationFrame(()=>backdrop.classList.add('show'));
+  }
+  state.reportFs = true;
+}
+function exitReportFullscreen(){
+  const panel = document.querySelector('.panel-wrap > .panel');
+  const backdrop = document.getElementById('fsBackdrop');
+  if(panel) panel.classList.remove('report-fs');
+  document.body.classList.remove('report-fs-open');
+  if(backdrop){
+    backdrop.classList.remove('show');
+    backdrop.hidden = true;
+  }
+  state.reportFs = false;
+}
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    if(state.reportFs) exitReportFullscreen();
+    else closeProtoFloat();
+  }
+});
+
+function setMode(mode){
+  state.mode = mode;
+  document.getElementById('tabReport').classList.toggle('active', mode==='report');
+  document.getElementById('tabTrend').classList.toggle('active', mode==='trend');
+  document.getElementById('tabReport').setAttribute('aria-selected', mode==='report');
+  document.getElementById('tabTrend').setAttribute('aria-selected', mode==='trend');
+  document.getElementById('reportView').hidden = mode!=='report';
+  document.getElementById('trendView').hidden = mode!=='trend';
+  if(mode==='report') renderReport();
+  else renderTrend();
+}
+
+function renderSideNav(report){
+  const nav = document.getElementById('sideNav');
+  // bareShorts（艺技体短周课夹层）不进目录
+  const items = report.modules.filter(m=>!m.bareShorts).map(m=>({id:m.id,title:m.title}));
+  if(!state.activeNav || !items.find(x=>x.id===state.activeNav)){
+    state.activeNav = items[0]?.id || '';
+  }
+  nav.innerHTML = `<div class="group">目录</div>` + items.map(it=>
+    `<a href="#sec-${it.id}" class="${it.id===state.activeNav?'active':''}" data-nav="${it.id}" onclick="jumpNav(event,'${it.id}')">${it.title}</a>`
+  ).join('');
+}
+
+function jumpNav(ev, id){
+  ev.preventDefault();
+  state.activeNav = id;
+  document.querySelectorAll('#sideNav a').forEach(a=>a.classList.toggle('active', a.dataset.nav===id));
+  const target = document.getElementById('sec-'+id);
+  if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderCourse(c, keyBase){
+  const selfVal = (c.selfList && c.selfList[0]?.v) || c.self || '—';
+  const teamVal = (c.teamList && c.teamList[0]?.v) || c.team || '—';
+  // 初中单科领域：任课教师用小灰字（.course-sub），不用大号粗黑标题
+  const titleHtml = c.hideCourseTitle
+    ? (c.teacher ? `<div class="course-sub teacher-only">任课教师 ${c.teacher}</div>` : '')
+    : `<div class="course-title">${c.name}</div>
+        <div class="course-sub">${c.teacher ? '任课教师 '+c.teacher : ''}</div>`;
+  const rowCls = c.rowPlain ? 'row plain' : 'row';
+  return `<article class="course">
+    <div class="course-head">
+      <div>
+        ${titleHtml}
+      </div>
+      <div class="soft-badges">
+        ${softBadge('自主学习', selfVal, c.selfList, keyBase+'-self')}
+        ${softBadge('参与与合作', teamVal, c.teamList, keyBase+'-team')}
+      </div>
+    </div>
+    <div class="rows">
+      ${(c.rows||[]).map(r=>`<div class="${rowCls}"><span class="ind">${r[0]}</span><span class="${gradeClass(r[1])}">${r[1]}</span></div>`).join('')}
+      ${c.writing ? `<div class="row"><span class="ind">书写能力</span><span class="${gradeClass(c.writing)}">${c.writing}</span></div>` : ''}
+    </div>
+  </article>`;
+}
+
+/** 艺技体短周课卡片：头栏仅任课教师；底栏大号课程名 + 学术等级（小学/初中共用结构） */
+function renderShortCourseCard(it){
+  const title = it.weeks ? `${it.name}·${it.weeks}` : it.name;
+  return `<article class="short-course">
+    <div class="sc-head">
+      <div>
+        <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
+      </div>
+      <div class="sc-soft">
+        <span class="soft-item">自主学习 <b class="soft-val">${it.self}</b></span>
+        <span class="soft-item">参与与合作 <b class="soft-val">${it.team}</b></span>
+      </div>
+    </div>
+    <div class="sc-body">
+      <span class="sc-ind">${title}</span>
+      ${chip(it.academic)}
+    </div>
+  </article>`;
+}
+
+function chip(g){
+  return `<span class="cell-grade ${gradeClass(g).replace('grade ','').trim()}">${g}</span>`;
+}
+
+/** 小学能力维度主表：左表头展示任课教师；无右侧教师列 */
+function renderAbilityTable(table){
+  const blocks = table.blocks || [];
+  const teachers = table.teachers || [];
+  let body = '';
+
+  blocks.forEach(block=>{
+    const indCount = block.groups.reduce((n,g)=>n+g.texts.length, 0);
+    let blockRow = 0;
+    block.groups.forEach((g, gi)=>{
+      g.texts.forEach((text, ti)=>{
+        body += '<tr>';
+        body += `<td class="ind-cell"><span class="mark">◇</span>${text}</td>`;
+        if(ti===0){
+          body += `<td class="center" rowspan="${g.texts.length}">${chip(g.academic)}</td>`;
+        }
+        if(blockRow===0 && ti===0 && gi===0){
+          body += `<td class="center" rowspan="${indCount}">${chip(block.self)}</td>`;
+          body += `<td class="center" rowspan="${indCount}">${chip(block.team)}</td>`;
+        }
+        body += '</tr>';
+        blockRow++;
+      });
+    });
+    if(block.writing){
+      body += '<tr>';
+      body += `<td class="ind-cell"><span class="mark">◇</span>书写能力</td>`;
+      body += `<td class="center" colspan="3">${chip(block.writing)}</td>`;
+      body += '</tr>';
+    }
+  });
+
+  const teacherHead = `<th class="th-teachers" scope="col">
+      <div class="th-label">任课教师</div>
+      <div class="th-names">${teachers.join(' · ') || '—'}</div>
+    </th>`;
+
+  return `<div class="ability-wrap"><table class="ability-table" aria-label="能力维度">
+    <colgroup>
+      <col class="c-ind"><col class="c-ac"><col class="c-self"><col class="c-team">
+    </colgroup>
+    <thead>
+      <tr>
+        ${teacherHead}
+        <th>学术水平</th>
+        <th>自主学习</th>
+        <th>参与与合作</th>
+      </tr>
+    </thead>
+    <tbody>${body}</tbody>
+  </table></div>`;
+}
+
+/** 能力维度附属块：劳动 / 体质 / 食服育 / 艺技体短课 */
+function renderAbilityExtras(extras){
+  if(!extras || !extras.length) return '';
+  return `<div class="ability-extras">${extras.map(ex=>{
+    if(ex.kind==='simple'){
+      const right = ex.grade
+        ? `<span class="${gradeClass(ex.grade)}">${ex.grade}</span>`
+        : `<span style="color:#5a6170;font-weight:600">${ex.text||'—'}</span>`;
+      return `<div class="extra-block"><div class="extra-head simple"><span class="extra-title">${ex.label}</span>${right}</div></div>`;
+    }
+    if(ex.kind==='shorts'){
+      return ex.items.map(it=>{
+        const title = it.weeks ? `${it.name}·${it.weeks}` : it.name;
+        // 艺技体短周课：头栏仅小灰「任课教师」；底栏左侧课程名 + 学术等级
+        return `<article class="short-course">
+          <div class="sc-head">
+            <div>
+              <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
+            </div>
+            <div class="sc-soft">
+              <span class="soft-item">自主学习 <b class="soft-val">${it.self}</b></span>
+              <span class="soft-item">参与与合作 <b class="soft-val">${it.team}</b></span>
+            </div>
+          </div>
+          <div class="sc-body">
+            <span class="sc-ind">${title}</span>
+            ${chip(it.academic)}
+          </div>
+        </article>`;
+      }).join('');
+    }
+    return '';
+  }).join('')}</div>`;
+}
+
+function renderLegend(report){
+  const academic = report.legendAcademic || [];
+  const soft = report.legendSoft || [];
+  const academicRows = academic.map(([g,def])=>
+    `<div class="legend-row">${chip(g)}<span>${def}</span></div>`
+  ).join('');
+  const softRows = soft.map(([g,def])=>
+    `<div class="legend-row"><b class="soft-val">${g}</b><span>${def}</span></div>`
+  ).join('');
+  return `<details class="legend" open>
+    <summary>本报告等级说明</summary>
+    <div class="legend-body">
+      <section class="legend-card">
+        <h4>学术水平</h4>
+        ${academicRows}
+      </section>
+      <section class="legend-card">
+        ${band()==='primary'
+          ? `<h4 class="legend-soft-title"><span>自主学习 参与与合作</span><span>认知与思维规律 社会性与情感发展</span></h4>`
+          : `<h4 class="legend-soft-title"><span>自主学习 参与与合作</span><span>书写等</span></h4>`}
+        ${softRows}
+      </section>
+    </div>
+  </details>`;
+}
+
+function renderReport(){
+  fillSelectors();
+  const content = document.getElementById('reportContent');
+  const pdfBtn = document.getElementById('btnPdf');
+  if(!hasData()){
+    document.getElementById('sideNav').innerHTML = `<div class="group">目录</div><div style="padding:12px 10px;color:#9aa0aa;font-size:12px;line-height:1.6">当前小学段无可用报告数据</div>`;
+    content.innerHTML = `<div class="empty-state"><div class="empty-illu" aria-hidden="true"></div><h4>无报告单数据</h4><p>该学年学期 / 小学段尚未同步或未发布结构化报告。<br>仍可切换其他小学段；下载 PDF 暂不可用。</p></div>`;
+    pdfBtn.disabled = true;
+    return;
+  }
+  pdfBtn.disabled = false;
+  const report = currentReport();
+  renderSideNav(report);
+
+  let html = '';
+
+  report.modules.forEach(m=>{
+    html += `<section class="section" id="sec-${m.id}">`;
+    // 初中：数学领域前的艺技体短周课夹层 — 无领域标题，仅卡片
+    if(m.bareShorts){
+      html += `<div class="j-shorts-stack">${(m.shortCourses||[]).map(c=>renderShortCourseCard(c)).join('')}</div>`;
+      html += `</section>`;
+      return;
+    }
+    html += `<h3>${m.title}${m.id==='summary'?'<span class="tag">学期末小学段</span>':''}</h3>`;
+    if(m.abilityTable){
+      html += renderAbilityTable(m.abilityTable);
+      html += renderAbilityExtras(m.abilityExtras);
+    } else if(m.laborGrade){
+      html += `<div class="labor-box"><span class="labor-label">劳动教育</span><span class="${gradeClass(m.laborGrade)}">${m.laborGrade}</span></div>`;
+    } else if(m.courses){
+      if(m.fitness){
+        // 初中/高中体质体能：白底
+        html += `<div class="extra-block fitness-block" style="margin-bottom:12px"><div class="extra-head simple"><span class="extra-title">体质体能</span><span style="color:#5a6170;font-weight:600">${m.fitness}</span></div></div>`;
+      }
+      const regular = m.courses.filter(c=>!c.shortCourse);
+      const shorts = m.courses.filter(c=>c.shortCourse);
+      regular.forEach((c,ci)=>{ html += renderCourse(c, m.id+'-'+ci); });
+      if(shorts.length){
+        html += `<div class="j-shorts-stack">${shorts.map(c=>renderShortCourseCard(c)).join('')}</div>`;
+      }
+    } else if(m.rows){
+      const plain = m.plain ? ' plain' : '';
+      html += `<div class="kv-block"><div class="rows" style="padding:0">${m.rows.map(r=>`<div class="row${plain}"><span class="ind">${r[0]}</span><span class="${gradeClass(r[1])}">${r[1]}</span></div>`).join('')}</div></div>`;
+    } else if(m.text){
+      html += `<div class="kv-block"><p>${m.text}</p></div>`;
+    }
+    html += `</section>`;
+  });
+
+  html += renderLegend(report);
+
+  content.innerHTML = html;
+  const first = report.modules[0];
+  if(first){
+    state.activeNav = first.id;
+    document.querySelectorAll('#sideNav a').forEach(a=>a.classList.toggle('active', a.dataset.nav===first.id));
+  }
+}
+
+function downloadPdf(){
+  if(!hasData()){
+    toast('无报告单数据，无法下载');
+    return;
+  }
+  const title = `云天学院_${document.getElementById('studentName').textContent}_${state.year}_${gradeLabel(state.grade)}_第${yearSeg()}学段_A3打印版`;
+  const blob = new Blob(
+    [`%PDF-1.4\n% 原型占位文件\n% ${title}\n% 正式环境将导出 A3 打印版 PDF（非电子排版版）\n`],
+    {type:'application/pdf'}
+  );
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = title + '.pdf';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  toast('已开始下载 A3 打印版 PDF');
+}
+
+function axisSegments(){
+  // 小学 / 初中 / 高中：横轴固定第1–6学段
+  if(band()==='primary' || band()==='junior' || band()==='high') return [1,2,3,4,5,6];
+  if(state.trendTermContext === 1) return [1,2,3];
+  return [1,2,3,4,5,6];
+}
+
+function renderTrend(){
+  fillSelectors();
+  // 轴口径跟随顶栏学年学期选择（已删独立「轴口径学期」控件）
+  state.trendTermContext = state.term;
+  if(band()==='primary') state.trendScope = 'overall';
+  const series = buildTrendSeries();
+  const b = band();
+  // 小学 / 初中 / 高中：标题旁免责声明、图例在下、紧凑图；初高中保留统计范围
+  const trendCompact = b==='primary' || b==='junior' || b==='high';
+  const wrap = document.getElementById('trendView');
+  const scopeOptions = b==='primary'
+    ? ''
+    : series.map(s=>`<label><input type="radio" name="scope" value="${s.name}" ${state.trendScope===s.name?'checked':''} onchange="setTrendScope(this.value)">${s.name}</label>`).join('');
+
+  const scopeFilter = b==='primary' ? '' : `<div class="filter-line">
+        <strong>统计范围</strong>
+        <label><input type="radio" name="scope" value="overall" ${state.trendScope==='overall'?'checked':''} onchange="setTrendScope('overall')">总体</label>
+        ${scopeOptions}
+      </div>`;
+
+  const chartHead = trendCompact ? '' : `<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:4px">
+          <strong id="scopeTitle">总体等级分布</strong>
+          <span style="color:#9097a2;font-size:12px" id="chartMeta"></span>
+        </div>`;
+
+  const subtitle = trendCompact
+    ? '不同学段下，学习目标、难度及等级记录数量可能不同，本趋势图仅呈现占比分布变化，不能直接认定能力进退'
+    : '仅统计学术水平 A+/A/A-/B/C；空等级与「学术水平单科汇总」不计入。缺失学段留空、不连线。';
+  // 小学：固定总体分母；初中：总体/领域；高中：总体/学科（均用「小学段」口径）
+  let notesExtra;
+  if(b==='primary'){
+    notesExtra = `<p><strong>该等级占比</strong>＝该等级数量 ÷ 该小学段「学术水平」总数 × 100%。</p>`;
+  } else if(b==='junior'){
+    const denom = state.trendScope==='overall'
+      ? '该小学段「学术水平」总数'
+      : '该小学段该领域的「学术水平」总数';
+    notesExtra = `<p><strong>该等级占比</strong>＝该等级数量 ÷ ${denom} × 100%。</p>`;
+  } else if(b==='high'){
+    const denom = state.trendScope==='overall'
+      ? '该小学段「学术水平」总数'
+      : '该小学段该学科的「学术水平」总数';
+    notesExtra = `<p><strong>该等级占比</strong>＝该等级数量 ÷ ${denom} × 100%。</p>`;
+  } else {
+    notesExtra = `<p><strong>占比</strong>＝该等级记录数 ÷ 所选范围有效学术评价记录总数 × 100%。</p>
+        <p>总体为合并计数，非等权平均。等级筛选只改曲线，不改分母。</p>
+        <p>未同步 / 无数据学段不打点、不跨空段连线。</p>`;
+  }
+
+  const notesLegend = trendCompact
+    ? `<div class="notes-legend-row">${ACADEMIC.map((g,i)=>`<span><i class="swatch" style="background:${COLOR_HEX[i]}"></i><strong>${g}</strong></span>`).join('')}</div>`
+    : ACADEMIC.map((g,i)=>`<p><span class="swatch" style="background:${COLOR_HEX[i]}"></span> <strong>${g}</strong></p>`).join('') + '<hr>';
+
+  wrap.classList.toggle('compact', trendCompact);
+  wrap.innerHTML = `
+    <div class="trend-toolbar">
+      <div>
+        <h3>「学术等级占比」学年趋势</h3>
+        <p>${subtitle}</p>
+      </div>
+    </div>
+    <div class="filters">
+      ${scopeFilter}
+      <div class="filter-line">
+        <strong>等级</strong>
+        ${ACADEMIC.map((g,i)=>`<label><input type="checkbox" value="${g}" ${state.trendGrades.has(g)?'checked':''} onchange="toggleTrendGrade('${g}',this.checked)"><span class="swatch" style="background:${COLOR_HEX[i]}"></span>${g}</label>`).join('')}
+      </div>
+    </div>
+    <div class="chart-grid${trendCompact?' stack':''}">
+      <section class="chart-card${trendCompact?' compact':''}">
+        ${chartHead}
+        ${trendCompact?'<span id="scopeTitle" hidden></span><span id="chartMeta" hidden></span>':''}
+        <div id="chartTip" class="chart-tooltip" role="tooltip"></div>
+        <div id="chart"></div>
+      </section>
+      <aside class="notes-card${trendCompact?' below':''}">
+        <h4>图例与计算说明</h4>
+        ${notesLegend}
+        ${notesExtra}
+      </aside>
+    </div>`;
+  drawChart(series);
+}
+
+function setTrendScope(v){ state.trendScope = v; renderTrend(); }
+function toggleTrendGrade(g, on){
+  if(on) state.trendGrades.add(g); else state.trendGrades.delete(g);
+  renderTrend();
+}
+
+function showChartTip(ev, seg, grade, count, total, pct){
+  const tip = document.getElementById('chartTip');
+  const card = tip?.closest('.chart-card');
+  const svg = document.querySelector('#chart svg');
+  if(!tip || !card || !svg) return;
+  const pt = ev.currentTarget?.querySelector('circle[stroke]') || ev.currentTarget;
+  const rect = card.getBoundingClientRect();
+  const cRect = pt.getBoundingClientRect();
+  tip.innerHTML = `<strong>第${seg}学段 · ${grade}</strong><br>${count} 个 / 共 ${total} 个<br>占比 ${pct.toFixed(1)}%`;
+  tip.style.left = (cRect.left + cRect.width/2 - rect.left) + 'px';
+  tip.style.top = (cRect.top - rect.top) + 'px';
+  tip.classList.add('show');
+}
+function hideChartTip(){
+  document.getElementById('chartTip')?.classList.remove('show');
+}
+
+function drawChart(series){
+  const segs = axisSegments();
+  const selected = state.trendScope==='overall' ? series : series.filter(s=>s.name===state.trendScope);
+  const scopeTitle = document.getElementById('scopeTitle');
+  const chartMeta = document.getElementById('chartMeta');
+  if(scopeTitle && !scopeTitle.hidden){
+    scopeTitle.textContent = state.trendScope==='overall' ? '总体等级分布' : state.trendScope + '等级分布';
+  }
+  if(chartMeta && !chartMeta.hidden){
+    chartMeta.textContent = `${state.trendScope==='overall'?'总体合并': '单范围'} · ${state.trendGrades.size} 个等级`;
+  }
+
+  const compactChart = band()==='primary' || band()==='junior' || band()==='high';
+  // 右侧留白加大，避免「第6学段」被裁切；左侧与刻度右对齐
+  const W=960, H=compactChart?200:300, L=52, R=compactChart?48:28, T=compactChart?28:22, B=compactChart?36:46;
+  const x = i => L + i * (W-L-R) / Math.max(segs.length-1,1);
+  const y = v => H - B - v * (H-T-B) / 100;
+  const tickX = L - 8;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="学年学术等级占比折线图">`;
+  // 「占比 %」与 Y 轴刻度同列右对齐（text-anchor=end）
+  svg += `<text x="${tickX}" y="14" text-anchor="end" fill="#8a929f" font-size="11">占比 %</text>`;
+  for(let v=0;v<=100;v+=20){
+    svg += `<line x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}" stroke="#e9edf2"/><text x="${tickX}" y="${y(v)+3}" text-anchor="end" fill="#8a929f" font-size="10">${v}%</text>`;
+  }
+  segs.forEach((seg,i)=>{
+    svg += `<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="11" fill="#646d7b">第${seg}学段</text>`;
+  });
+
+  if(!selected.length || !state.trendGrades.size){
+    svg += `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#969eaa" font-size="14">请至少选择一个等级</text></svg>`;
+    document.getElementById('chart').innerHTML = svg;
+    return;
+  }
+
+  ACADEMIC.forEach((g, gi)=>{
+    if(!state.trendGrades.has(g)) return;
+    let poly = [];
+    const flush = ()=>{
+      if(poly.length>=2){
+        svg += `<polyline points="${poly.map(p=>`${p.x},${p.y}`).join(' ')}" fill="none" stroke="${COLOR_HEX[gi]}" stroke-width="2.4"/>`;
+      }
+      poly = [];
+    };
+    segs.forEach((seg, i)=>{
+      const vectors = selected.map(s=>s.v[seg-1]);
+      if(vectors.some(v=>v==null)){ flush(); return; }
+      const total = vectors.reduce((n,v)=>n+v.reduce((a,b)=>a+b,0),0);
+      if(total===0){ flush(); return; }
+      const count = vectors.reduce((n,v)=>n+v[gi],0);
+      const pct = 100 * count / total;
+      const px = x(i), py = y(pct);
+      poly.push({x:px,y:py});
+      const handler = `showChartTip(event,${seg},'${g}',${count},${total},${pct})`;
+      svg += `<g tabindex="0" role="button" aria-label="第${seg}学段 ${g} ${count}个 占比${pct.toFixed(1)}%" onfocus="${handler}" onmouseenter="${handler}" onmouseleave="hideChartTip()">
+        <circle cx="${px}" cy="${py}" r="12" fill="transparent"/>
+        <circle cx="${px}" cy="${py}" r="4.4" fill="#fff" stroke="${COLOR_HEX[gi]}" stroke-width="2.4"/>
+      </g>`;
+    });
+    flush();
+  });
+
+  svg += '</svg>';
+  document.getElementById('chart').innerHTML = svg;
+  hideChartTip();
+}
+
+fillSelectors();
+renderReport();
+</script>
+</body>
+</html>
