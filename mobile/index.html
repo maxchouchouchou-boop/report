@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="v5.1-teacher-above">
+<meta name="cache-bust" content="v6-ability-table">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端原型 · v5.1 教师上）</title>
+<title>学生成长报告 · 评估报告（手机端原型 · v6 能力表）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -195,18 +195,44 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .sc-ind{font-size:14px;font-weight:650}
 .j-shorts-stack{display:flex;flex-direction:column;gap:0}
 
-.ability-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px 10px;padding:0 4px}
-.ability-table{width:100%;min-width:520px;border-collapse:separate;border-spacing:0;font-size:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.ability-table th,.ability-table td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:8px;vertical-align:middle}
-.ability-table th:last-child,.ability-table td:last-child{border-right:0}
-.ability-table tr:last-child td{border-bottom:0}
-.ability-table thead th{background:#f7f8fa;font-weight:650;text-align:center;font-size:12px}
+.ability-wrap{
+  overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;
+  margin:0 -2px 10px;padding:0 2px 6px;
+}
+.ability-table{
+  width:max-content;min-width:100%;border-collapse:separate;border-spacing:0;
+  font-size:12px;border:1px solid var(--line);border-radius:10px;
+  /* overflow:hidden breaks position:sticky */
+}
+.ability-table .c-ind{width:168px}
+.ability-table .c-ac{width:72px}
+.ability-table .c-self{width:92px}
+.ability-table .c-team{width:92px}
+.ability-table th,.ability-table td{
+  border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  padding:8px 6px;vertical-align:middle;background:#fff;
+}
+.ability-table th:last-child,.ability-table td:last-child{border-right:1px solid var(--line)}
+.ability-table tr:last-child td{border-bottom:1px solid var(--line)}
+.ability-table thead th{background:#f7f8fa;font-weight:650;text-align:center;font-size:11px;line-height:1.35}
 .th-teachers{text-align:left!important}
 .th-label{font-size:11px;color:#9aa0aa;font-weight:500}
-.th-names{margin-top:4px;font-size:12px;color:#3a4050;font-weight:650;line-height:1.35}
-.ind-cell{text-align:left;line-height:1.4}
-.ind-cell .mark{color:var(--orange);margin-right:4px}
+.th-names{margin-top:4px;font-size:11px;color:#3a4050;font-weight:650;line-height:1.35}
+.ind-cell{text-align:left;line-height:1.4;min-width:168px;max-width:168px}
+.ind-cell .mark{color:#2f333c;margin-right:4px}
 .center{text-align:center}
+/* sticky indicator column while scrolling to soft grades */
+.ability-table thead th:first-child,
+.ability-table tbody td.ind-cell{
+  position:sticky;left:0;z-index:3;
+  box-shadow:2px 0 0 var(--line);
+}
+.ability-table thead th:first-child{z-index:4;background:#f7f8fa}
+.ability-table tbody td.ind-cell{background:#fff}
+.ability-table td.center{min-width:72px}
+.ability-table td.center .cell-grade,
+.ability-table td.center .grade{margin:0 auto}
+
 .ability-extras{display:flex;flex-direction:column;gap:10px}
 .extra-block{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff}
 .extra-head.simple{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -1068,22 +1094,16 @@ function renderAbilityTable(table){
   const teachers = table.teachers || [];
   let body = '';
 
+  // 手机端：每行补齐四格（不用 rowspan），边框稳定；左列 sticky，学术列初始完整可见
   blocks.forEach(block=>{
-    const indCount = block.groups.reduce((n,g)=>n+g.texts.length, 0);
-    let blockRow = 0;
-    block.groups.forEach((g, gi)=>{
-      g.texts.forEach((text, ti)=>{
+    block.groups.forEach((g)=>{
+      g.texts.forEach((text)=>{
         body += '<tr>';
         body += `<td class="ind-cell"><span class="mark">◇</span>${text}</td>`;
-        if(ti===0){
-          body += `<td class="center" rowspan="${g.texts.length}">${chip(g.academic)}</td>`;
-        }
-        if(blockRow===0 && ti===0 && gi===0){
-          body += `<td class="center" rowspan="${indCount}">${chip(block.self)}</td>`;
-          body += `<td class="center" rowspan="${indCount}">${chip(block.team)}</td>`;
-        }
+        body += `<td class="center col-ac">${chip(g.academic)}</td>`;
+        body += `<td class="center col-soft">${chip(block.self)}</td>`;
+        body += `<td class="center col-soft">${chip(block.team)}</td>`;
         body += '</tr>';
-        blockRow++;
       });
     });
     if(block.writing){
