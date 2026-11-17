@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端原型 · v4 筛选）</title>
+<title>学生成长报告 · 评估报告（手机端原型 · v5 教师上）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -159,9 +159,9 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .course{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:visible}
 .course-head{display:flex;flex-direction:column;gap:8px;padding:12px;background:#fafbfc;border-bottom:1px solid var(--line)}
 .course-title{font-size:15px;font-weight:650}
-.course-sub,.course-sub.teacher-only{font-size:11px;color:#a0a6b0;margin-top:0;font-weight:400;order:2}
+.course-sub,.course-sub.teacher-only{font-size:12px;color:#8a8f99;margin-top:0;font-weight:400}
 .course-head-main{display:flex;flex-direction:column;gap:8px}
-.soft-badges{display:flex;flex-wrap:wrap;gap:8px;order:1}
+.soft-badges{display:flex;flex-wrap:wrap;gap:8px}
 .soft-item{
   position:relative;display:inline-flex;align-items:center;gap:4px;
   font-size:13px;color:#3a4050;background:#fff;border:1px solid #e8eaef;border-radius:8px;
@@ -183,8 +183,8 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 
 .short-course{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden;background:#fff}
 .sc-head{display:flex;flex-direction:column;gap:8px;padding:12px;background:#fafbfc;border-bottom:1px solid var(--line)}
-.sc-teacher{font-size:11px;color:#a0a6b0;order:2}
-.sc-soft{display:flex;flex-wrap:wrap;gap:8px;order:1}
+.sc-teacher{font-size:12px;color:#8a8f99}
+.sc-soft{display:flex;flex-wrap:wrap;gap:8px}
 .sc-soft .soft-item{
   font-size:13px;color:#3a4050;background:#fff;border:1px solid #e8eaef;border-radius:8px;padding:6px 10px;
 }
@@ -1017,7 +1017,7 @@ function jumpNav(ev, id){
 function renderCourse(c, keyBase){
   const selfVal = (c.selfList && c.selfList[0]?.v) || c.self || '—';
   const teamVal = (c.teamList && c.teamList[0]?.v) || c.team || '—';
-  // 手机端：自主学习/参与与合作优先于任课教师
+  // 手机端：任课教师在上，自主学习/参与与合作在下
   const titleHtml = c.hideCourseTitle
     ? ''
     : `<div class="course-title">${c.name}</div>`;
@@ -1026,11 +1026,11 @@ function renderCourse(c, keyBase){
   return `<article class="course">
     <div class="course-head">
       ${titleHtml}
+      ${teacherHtml}
       <div class="soft-badges">
         ${softBadge('自主学习', selfVal, c.selfList, keyBase+'-self')}
         ${softBadge('参与与合作', teamVal, c.teamList, keyBase+'-team')}
       </div>
-      ${teacherHtml}
     </div>
     <div class="rows">
       ${(c.rows||[]).map(r=>`<div class="${rowCls}"><span class="ind">${r[0]}</span><span class="${gradeClass(r[1])}">${r[1]}</span></div>`).join('')}
@@ -1044,11 +1044,11 @@ function renderShortCourseCard(it){
   const title = it.weeks ? `${it.name}·${it.weeks}` : it.name;
   return `<article class="short-course">
     <div class="sc-head">
+      <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
       <div class="sc-soft">
         <span class="soft-item">自主学习 <b class="soft-val">${it.self}</b></span>
         <span class="soft-item">参与与合作 <b class="soft-val">${it.team}</b></span>
       </div>
-      <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
     </div>
     <div class="sc-body">
       <span class="sc-ind">${title}</span>
@@ -1130,11 +1130,11 @@ function renderAbilityExtras(extras){
         // 艺技体短周课：头栏仅小灰「任课教师」；底栏左侧课程名 + 学术等级
         return `<article class="short-course">
           <div class="sc-head">
+            <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
             <div class="sc-soft">
               <span class="soft-item">自主学习 <b class="soft-val">${it.self}</b></span>
               <span class="soft-item">参与与合作 <b class="soft-val">${it.team}</b></span>
             </div>
-            <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
           </div>
           <div class="sc-body">
             <span class="sc-ind">${title}</span>
