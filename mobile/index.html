@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="v6.2-emnu-gray">
+<meta name="cache-bust" content="v7.1-pdf-preview">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端原型 · v6.2 EMNU灰）</title>
+<title>学生成长报告 · 评估报告（手机端原型 · v7.1 PDF预览）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -315,6 +315,87 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .pop-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #f0f1f4;font-size:14px}
 .pop-row:first-of-type{border-top:0}
 
+
+/* PDF preview (WeChat-style) */
+#pdfPreview{
+  display:none;position:absolute;inset:0;z-index:110;background:#111;
+  flex-direction:column;min-height:0;
+}
+#pdfPreview.open{display:flex}
+.pdf-nav{
+  flex-shrink:0;height:48px;display:flex;align-items:center;gap:8px;
+  padding:0 10px;background:#2a2a2a;color:#fff;
+}
+.pdf-nav .pdf-back,.pdf-nav .pdf-more{
+  width:36px;height:36px;border:0;border-radius:8px;background:transparent;color:#fff;font-size:22px;
+  display:grid;place-items:center;
+}
+.pdf-nav .pdf-title{
+  flex:1;min-width:0;text-align:center;font-size:14px;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px;
+}
+.pdf-stage{
+  flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;
+  background:#3a3a3a;padding:12px 8px 28px;
+}
+.pdf-page-sizer{margin:0 auto;overflow:hidden}
+.pdf-page{
+  width:920px;min-height:620px;background:#fff;color:#222;
+  box-shadow:0 8px 28px rgba(0,0,0,.35);padding:14px 16px 12px;
+  font-size:11px;line-height:1.35;transform-origin:top left;
+}
+.pdf-page h1{
+  margin:0 0 8px;text-align:center;font-size:16px;font-weight:700;
+}
+.pdf-meta{text-align:center;margin-bottom:10px;font-size:12px;color:#444}
+.pdf-a3-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.pdf-a3-table th,.pdf-a3-table td{
+  border:1px solid #333;padding:3px 4px;vertical-align:top;font-size:10px;
+}
+.pdf-a3-table th{background:#f3f4f6;font-weight:650;text-align:center}
+.pdf-a3-table .dom{font-weight:650;background:#fafafa;width:18%}
+.pdf-a3-table .course{width:14%}
+.pdf-a3-table .ind{width:36%}
+.pdf-a3-table .g{width:8%;text-align:center;font-weight:700}
+.pdf-a3-table .t{width:10%;text-align:center;color:#555}
+.pdf-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px;font-size:10px;color:#444}
+.pdf-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#666}
+.pdf-hint{text-align:center;color:#bbb;font-size:11px;margin-top:8px}
+
+/* WeChat forward sheet */
+#wxShareMask{
+  display:none;position:absolute;inset:0;z-index:120;background:rgba(0,0,0,.45);
+}
+#wxShareMask.open{display:block}
+#wxShareSheet{
+  display:none;position:absolute;left:0;right:0;bottom:0;z-index:121;
+  background:#f2f2f2;border-radius:14px 14px 0 0;padding:12px 12px calc(12px + var(--safe-b));
+}
+#wxShareSheet.open{display:block}
+.wx-share-title{font-size:13px;color:#888;margin:0 0 10px;padding:0 4px}
+.wx-row{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 12px;-webkit-overflow-scrolling:touch}
+.wx-row::-webkit-scrollbar{display:none}
+.wx-item{flex:0 0 auto;width:58px;text-align:center}
+.wx-avatar{
+  width:52px;height:52px;border-radius:8px;margin:0 auto 6px;
+  display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;
+}
+.wx-item span{display:block;font-size:11px;color:#333;line-height:1.25;max-height:2.5em;overflow:hidden}
+.wx-actions{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 14px}
+.wx-act{
+  flex:0 0 auto;width:58px;text-align:center;border:0;background:transparent;padding:0;color:#333;
+}
+.wx-act i{
+  display:grid;place-items:center;width:52px;height:52px;border-radius:12px;margin:0 auto 6px;
+  background:#fff;font-style:normal;font-size:22px;
+}
+.wx-act span{font-size:11px}
+.wx-cancel{
+  width:100%;border:0;background:#fff;border-radius:10px;padding:14px;font-size:16px;font-weight:600;color:#111;
+}
+body.pdf-open .proto-float{display:none!important}
+body.pdf-open .phone-badge{display:none!important}
+
 /* proto float */
 .proto-float{position:fixed;right:12px;bottom:calc(16px + var(--safe-b));z-index:30}
 .proto-float-btn{
@@ -455,6 +536,41 @@ body:not(.in-report) .proto-float{display:none}
     </select>
     <p class="proto-float-hint">仅设计演示；正式环境按学生真实年级加载。切换年级会刷新报告结构与趋势口径。</p>
   </div>
+</div>
+
+
+<!-- PDF preview -->
+<div id="pdfPreview" aria-hidden="true">
+  <header class="pdf-nav">
+    <button type="button" class="pdf-back" onclick="closePdfPreview()" aria-label="返回">‹</button>
+    <div class="pdf-title" id="pdfFileName">评估报告_A3打印版.pdf</div>
+    <button type="button" class="pdf-more" onclick="openWxShare(event)" aria-label="更多">⋯</button>
+  </header>
+  <div class="pdf-stage" id="pdfStage">
+    <div class="pdf-page-sizer" id="pdfSizer">
+      <div class="pdf-page" id="pdfPage"></div>
+    </div>
+    <div class="pdf-hint">A3 打印版预览 · 可左右/上下拖动查看</div>
+  </div>
+</div>
+
+<div id="wxShareMask" onclick="closeWxShare()"></div>
+<div id="wxShareSheet" role="dialog" aria-label="转发给">
+  <div class="wx-share-title">转发给</div>
+  <div class="wx-row" id="wxRecent">
+    <div class="wx-item"><div class="wx-avatar" style="background:#07c160">传</div><span>文件传输助手</span></div>
+    <div class="wx-item"><div class="wx-avatar" style="background:#4b7bec">同</div><span>同学群</span></div>
+    <div class="wx-item"><div class="wx-avatar" style="background:#eb6900">家</div><span>家长沟通</span></div>
+    <div class="wx-item"><div class="wx-avatar" style="background:#9a7a98">班</div><span>班级群</span></div>
+  </div>
+  <div class="wx-actions">
+    <button type="button" class="wx-act" onclick="toast('原型：转发给朋友（演示）')"><i>↗</i><span>转发给朋友</span></button>
+    <button type="button" class="wx-act" onclick="toast('原型：星标（演示）')"><i>★</i><span>星标</span></button>
+    <button type="button" class="wx-act" onclick="toast('原型：收藏（演示）')"><i>▣</i><span>收藏</span></button>
+    <button type="button" class="wx-act" onclick="toast('原型：用其他应用打开（演示）')"><i>▦</i><span>用其他应用打开</span></button>
+    <button type="button" class="wx-act" onclick="toast('原型：浮窗（演示）')"><i>⧉</i><span>浮窗</span></button>
+  </div>
+  <button type="button" class="wx-cancel" onclick="closeWxShare()">取消</button>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1254,27 +1370,135 @@ function renderReport(){
   }
 }
 
+function pdfFileTitle(){
+  const name = document.getElementById('studentName')?.textContent || '学生';
+  return `云天学院_${name}_${state.year}_${gradeLabel(state.grade)}_第${yearSeg()}学段_A3打印版.pdf`;
+}
+
+function buildA3PreviewHtml(){
+  const report = currentReport();
+  const name = document.getElementById('studentName')?.textContent || '演示学生';
+  const head = `${state.year}学年 ${gradeLabel(state.grade)}${termLabel(state.term)}第${state.seg}小学段评估报告`;
+  let rows = '';
+  (report.modules||[]).forEach(m=>{
+    if(m.bareShorts){
+      (m.shortCourses||[]).forEach(c=>{
+        rows += `<tr><td class="dom">艺技体短课</td><td class="course">${c.name||''}</td><td class="ind">学术水平</td><td class="g">${c.academic||'—'}</td><td class="g">${c.self||'—'}</td><td class="g">${c.team||'—'}</td><td class="t">${c.teacher||'演示'}</td></tr>`;
+      });
+      return;
+    }
+    if(m.abilityTable){
+      (m.abilityTable.blocks||[]).forEach((block,bi)=>{
+        const teacher = (m.abilityTable.teachers||[])[bi] || (m.abilityTable.teachers||[])[0] || '演示';
+        block.groups.forEach(g=>{
+          g.texts.forEach((text,ti)=>{
+            const first = (ti===0 && g===block.groups[0]);
+            rows += `<tr><td class="dom">${first?'能力维度':''}</td><td class="course"></td><td class="ind">${text}</td><td class="g">${g.academic||'—'}</td><td class="g">${ti===0?block.self:'—'}</td><td class="g">${ti===0?block.team:'—'}</td><td class="t">${ti===0?teacher:''}</td></tr>`;
+          });
+        });
+        if(block.writing){
+          rows += `<tr><td class="dom"></td><td class="course"></td><td class="ind">书写能力</td><td class="g" colspan="3">${block.writing}</td><td class="t"></td></tr>`;
+        }
+      });
+      return;
+    }
+    if(m.courses){
+      m.courses.forEach(c=>{
+        if(c.shortCourse){
+          rows += `<tr><td class="dom">${m.title||''}</td><td class="course">${c.name||''}</td><td class="ind">学术水平</td><td class="g">${c.academic||'—'}</td><td class="g">${c.self||'—'}</td><td class="g">${c.team||'—'}</td><td class="t">${c.teacher||'演示'}</td></tr>`;
+          return;
+        }
+        const inds = (c.rows||[]).map(r=>r[0]).join('；') || '学习目标达成';
+        const g0 = (c.rows&&c.rows[0]&&c.rows[0][1]) || 'A';
+        rows += `<tr><td class="dom">${m.title||''}</td><td class="course">${c.hideCourseTitle?'':(c.name||'')}</td><td class="ind">${inds}</td><td class="g">${g0}</td><td class="g">${c.self||'—'}</td><td class="g">${c.team||'—'}</td><td class="t">${c.teacher||'演示'}</td></tr>`;
+      });
+      if(m.fitness){
+        rows += `<tr><td class="dom">${m.title||''}</td><td class="course">体质体能</td><td class="ind">${m.fitness}</td><td class="g">—</td><td class="g">—</td><td class="g">—</td><td class="t"></td></tr>`;
+      }
+      return;
+    }
+    if(m.laborGrade){
+      rows += `<tr><td class="dom">${m.title||'劳动教育'}</td><td class="course"></td><td class="ind">劳动教育</td><td class="g">${m.laborGrade}</td><td class="g">—</td><td class="g">—</td><td class="t"></td></tr>`;
+      return;
+    }
+    if(m.text){
+      rows += `<tr><td class="dom">${m.title||''}</td><td class="course"></td><td class="ind">${m.text}</td><td class="g">—</td><td class="g">—</td><td class="g">—</td><td class="t"></td></tr>`;
+      return;
+    }
+    if(m.rows){
+      m.rows.forEach(r=>{
+        rows += `<tr><td class="dom">${m.title||''}</td><td class="course"></td><td class="ind">${r[0]}</td><td class="g">${r[1]}</td><td class="g">—</td><td class="g">—</td><td class="t"></td></tr>`;
+      });
+    }
+  });
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+  return `<h1>${head}</h1>
+    <div class="pdf-meta">学生：${name} · 云天学院 · 学号 000000000</div>
+    <table class="pdf-a3-table">
+      <thead><tr><th>领域</th><th>课程</th><th>指标</th><th>学术水平</th><th>自主学习</th><th>参与与合作</th><th>任课教师</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="7" style="text-align:center;padding:20px">无报告数据</td></tr>'}</tbody>
+    </table>
+    <div class="pdf-legend">
+      <span>学术水平：A+ 超出 / A 达到 / A- 接近 / B 部分达到 / C 尚未达到</span>
+      <span>自主学习·参与与合作：E 超出预期 / M 达到预期 / N 接近预期 / U 低于预期</span>
+    </div>
+    <div class="pdf-foot"><span>A3 打印版（原型预览）</span><span>云天学院教育教学平台 · ${dateStr}</span></div>`;
+}
+
+function openPdfPreview(){
+  const preview = document.getElementById('pdfPreview');
+  const page = document.getElementById('pdfPage');
+  const sizer = document.getElementById('pdfSizer');
+  const file = document.getElementById('pdfFileName');
+  if(!preview || !page) return;
+  file.textContent = pdfFileTitle();
+  page.innerHTML = buildA3PreviewHtml();
+  page.style.transform = 'none';
+  preview.classList.add('open');
+  preview.setAttribute('aria-hidden','false');
+  document.body.classList.add('pdf-open');
+  const fit = ()=>{
+    const stage = document.getElementById('pdfStage');
+    if(!stage || !sizer) return;
+    const pad = 16;
+    const scale = Math.max(0.35, Math.min(1, (stage.clientWidth - pad) / 920));
+    page.style.transform = `scale(${scale})`;
+    page.style.transformOrigin = 'top left';
+    const h = Math.max(page.scrollHeight, 620);
+    sizer.style.width = `${Math.round(920 * scale)}px`;
+    sizer.style.height = `${Math.round(h * scale)}px`;
+    stage.scrollLeft = 0;
+    stage.scrollTop = 0;
+  };
+  requestAnimationFrame(()=>requestAnimationFrame(fit));
+}
+function closePdfPreview(){
+  closeWxShare();
+  const preview = document.getElementById('pdfPreview');
+  if(preview){
+    preview.classList.remove('open');
+    preview.setAttribute('aria-hidden','true');
+  }
+  document.body.classList.remove('pdf-open');
+}
+function openWxShare(ev){
+  if(ev) ev.stopPropagation();
+  document.getElementById('wxShareMask')?.classList.add('open');
+  document.getElementById('wxShareSheet')?.classList.add('open');
+}
+function closeWxShare(){
+  document.getElementById('wxShareMask')?.classList.remove('open');
+  document.getElementById('wxShareSheet')?.classList.remove('open');
+}
+
 function downloadPdf(){
   if(!hasData()){
     toast('无报告单数据，无法下载');
     return;
   }
-  const title = `云天学院_${document.getElementById('studentName').textContent}_${state.year}_${gradeLabel(state.grade)}_第${yearSeg()}学段_A3打印版`;
-  const blob = new Blob(
-    [`%PDF-1.4\n% 原型占位文件\n% ${title}\n% 正式环境将导出 A3 打印版 PDF（非电子排版版）\n`],
-    {type:'application/pdf'}
-  );
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = title + '.pdf';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
-  toast('已开始下载 A3 打印版 PDF');
+  openPdfPreview();
 }
-
 function axisSegments(){
   // 小学 / 初中 / 高中：横轴固定第1–6学段
   if(band()==='primary' || band()==='junior' || band()==='high') return [1,2,3,4,5,6];
