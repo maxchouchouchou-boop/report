@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="mobile-B-v8.3-jh-tiles">
+<meta name="cache-bust" content="mobile-B-v8.4-filters-below">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端-B · 初高中平铺）</title>
+<title>学生成长报告 · 评估报告（手机端-B · 筛选在图下）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -262,6 +262,7 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
   display:flex;flex-wrap:wrap;gap:8px;padding:0 0 8px;margin-bottom:0;
 }
 .filter-tile-block{margin:0 0 10px}
+.chart-grid .filter-tile-block{margin:12px 0 10px}
 .filter-tile-label{font-size:12px;color:#8a8f99;margin:0 0 6px;font-weight:500}
 .scope-tiles{display:flex;flex-wrap:wrap;gap:8px}
 .scope-tile{
@@ -1603,6 +1604,10 @@ function renderTrend(){
     ? `<div class="notes-legend-row">${ACADEMIC.map((g,i)=>`<span><i class="swatch" style="background:${COLOR_HEX[i]}"></i><strong>${g}</strong></span>`).join('')}</div>`
     : ACADEMIC.map((g,i)=>`<p><span class="swatch" style="background:${COLOR_HEX[i]}"></span> <strong>${g}</strong></p>`).join('') + '<hr>';
 
+  // 手机端-B：初中/高中把统计范围+等级放到折线图下方、图例上方；小学仍在图上方
+  const filtersAbove = b==='primary' ? gradeTiles : '';
+  const filtersBelow = (b==='junior' || b==='high') ? `${scopeTiles}${gradeTiles}` : '';
+
   wrap.classList.toggle('compact', trendCompact);
   wrap.innerHTML = `
     <div class="trend-toolbar">
@@ -1611,8 +1616,7 @@ function renderTrend(){
         <p>${subtitle}</p>
       </div>
     </div>
-    ${scopeTiles}
-    ${gradeTiles}
+    ${filtersAbove}
     <div class="filters" hidden>
       ${scopeFilter}
       ${gradeFilter}
@@ -1625,6 +1629,7 @@ function renderTrend(){
         <div id="chartTip" class="chart-tooltip" role="tooltip"></div>
         <div class="chart-scroll" id="chartScroll"><div id="chart"></div></div>
       </section>
+      ${filtersBelow}
       <aside class="notes-card${trendCompact?' below':''}">
         <h4>图例与计算说明</h4>
         ${notesLegend}
