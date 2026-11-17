@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="cache-bust" content="desktop-v9b-proto-label">
-<!-- rollback baseline: main@3d204a2 / pre-grade9; prior UI mark: desktop-v9-grade9 -->
+<meta name="cache-bust" content="desktop-v9c-drop-hint">
+<!-- rollback baseline: main@3d204a2 / pre-grade9; prior UI marks: desktop-v9-grade9, desktop-v9b-proto-label -->
 <title>学生成长报告 · 评估报告（桌面端原型）</title>
 <style>
 :root{
@@ -155,8 +155,6 @@ select{border:1px solid #d9dbe1;border-radius:6px;padding:7px 10px;background:#f
 .proto-float-panel select{
   width:100%;padding:7px 8px;font-size:13px;border:1px solid #e3e5ea;border-radius:6px;background:#fff;
 }
-.proto-float-hint{margin:8px 0 0;font-size:11px;line-height:1.45;color:#8a909b}
-
 .report-chrome{
   flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
   padding:14px 18px 10px;border-bottom:1px solid #f0f1f4;
@@ -604,7 +602,6 @@ body.report-fs-open{overflow:hidden}
       <option value="9">高中 · 九年级</option>
       <option value="10">高中 · 十年级</option>
     </select>
-    <p class="proto-float-hint">仅设计演示；正式环境按学生真实年级加载。切换年级会刷新报告结构与趋势口径。九年级与十年级同结构，但仅 1 门人文（无地理/生物/政治/历史）。</p>
   </div>
 </div>
 
