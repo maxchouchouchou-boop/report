@@ -16,7 +16,34 @@
 html,body{height:100%;margin:0}
 body{
   font:15px/1.5 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-  color:var(--text);background:#fff;overflow:hidden;
+  color:var(--text);background:#d8dde6;
+  overflow:hidden;
+  display:flex;justify-content:center;align-items:stretch;
+}
+/* Desktop browser: lock prototype to phone width so layout matches real mobile */
+.phone-shell{
+  width:100%;max-width:390px;height:100%;
+  background:#fff;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  /* make position:fixed children stay inside the phone frame */
+  transform:translateZ(0);
+}
+@media (min-width:480px){
+  body{
+    background:#cfd5df;
+    align-items:center;
+    padding:16px 12px;
+  }
+  .phone-shell{
+    height:min(844px, calc(100dvh - 32px));
+    border-radius:28px;
+    border:1px solid #b8bfca;
+    box-shadow:0 18px 48px rgba(20,28,45,.22);
+  }
+}
+@media (max-width:479px){
+  body{background:#fff}
+  .phone-shell{max-width:none;height:100%;border-radius:0;border:0;box-shadow:none}
 }
 button,select{font:inherit}
 button{border:0;background:none;color:inherit;padding:0;cursor:pointer}
@@ -26,7 +53,7 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 [hidden]{display:none!important}
 
 /* —— Home portal —— */
-#homeView{height:100%;display:flex;flex-direction:column;background:#fff;overflow:auto}
+#homeView{flex:1;min-height:0;height:100%;display:flex;flex-direction:column;background:#fff;overflow:auto}
 .m-status{height:calc(12px + var(--safe-t));flex-shrink:0}
 .m-nav{
   flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;
@@ -63,7 +90,7 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .app-item.is-muted .app-label{color:#555}
 
 /* —— Report app —— */
-#reportApp{height:100%;display:flex;flex-direction:column;background:var(--bg);min-height:0}
+#reportApp{flex:1;min-height:0;height:100%;display:flex;flex-direction:column;background:var(--bg)}
 .r-top{
   flex-shrink:0;display:flex;align-items:center;gap:8px;padding:calc(8px + var(--safe-t)) 12px 10px;
   background:#fff;border-bottom:1px solid var(--line);position:relative;
@@ -104,7 +131,7 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .nav-chips::-webkit-scrollbar{display:none}
 .nav-chip{
   flex:0 0 auto;padding:7px 12px;border-radius:999px;background:#f3f4f6;color:#5a6170;
-  font-size:13px;border:1px solid transparent;max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:13px;border:1px solid transparent;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .nav-chip.active{background:var(--orange-soft);color:var(--orange);border-color:var(--orange-line);font-weight:600}
 .nav-empty{font-size:12px;color:#9aa0aa;padding:4px 2px}
@@ -227,7 +254,7 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .toast{
   position:fixed;left:50%;bottom:calc(88px + var(--safe-b));transform:translateX(-50%) translateY(12px);
   background:#1f2937;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;
-  transition:.2s;z-index:60;max-width:86vw;text-align:center;
+  transition:.2s;z-index:60;max-width:86%;text-align:center;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 body.in-report #homeView{display:none}
@@ -235,6 +262,7 @@ body:not(.in-report) .proto-float{display:none}
 </style>
 </head>
 <body>
+<div class="phone-shell" id="phoneShell">
 <!-- HOME -->
 <div id="homeView">
   <div class="m-status" aria-hidden="true"></div>
@@ -1407,5 +1435,6 @@ document.addEventListener('click', closePopovers);
 showHome();
 
 </script>
+</div><!-- /.phone-shell -->
 </body>
 </html>
