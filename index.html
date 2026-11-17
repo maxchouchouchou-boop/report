@@ -260,6 +260,10 @@ body.report-fs-open{overflow:hidden}
 .row:last-child{border-bottom:0}
 .row .ind::before{content:"◇ ";color:#b0b4bd}
 .row.plain .ind::before{content:none}
+/* 学术水平单科汇总：无菱形；科目文字对齐劳动教育标签 */
+#sec-summary .row .ind{
+  font-size:14px;color:#3a4150;font-weight:500;
+}
 .grade{
   min-width:36px;text-align:center;padding:3px 8px;border-radius:5px;
   background:#edf3fb;color:#4f6f97;font-weight:650;font-size:13px;
@@ -1409,7 +1413,7 @@ function renderReport(){
         html += `<div class="j-shorts-stack">${shorts.map(c=>renderShortCourseCard(c)).join('')}</div>`;
       }
     } else if(m.rows){
-      const plain = m.plain ? ' plain' : '';
+      const plain = (m.plain || m.id==='summary') ? ' plain' : '';
       html += `<div class="kv-block"><div class="rows" style="padding:0">${m.rows.map(r=>`<div class="row${plain}"><span class="ind">${r[0]}</span><span class="${gradeClass(r[1])}">${r[1]}</span></div>`).join('')}</div></div>`;
     } else if(m.text){
       html += `<div class="kv-block"><p>${m.text}</p></div>`;
