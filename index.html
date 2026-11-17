@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="cache-bust" content="desktop-v9-grade9">
-<!-- rollback baseline: main@3d204a2 / pre-grade9 -->
-<title>学生成长报告 · 评估报告（桌面端原型 · v9-grade9）</title>
+<meta name="cache-bust" content="desktop-v9b-proto-label">
+<!-- rollback baseline: main@3d204a2 / pre-grade9; prior UI mark: desktop-v9-grade9 -->
+<title>学生成长报告 · 评估报告（桌面端原型）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -595,14 +595,13 @@ body.report-fs-open{overflow:hidden}
 <div class="fs-backdrop" id="fsBackdrop" onclick="exitReportFullscreen()" hidden></div>
 
 <div class="proto-float" id="protoFloat">
-  <button type="button" class="proto-float-btn" id="protoFloatBtn" aria-expanded="false" aria-controls="protoFloatPanel" onclick="toggleProtoFloat(event)">原型 · 预览年级 · v9</button>
-  <div class="proto-float-panel" id="protoFloatPanel" role="dialog" aria-label="原型演示 · 预览年级" hidden>
-    <div class="proto-float-title">原型演示 · desktop-v9-grade9</div>
+  <button type="button" class="proto-float-btn" id="protoFloatBtn" aria-expanded="false" aria-controls="protoFloatPanel" onclick="toggleProtoFloat(event)">原型预览 选择年级</button>
+  <div class="proto-float-panel" id="protoFloatPanel" role="dialog" aria-label="原型预览 选择年级" hidden>
     <label for="gradePreview">预览年级</label>
     <select id="gradePreview" onchange="onGradePreview(this.value)">
       <option value="5" selected>小学 · 五年级</option>
       <option value="7">初中 · 七年级</option>
-      <option value="9">九年级</option>
+      <option value="9">高中 · 九年级</option>
       <option value="10">高中 · 十年级</option>
     </select>
     <p class="proto-float-hint">仅设计演示；正式环境按学生真实年级加载。切换年级会刷新报告结构与趋势口径。九年级与十年级同结构，但仅 1 门人文（无地理/生物/政治/历史）。</p>
