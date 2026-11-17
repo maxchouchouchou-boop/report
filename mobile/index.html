@@ -248,7 +248,7 @@ body:not(.in-report) .proto-float{display:none}
         <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="#8a93a3" stroke-width="1.6"/><path d="M5 19c1.6-3.2 4-4.8 7-4.8s5.4 1.6 7 4.8" stroke="#8a93a3" stroke-width="1.6" stroke-linecap="round"/></svg>
       </div>
       <div>
-        <div class="home-name">演示学生</div>
+        <div class="home-name">林晓晴</div>
         <div class="home-sid">学号：000000000</div>
       </div>
     </div>
@@ -310,9 +310,9 @@ body:not(.in-report) .proto-float{display:none}
     <div class="r-title">学生成长报告</div>
   </header>
   <section class="student-head">
-    <div class="avatar" id="avatarText">演示</div>
+    <div class="avatar" id="avatarText">晓晴</div>
     <div class="student-meta">
-      <h2 id="studentName">演示学生</h2>
+      <h2 id="studentName">林晓晴</h2>
       <div class="meta-row">
         <span id="metaCohort">2033届</span>
         <span id="metaGrade">五年级</span>
@@ -423,7 +423,7 @@ function termLabel(t){ return t===1 ? '上学期' : '下学期'; }
 
 /* ========== 小学能力维度 mock（主表 + 附属块） ========== */
 function primaryAbilityTable(){
-  const teachers = ['演示','演示','演示','演示','演示'];
+  const teachers = ['沈若兰','贺明川','白予安','顾清禾','江晚宁'];
   if(state.grade === 3){
     return {
       teachers,
@@ -522,21 +522,21 @@ function primaryAbilityExtras(){
   const g3 = state.grade === 3;
   const shorts = g3
     ? [
-        {name:'工笔花鸟画', weeks:'1-8周', teacher:'演示', self:'E', team:'M',
+        {name:'工笔花鸟画', weeks:'1-8周', teacher:'沈若兰', self:'E', team:'M',
           indicator:'工笔技法练习与作品完成', academic:'A'},
-        {name:'书法提包', weeks:'1-8周', teacher:'演示', self:'M', team:'M',
+        {name:'书法提包', weeks:'1-8周', teacher:'贺明川', self:'M', team:'M',
           indicator:'笔法临摹与作品提包完成', academic:'A-'},
-        {name:'游泳', weeks:'1-8周', teacher:'演示', self:'E', team:'E',
+        {name:'游泳', weeks:'1-8周', teacher:'白予安', self:'E', team:'E',
           indicator:'泳姿技术优化与综合能力提升', academic:'A+'}
       ]
     : [
-        {name:'工笔花鸟画', weeks:'1-8周', teacher:'演示', self:'E', team:'M',
+        {name:'工笔花鸟画', weeks:'1-8周', teacher:'顾清禾', self:'E', team:'M',
           indicator:'工笔技法练习与作品完成', academic:'A'},
-        {name:'书法提包', weeks:'1-8周', teacher:'演示', self:'M', team:'U',
+        {name:'书法提包', weeks:'1-8周', teacher:'江晚宁', self:'M', team:'U',
           indicator:'笔法临摹与作品提包完成', academic:'B'},
-        {name:'游泳', weeks:'1-8周', teacher:'演示', self:'E', team:'E',
+        {name:'游泳', weeks:'1-8周', teacher:'陆知夏', self:'E', team:'E',
           indicator:'泳姿技术优化与综合能力提升', academic:'A+'},
-        {name:'跆拳道', weeks:'1-8周', teacher:'演示', self:'E', team:'E',
+        {name:'跆拳道', weeks:'1-8周', teacher:'程一诺', self:'E', team:'E',
           indicator:'基本腿法与礼仪规范', academic:'A-'}
       ];
   return [
@@ -598,23 +598,23 @@ function mockPrimary(){
 function mockJunior(includeSummary){
   // 单科领域（数学 / 道德与人文、社会 / 科学、技术与工程）：课程头不重复领域/学科名，仅任课教师
   const courses = [
-    {domain:0,name:'语文',teacher:'演示',self:'E',team:'M',writing:'M',
+    {domain:0,name:'语文',teacher:'方景行',self:'E',team:'M',writing:'M',
       selfList:[{label:'阅读与写作',v:'E'}],teamList:[{label:'课堂讨论',v:'M'},{label:'小组项目',v:'E'}],
       rows:[['准确辨析词语与修辞的表达效果','A'],['调用表达策略完成文段写作','A+'],['古诗文背诵与理解','A-'],['倾听并补充同伴发言','A']]},
-    {domain:0,name:'英语',teacher:'演示',self:'N',team:'M',writing:'M',
+    {domain:0,name:'英语',teacher:'叶可宁',self:'N',team:'M',writing:'M',
       selfList:[{label:'听说读写',v:'N'}],teamList:[{label:'合作任务',v:'M'}],
       rows:[['积累常用词汇与句型','B'],['听懂语速适中的音频并回应','A-'],['提炼文本关键信息','A-'],['情境写作表达观点','A']]},
-    {domain:1,name:'数学',teacher:'演示',self:'M',team:'M',writing:'M',hideCourseTitle:true,
+    {domain:1,name:'数学',teacher:'宋予衡',self:'M',team:'M',writing:'M',hideCourseTitle:true,
       selfList:[{label:'练习与订正',v:'M'}],teamList:[{label:'同伴互评',v:'M'}],
       rows:[['理解不等式与实数概念','A'],['坐标系表示点与图形','A'],['规范完成求解与化简','A-'],['建立不等式模型并解释','A']]},
-    {domain:2,name:'道德与人文、社会',teacher:'演示',self:'E',team:'M',writing:'M',hideCourseTitle:true,
+    {domain:2,name:'道德与人文、社会',teacher:'赵知遥',self:'E',team:'M',writing:'M',hideCourseTitle:true,
       selfList:[{label:'材料研读',v:'E'}],teamList:[{label:'议题讨论',v:'M'}],
       rows:[['在简单场景中调用能力','A+'],['准确表述熟悉场景','A+'],['提取有效信息','A+'],['多环节递进式分析','A']]},
-    {domain:3,name:'科学、技术与工程',teacher:'演示',self:'M',team:'E',writing:'E',hideCourseTitle:true,
+    {domain:3,name:'科学、技术与工程',teacher:'周明远',self:'M',team:'E',writing:'E',hideCourseTitle:true,
       selfList:[{label:'实验预习',v:'M'}],teamList:[{label:'实验协作',v:'E'}],
       rows:[['辨识运动与光学基本概念','A+'],['抽象运动过程并计算','A+'],['规范开展实验并分析误差','A+'],['从图表中提取规律','A+']]},
     // 初中游泳：与小学艺技体短周课同款卡片（非普通课程卡）
-    {domain:4,name:'游泳',weeks:'1-8周',teacher:'演示',self:'E',team:'E',academic:'A+',shortCourse:true}
+    {domain:4,name:'游泳',weeks:'1-8周',teacher:'林晓萱',self:'E',team:'E',academic:'A+',shortCourse:true}
   ];
   const modules = DOMAINS.map((title,i)=>{
     const mod = {id:'d'+i, title, courses: courses.filter(c=>c.domain===i)};
@@ -628,8 +628,8 @@ function mockJunior(includeSummary){
     id:'j-shorts',
     bareShorts:true,
     shortCourses:[
-      {name:'陶艺创作', weeks:'1-8周', teacher:'演示', self:'E', team:'M', academic:'A'},
-      {name:'管乐团', weeks:'1-8周', teacher:'演示', self:'M', team:'E', academic:'A-'}
+      {name:'陶艺创作', weeks:'1-8周', teacher:'王宁川', self:'E', team:'M', academic:'A'},
+      {name:'管乐团', weeks:'1-8周', teacher:'陈可意', self:'M', team:'E', academic:'A-'}
     ]
   });
   modules.push({id:'labor',title:'劳动教育',laborGrade:'M'});
@@ -665,45 +665,45 @@ function mockHigh(includeSummary){
   // 与目录一致：语文…地理 → 体育、健康与生活技能 → 艺术 → 技术 → 劳动教育 → 出勤情况
   // 九大学科：课程头仅小灰任课教师（不重复学科名）
   const academic = {
-    '语文':{teacher:'演示',self:'M',team:'E',writing:'M',
+    '语文':{teacher:'赵衡远',self:'M',team:'E',writing:'M',
       selfList:[{label:'整本书阅读',v:'M'}],teamList:[{label:'专题研讨',v:'E'}],
       rows:[['文本细读与观点论证','A'],['书面表达结构完整、论据充分','A+'],['古诗文理解与迁移','A-']]},
-    '英语':{teacher:'演示',self:'N',team:'M',writing:'E',
+    '英语':{teacher:'沈岚溪',self:'N',team:'M',writing:'E',
       selfList:[{label:'词汇积累',v:'N'},{label:'听力训练',v:'M'}],teamList:[{label:'口语合作',v:'M'}],
       rows:[['听读获取关键信息','A'],['口头阐述观点','A-'],['议论文写作','A']]},
-    '数学':{teacher:'演示',self:'E',team:'M',writing:'M',
+    '数学':{teacher:'林予安',self:'E',team:'M',writing:'M',
       selfList:[{label:'错题复盘',v:'E'}],teamList:[{label:'解题分享',v:'M'}],
       rows:[['函数与方程综合运用','A'],['空间几何推理','A-'],['概率统计建模','A']]},
-    '政治':{teacher:'演示',self:'M',team:'E',writing:'M',
+    '政治':{teacher:'何川行',self:'M',team:'E',writing:'M',
       selfList:[{label:'时政研读',v:'M'}],teamList:[{label:'议题辩论',v:'E'}],
       rows:[['理解基本政治概念与原理','A'],['结合材料分析社会现象','A-'],['规范完成论述题表达','A']]},
-    '化学':{teacher:'演示',self:'M',team:'M',writing:'',
+    '化学':{teacher:'周启明',self:'M',team:'M',writing:'',
       selfList:[{label:'方程式练习',v:'M'}],teamList:[{label:'实验安全协作',v:'M'}],
       rows:[['物质组成与变化','A'],['定量计算','A-'],['实验操作规范','A']]},
-    '历史':{teacher:'演示',self:'E',team:'M',writing:'M',
+    '历史':{teacher:'许晴川',self:'E',team:'M',writing:'M',
       selfList:[{label:'史料整理',v:'E'}],teamList:[{label:'小组探究',v:'M'}],
       rows:[['梳理重要历史线索','A'],['比较不同史料并说明依据','A+'],['完成专题小论文结构','A-']]},
-    '物理':{teacher:'演示',self:'M',team:'E',writing:'',
+    '物理':{teacher:'戴远舟',self:'M',team:'E',writing:'',
       selfList:[{label:'实验报告',v:'M'}],teamList:[{label:'实验协作',v:'E'}],
       rows:[['力学概念与模型','A+'],['实验设计与误差分析','A'],['图像与公式互译','A']]},
-    '生物':{teacher:'演示',self:'M',team:'M',writing:'',
+    '生物':{teacher:'韩川野',self:'M',team:'M',writing:'',
       selfList:[{label:'概念图整理',v:'M'}],teamList:[{label:'实验观察协作',v:'M'}],
       rows:[['细胞与遗传基本概念','A'],['读懂实验与图表信息','A-'],['说明生命活动调节机制','A']]},
-    '地理':{teacher:'演示',self:'N',team:'M',writing:'M',
+    '地理':{teacher:'陆行舟',self:'N',team:'M',writing:'M',
       selfList:[{label:'图册标注',v:'N'}],teamList:[{label:'区域案例讨论',v:'M'}],
       rows:[['判读常见地理图表','A-'],['分析区域特征与成因','A'],['提出合理的人地协调建议','A']]}
   };
   const peShorts = [
-    {name:'攀岩基础', weeks:'1-8周', teacher:'演示', self:'E', team:'M', academic:'A+', shortCourse:true},
-    {name:'羽毛球专项', weeks:'1-8周', teacher:'演示', self:'M', team:'E', academic:'A', shortCourse:true}
+    {name:'攀岩基础', weeks:'1-8周', teacher:'乔安宁', self:'E', team:'M', academic:'A+', shortCourse:true},
+    {name:'羽毛球专项', weeks:'1-8周', teacher:'阮清禾', self:'M', team:'E', academic:'A', shortCourse:true}
   ];
   const artShorts = [
-    {name:'油画写生', weeks:'1-8周', teacher:'演示', self:'E', team:'M', academic:'A', shortCourse:true},
-    {name:'戏剧工作坊', weeks:'1-8周', teacher:'演示', self:'M', team:'E', academic:'A-', shortCourse:true}
+    {name:'油画写生', weeks:'1-8周', teacher:'穆森远', self:'E', team:'M', academic:'A', shortCourse:true},
+    {name:'戏剧工作坊', weeks:'1-8周', teacher:'纪川行', self:'M', team:'E', academic:'A-', shortCourse:true}
   ];
   const techShorts = [
-    {name:'机器人设计', weeks:'1-8周', teacher:'演示', self:'M', team:'E', academic:'A+', shortCourse:true},
-    {name:'3D建模', weeks:'1-8周', teacher:'演示', self:'E', team:'M', academic:'A', shortCourse:true}
+    {name:'机器人设计', weeks:'1-8周', teacher:'沈若兰', self:'M', team:'E', academic:'A+', shortCourse:true},
+    {name:'3D建模', weeks:'1-8周', teacher:'贺明川', self:'E', team:'M', academic:'A', shortCourse:true}
   ];
   const order = (HS_SUBJECTS[state.grade] || HS_SUBJECTS[10]).slice();
   const modules = order.map((name,i)=>{
@@ -716,7 +716,7 @@ function mockHigh(includeSummary){
     if(name === '技术'){
       return {id:'s'+i, title:name, courses:techShorts.slice()};
     }
-    const base = academic[name] || {teacher:'演示',self:'M',team:'M',writing:'',rows:[['学习目标达成','A']]};
+    const base = academic[name] || {teacher:'白予安',self:'M',team:'M',writing:'',rows:[['学习目标达成','A']]};
     const course = Object.assign({name, hideCourseTitle:true}, base);
     return {id:'s'+i, title:name, courses:[course]};
   });
