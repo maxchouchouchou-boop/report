@@ -352,6 +352,20 @@ body.report-fs-open{overflow:hidden}
   font-size:14px;font-weight:600;color:#3a4150;
 }
 
+.summary-table{
+  width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px;background:#fff;
+  border:1px solid #d7dae0;border-radius:8px;overflow:hidden;
+}
+.summary-table th{
+  background:#5c6573;color:#fff;font-weight:650;text-align:center;padding:10px 8px;
+  border:1px solid #4f5763;
+}
+.summary-table td{
+  border:1px solid #d7dae0;text-align:center;padding:10px 8px;color:#2f333c;vertical-align:middle;
+}
+.summary-table td.sub{font-weight:500;background:#fafbfc}
+.summary-table td.g{font-weight:700}
+.summary-tag-row{margin:0 0 8px}
 .kv-block{
   border:1px solid #e7e8ed;border-radius:8px;padding:14px 16px;background:#fff;
 }
@@ -817,7 +831,7 @@ function mockPrimary(){
       },
       {
         id:'attendance', title:'出勤情况',
-        text:'本学段出勤正常（演示数据）：缺勤 0 天，迟到 0 次，无故缺席 0 节课。'
+        text:'本学段出勤情况：缺勤0天，其中事假0天，病假0天；迟到1次，无故缺席3节课。'
       }
       // 小学：劳动教育不进左侧目录，挂在能力维度附属块
     ],
@@ -877,12 +891,13 @@ function mockJunior(includeSummary){
   modules.push({id:'labor',title:'劳动教育',laborGrade:'M'});
   modules.push({
     id:'attendance', title:'出勤情况',
-    text:'本学段出勤正常（演示数据）：缺勤 0 天，迟到 0 次，无故缺席 0 节课。'
+    text:'本学段出勤情况：缺勤0天，其中事假0天，病假0天；迟到1次，无故缺席3节课。'
   });
   if(includeSummary){
     modules.push({
       id:'summary', title:'学术水平单科汇总',
-      rows:[['语文','A'],['数学','A'],['英语','A-'],['科学','A+'],['人文','A'],['艺术','A'],['体育与健康','A+']]
+      summaryGrid:true,
+      rows:[['语文','A'],['数学','A+'],['英语','A+'],['科学','A+'],['人文','A'],['体育与健康','A'],['艺术','A+'],['技术','A']]
     });
   }
   return {
@@ -965,12 +980,18 @@ function mockHigh(includeSummary){
   modules.push({id:'labor',title:'劳动教育',laborGrade:'E'});
   modules.push({
     id:'attendance', title:'出勤情况',
-    text:'本学段出勤正常（演示数据）：缺勤 0 天，迟到 0 次，无故缺席 0 节课。'
+    text:'本学段出勤情况：缺勤0天，其中事假0天，病假0天；迟到1次，无故缺席3节课。'
   });
   if(includeSummary){
     modules.push({
       id:'summary', title:'学术水平单科汇总',
-      rows: order.map((name,i)=>[name, ['A','A','A','A-','A','A+','A+','A','A-','A+','A','A+'][i] || 'A'])
+      summaryGrid:true,
+      // 演示：按参考打印版三列科目×等级排布
+      rows:[
+        ['语文','A'],['数学','A+'],['英语','A+'],
+        ['物理','A+'],['化学','A+'],['生物','A+'],
+        ['技术','A'],['艺术','A+'],['体育与健康','A']
+      ]
     });
   }
   return {
@@ -992,7 +1013,8 @@ function mockHigh(includeSummary){
 }
 
 function currentReport(){
-  const includeSummary = state.seg === 3;
+  // 初中/高中：出勤下方始终展示学术水平单科汇总（不再仅学期末）
+  const includeSummary = true;
   if(band()==='primary') return mockPrimary();
   if(band()==='junior') return mockJunior(includeSummary);
   return mockHigh(includeSummary);
@@ -1360,6 +1382,24 @@ function renderLegend(report){
   </details>`;
 }
 
+
+function renderSummaryGrid(rows){
+  const cells = rows || [];
+  let body = '';
+  for(let i=0;i<cells.length;i+=3){
+    const chunk = cells.slice(i, i+3);
+    while(chunk.length < 3) chunk.push(['','']);
+    body += '<tr>' + chunk.map(([name,g])=>{
+      if(!name) return '<td class="sub"></td><td class="g"></td>';
+      return `<td class="sub">${name}</td><td class="g">${g||'—'}</td>`;
+    }).join('') + '</tr>';
+  }
+  return `<table class="summary-table" aria-label="学术水平单科汇总">
+    <thead><tr><th colspan="6">学术水平单科汇总</th></tr></thead>
+    <tbody>${body}</tbody>
+  </table>`;
+}
+
 function renderReport(){
   fillSelectors();
   const content = document.getElementById('reportContent');
@@ -1384,7 +1424,12 @@ function renderReport(){
       html += `</section>`;
       return;
     }
-    html += `<h3>${m.title}${m.id==='summary'?'<span class="tag">学期末小学段</span>':''}</h3>`;
+    // 单科汇总用表头承载标题，避免与表格标题重复；学期末仍可打标
+    if(m.summaryGrid){
+      html += state.seg===3 ? `<div class="summary-tag-row"><span class="tag">学期末小学段</span></div>` : '';
+    } else {
+      html += `<h3>${m.title}${m.id==='summary' && state.seg===3?'<span class="tag">学期末小学段</span>':''}</h3>`;
+    }
     if(m.abilityTable){
       html += renderAbilityTable(m.abilityTable);
       html += renderAbilityExtras(m.abilityExtras);
@@ -1401,6 +1446,8 @@ function renderReport(){
       if(shorts.length){
         html += `<div class="j-shorts-stack">${shorts.map(c=>renderShortCourseCard(c)).join('')}</div>`;
       }
+    } else if(m.summaryGrid && m.rows){
+      html += renderSummaryGrid(m.rows);
     } else if(m.rows){
       const plain = m.plain ? ' plain' : '';
       html += `<div class="kv-block"><div class="rows" style="padding:0">${m.rows.map(r=>`<div class="row${plain}"><span class="ind">${r[0]}</span><span class="${gradeClass(r[1])}">${r[1]}</span></div>`).join('')}</div></div>`;
