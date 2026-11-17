@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="mobile-B-v8.2.1-base">
+<meta name="cache-bust" content="mobile-B-v8.3-jh-tiles">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端-B）</title>
+<title>学生成长报告 · 评估报告（手机端-B · 初高中平铺）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -261,6 +261,14 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .grade-tiles{
   display:flex;flex-wrap:wrap;gap:8px;padding:0 0 8px;margin-bottom:0;
 }
+.filter-tile-block{margin:0 0 10px}
+.filter-tile-label{font-size:12px;color:#8a8f99;margin:0 0 6px;font-weight:500}
+.scope-tiles{display:flex;flex-wrap:wrap;gap:8px}
+.scope-tile{
+  flex:0 0 auto;padding:8px 12px;border-radius:999px;
+  border:1px solid #e1e3e8;background:#fff;color:#5a6170;font-size:13px;font-weight:650;
+}
+.scope-tile.active{border-color:var(--orange);background:var(--orange-soft);color:var(--orange)}
 .grade-tile{
   flex:0 0 auto;min-width:46px;padding:8px 12px;border-radius:999px;
   border:1px solid #e1e3e8;background:#fff;color:#5a6170;font-size:13px;font-weight:650;
@@ -1549,17 +1557,19 @@ function renderTrend(){
   const titleEcho = b==='primary'
     ? `已选等级 ${gradeLabel}`
     : `统计范围 ${scopeLabel} · 等级 ${gradeLabel}`;
-  // 小学：等级平铺；初高中：保留下拉，并把所选回显到标题
-  const scopeFilter = b==='primary' ? '' : `<button type="button" class="filter-trigger" id="scopeTrigger" onclick="openScopeSheet(event)"><span>统计范围</span> <b>${scopeLabel}</b></button>`;
-  const gradeFilter = b==='primary'
-    ? ''
-    : `<button type="button" class="filter-trigger" id="gradeTrigger" onclick="openGradeSheet(event)"><span>等级</span> <b>${gradeLabel}</b></button>`;
-  const gradeTiles = b==='primary'
-    ? `<div class="grade-tiles" id="gradeTiles" role="group" aria-label="等级">${ACADEMIC.map((g,i)=>{
+  // 手机端-B：小学只平铺等级；初中/高中统计范围+等级全部平铺（不下拉）
+  const scopeFilter = '';
+  const gradeFilter = '';
+  const scopeTiles = (b==='junior' || b==='high')
+    ? `<div class="filter-tile-block"><div class="filter-tile-label">统计范围</div><div class="scope-tiles" id="scopeTiles" role="group" aria-label="统计范围">${scopeChoices.map(([v,lab])=>{
+        const on = state.trendScope===v;
+        return `<button type="button" class="scope-tile${on?' active':''}" data-scope="${v}" onclick="setTrendScope('${v}')">${lab}</button>`;
+      }).join('')}</div></div>`
+    : '';
+  const gradeTiles = `<div class="filter-tile-block"><div class="filter-tile-label">等级</div><div class="grade-tiles" id="gradeTiles" role="group" aria-label="等级">${ACADEMIC.map((g,i)=>{
         const on = state.trendGrades.has(g);
         return `<button type="button" class="grade-tile${on?' active':''}" data-grade="${g}" onclick="toggleTrendGrade('${g}', ${on?'false':'true'})"><i class="dot" style="background:${COLOR_HEX[i]}"></i>${g}</button>`;
-      }).join('')}</div>`
-    : '';
+      }).join('')}</div></div>`;
 
   const chartHead = trendCompact ? '' : `<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:4px">
           <strong id="scopeTitle">总体等级分布</strong>
@@ -1601,8 +1611,9 @@ function renderTrend(){
         <p>${subtitle}</p>
       </div>
     </div>
+    ${scopeTiles}
     ${gradeTiles}
-    <div class="filters"${b==='primary'?' hidden':''}>
+    <div class="filters" hidden>
       ${scopeFilter}
       ${gradeFilter}
     </div>
