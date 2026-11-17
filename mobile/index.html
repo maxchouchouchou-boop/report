@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端原型 · v2 手机框）</title>
+<title>学生成长报告 · 评估报告（手机端原型 · v3 UI）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -106,9 +106,9 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 }
 .r-back{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:22px;color:#444}
 .r-title{flex:1;text-align:center;font-size:17px;font-weight:650;margin-right:36px}
-.student-head{
-  flex-shrink:0;display:flex;gap:12px;align-items:center;padding:14px 16px;background:#fff;
-}
+.student-head{display:none!important}
+.report-meta-hidden{display:none!important}
+
 .avatar{
   width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ffb26b,#eb6900);
   color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0;
@@ -153,13 +153,18 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .section h3{margin:0 0 12px;font-size:16px;font-weight:650;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .section h3 .tag{font-size:11px;font-weight:600;color:var(--orange);background:var(--orange-soft);border-radius:999px;padding:2px 8px}
 .course{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:visible}
-.course-head{display:flex;flex-direction:column;gap:10px;padding:12px;background:#fafbfc;border-bottom:1px solid var(--line)}
+.course-head{display:flex;flex-direction:column;gap:8px;padding:12px;background:#fafbfc;border-bottom:1px solid var(--line)}
 .course-title{font-size:15px;font-weight:650}
-.course-sub{font-size:12px;color:#9aa0aa;margin-top:2px}
-.course-sub.teacher-only{font-size:13px;color:#6b7180}
-.soft-badges{display:flex;flex-wrap:wrap;gap:8px 12px}
-.soft-item{position:relative;display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#6b7180}
-.soft-val{color:var(--text);font-weight:700;margin-left:2px}
+.course-sub,.course-sub.teacher-only{font-size:11px;color:#a0a6b0;margin-top:0;font-weight:400;order:2}
+.course-head-main{display:flex;flex-direction:column;gap:8px}
+.soft-badges{display:flex;flex-wrap:wrap;gap:8px;order:1}
+.soft-item{
+  position:relative;display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;color:#3a4050;background:#fff;border:1px solid #e8eaef;border-radius:8px;
+  padding:6px 10px;font-weight:500;
+}
+.soft-val{color:var(--orange);font-weight:800;margin-left:2px;font-size:15px}
+
 .chev{width:22px;height:22px;border-radius:6px;background:#eef0f3;color:#666;font-size:11px}
 .rows{padding:4px 0}
 .row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:10px 12px;border-top:1px solid #f0f1f4}
@@ -174,8 +179,13 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 
 .short-course{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden;background:#fff}
 .sc-head{display:flex;flex-direction:column;gap:8px;padding:12px;background:#fafbfc;border-bottom:1px solid var(--line)}
-.sc-teacher{font-size:12px;color:#9aa0aa}
-.sc-soft{display:flex;flex-wrap:wrap;gap:8px 12px}
+.sc-teacher{font-size:11px;color:#a0a6b0;order:2}
+.sc-soft{display:flex;flex-wrap:wrap;gap:8px;order:1}
+.sc-soft .soft-item{
+  font-size:13px;color:#3a4050;background:#fff;border:1px solid #e8eaef;border-radius:8px;padding:6px 10px;
+}
+.sc-soft .soft-val{color:var(--orange);font-weight:800;font-size:15px}
+
 .sc-body{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px}
 .sc-ind{font-size:14px;font-weight:650}
 .j-shorts-stack{display:flex;flex-direction:column;gap:0}
@@ -216,14 +226,48 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 /* trend */
 .trend-toolbar h3{margin:0 0 6px;font-size:16px}
 .trend-toolbar p{margin:0 0 12px;font-size:12px;color:#8a8f99;line-height:1.55}
-.filters{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;border:1px solid var(--line)}
-.filter-line{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-bottom:10px;font-size:13px}
-.filter-line:last-child{margin-bottom:0}
-.filter-line strong{width:100%;font-size:12px;color:#9aa0aa;font-weight:600}
-.filter-line label{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:#f3f4f6}
+.filters{
+  background:transparent;border:0;border-radius:0;padding:0 0 12px;margin-bottom:4px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.filter-line{display:flex;align-items:center;gap:8px;margin:0;font-size:13px}
+.filter-line strong{flex:0 0 auto;width:auto;font-size:13px;color:#6b7180;font-weight:500}
+.filter-line label{display:inline-flex;align-items:center;gap:5px;padding:0;border-radius:0;background:transparent}
 .filter-line input{accent-color:var(--orange)}
+.dd-plain{
+  flex:1;min-width:0;border:0!important;border-bottom:1px solid #d9dbe1!important;border-radius:0!important;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8f99' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 4px center!important;
+  padding:8px 28px 8px 4px!important;font-size:14px;color:var(--text);box-shadow:none!important;
+}
+.grade-dd{position:relative;flex:1;min-width:0}
+.grade-dd-btn{
+  width:100%;text-align:left;border:0;border-bottom:1px solid #d9dbe1;border-radius:0;
+  background:#fff;padding:8px 28px 8px 4px;font-size:14px;color:var(--text);position:relative;
+}
+.grade-dd-btn::after{
+  content:"";position:absolute;right:6px;top:50%;width:10px;height:6px;transform:translateY(-40%);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8f99' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.grade-dd-panel{
+  display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:8;
+  background:#fff;border-radius:10px;box-shadow:0 8px 24px rgba(20,24,40,.14);padding:8px;
+}
+.grade-dd.open .grade-dd-panel{display:block}
+.grade-dd-panel label{
+  display:flex!important;align-items:center;gap:8px;padding:10px 8px!important;border-radius:8px!important;
+  background:transparent!important;width:100%;font-size:14px;
+}
+.grade-dd-panel label:active{background:#f5f6f8!important}
 .swatch{display:inline-block;width:10px;height:10px;border-radius:2px}
 .chart-card{background:#fff;border-radius:12px;padding:12px;border:1px solid var(--line);margin-bottom:12px;position:relative}
+.chart-scroll{
+  overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;
+  margin:0 -4px;padding:4px 4px 8px;cursor:grab;
+}
+.chart-scroll:active{cursor:grabbing}
+#chart{min-width:560px}
+#chart svg{display:block;min-width:560px;height:240px}
+
 .notes-card{background:#fff;border-radius:12px;padding:12px;border:1px solid var(--line);font-size:13px;color:#5a6170;line-height:1.55}
 .notes-card h4{margin:0 0 8px;color:var(--text)}
 .notes-legend-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px}
@@ -347,22 +391,12 @@ body:not(.in-report) .proto-float{display:none}
     <button type="button" class="r-back" onclick="backHome()" aria-label="返回">‹</button>
     <div class="r-title">学生成长报告</div>
   </header>
-  <section class="student-head">
-    <div class="avatar" id="avatarText">晓晴</div>
-    <div class="student-meta">
-      <h2 id="studentName">林晓晴</h2>
-      <div class="meta-row">
-        <span id="metaCohort">2033届</span>
-        <span id="metaGrade">五年级</span>
-        <span>云天学院</span>
-        <span id="metaSid">学号：000000000</span>
-      </div>
-      <div class="meta-gender">女</div>
-    </div>
-  </section>
-  <div class="subtabs" role="tablist">
-    <button type="button" id="tabReport" class="active" role="tab" aria-selected="true" onclick="setMode('report')">学段报告</button>
-    <button type="button" id="tabTrend" role="tab" aria-selected="false" onclick="setMode('trend')">学年趋势</button>
+  <div class="report-meta-hidden" aria-hidden="true">
+    <span id="avatarText">晓晴</span>
+    <span id="studentName">林晓晴</span>
+    <span id="metaCohort">2033届</span>
+    <span id="metaGrade">五年级</span>
+    <span id="metaSid">学号：000000000</span>
   </div>
   <div class="toolbar" id="historySelectors">
     <label>学年学期
@@ -372,6 +406,10 @@ body:not(.in-report) .proto-float{display:none}
       <select id="selSeg" onchange="onHistoryChange()"></select>
     </label>
     <button type="button" class="btn-pdf" id="btnPdf" onclick="downloadPdf()">下载 PDF</button>
+  </div>
+  <div class="subtabs" role="tablist">
+    <button type="button" id="tabReport" class="active" role="tab" aria-selected="true" onclick="setMode('report')">学段报告</button>
+    <button type="button" id="tabTrend" role="tab" aria-selected="false" onclick="setMode('trend')">学年趋势</button>
   </div>
   <div id="reportView">
     <nav class="nav-chips" id="sideNav" aria-label="目录"></nav>
@@ -881,8 +919,10 @@ function onGradePreview(v){
   state.activeNav = '';
   const sel = document.getElementById('gradePreview');
   if(sel && String(sel.value) !== String(v)) sel.value = String(v);
-  document.getElementById('metaGrade').textContent = gradeLabel(state.grade);
-  document.getElementById('metaCohort').textContent = cohortFor(state.grade) + '届';
+  const mg = document.getElementById('metaGrade');
+  const mc = document.getElementById('metaCohort');
+  if(mg) mg.textContent = gradeLabel(state.grade);
+  if(mc) mc.textContent = cohortFor(state.grade) + '届';
   if(state.mode==='report') renderReport();
   else renderTrend();
 }
@@ -983,21 +1023,20 @@ function jumpNav(ev, id){
 function renderCourse(c, keyBase){
   const selfVal = (c.selfList && c.selfList[0]?.v) || c.self || '—';
   const teamVal = (c.teamList && c.teamList[0]?.v) || c.team || '—';
-  // 初中单科领域：任课教师用小灰字（.course-sub），不用大号粗黑标题
+  // 手机端：自主学习/参与与合作优先于任课教师
   const titleHtml = c.hideCourseTitle
-    ? (c.teacher ? `<div class="course-sub teacher-only">任课教师 ${c.teacher}</div>` : '')
-    : `<div class="course-title">${c.name}</div>
-        <div class="course-sub">${c.teacher ? '任课教师 '+c.teacher : ''}</div>`;
+    ? ''
+    : `<div class="course-title">${c.name}</div>`;
+  const teacherHtml = c.teacher ? `<div class="course-sub teacher-only">任课教师 ${c.teacher}</div>` : '';
   const rowCls = c.rowPlain ? 'row plain' : 'row';
   return `<article class="course">
     <div class="course-head">
-      <div>
-        ${titleHtml}
-      </div>
+      ${titleHtml}
       <div class="soft-badges">
         ${softBadge('自主学习', selfVal, c.selfList, keyBase+'-self')}
         ${softBadge('参与与合作', teamVal, c.teamList, keyBase+'-team')}
       </div>
+      ${teacherHtml}
     </div>
     <div class="rows">
       ${(c.rows||[]).map(r=>`<div class="${rowCls}"><span class="ind">${r[0]}</span><span class="${gradeClass(r[1])}">${r[1]}</span></div>`).join('')}
@@ -1011,13 +1050,11 @@ function renderShortCourseCard(it){
   const title = it.weeks ? `${it.name}·${it.weeks}` : it.name;
   return `<article class="short-course">
     <div class="sc-head">
-      <div>
-        <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
-      </div>
       <div class="sc-soft">
         <span class="soft-item">自主学习 <b class="soft-val">${it.self}</b></span>
         <span class="soft-item">参与与合作 <b class="soft-val">${it.team}</b></span>
       </div>
+      <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
     </div>
     <div class="sc-body">
       <span class="sc-ind">${title}</span>
@@ -1099,13 +1136,11 @@ function renderAbilityExtras(extras){
         // 艺技体短周课：头栏仅小灰「任课教师」；底栏左侧课程名 + 学术等级
         return `<article class="short-course">
           <div class="sc-head">
-            <div>
-              <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
-            </div>
             <div class="sc-soft">
               <span class="soft-item">自主学习 <b class="soft-val">${it.self}</b></span>
               <span class="soft-item">参与与合作 <b class="soft-val">${it.team}</b></span>
             </div>
+            <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
           </div>
           <div class="sc-body">
             <span class="sc-ind">${title}</span>
@@ -1242,14 +1277,13 @@ function renderTrend(){
   // 小学 / 初中 / 高中：标题旁免责声明、图例在下、紧凑图；初高中保留统计范围
   const trendCompact = b==='primary' || b==='junior' || b==='high';
   const wrap = document.getElementById('trendView');
-  const scopeOptions = b==='primary'
-    ? ''
-    : series.map(s=>`<label><input type="radio" name="scope" value="${s.name}" ${state.trendScope===s.name?'checked':''} onchange="setTrendScope(this.value)">${s.name}</label>`).join('');
-
+  const scopeChoices = [['overall','总体']].concat(b==='primary' ? [] : series.map(s=>[s.name, s.name]));
+  const scopeLabel = scopeChoices.find(x=>x[0]===state.trendScope)?.[1] || '总体';
   const scopeFilter = b==='primary' ? '' : `<div class="filter-line">
         <strong>统计范围</strong>
-        <label><input type="radio" name="scope" value="overall" ${state.trendScope==='overall'?'checked':''} onchange="setTrendScope('overall')">总体</label>
-        ${scopeOptions}
+        <select class="dd-plain" aria-label="统计范围" onchange="setTrendScope(this.value)">
+          ${scopeChoices.map(([v,lab])=>`<option value="${v}" ${state.trendScope===v?'selected':''}>${lab}</option>`).join('')}
+        </select>
       </div>`;
 
   const chartHead = trendCompact ? '' : `<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:4px">
@@ -1296,7 +1330,12 @@ function renderTrend(){
       ${scopeFilter}
       <div class="filter-line">
         <strong>等级</strong>
-        ${ACADEMIC.map((g,i)=>`<label><input type="checkbox" value="${g}" ${state.trendGrades.has(g)?'checked':''} onchange="toggleTrendGrade('${g}',this.checked)"><span class="swatch" style="background:${COLOR_HEX[i]}"></span>${g}</label>`).join('')}
+        <div class="grade-dd" id="gradeDd">
+          <button type="button" class="grade-dd-btn" onclick="toggleGradeDd(event)">${[...state.trendGrades].sort((a,b)=>ACADEMIC.indexOf(a)-ACADEMIC.indexOf(b)).join(' · ') || '请选择等级'}</button>
+          <div class="grade-dd-panel" role="listbox">
+            ${ACADEMIC.map((g,i)=>`<label><input type="checkbox" value="${g}" ${state.trendGrades.has(g)?'checked':''} onchange="toggleTrendGrade('${g}',this.checked)"><span class="swatch" style="background:${COLOR_HEX[i]}"></span>${g}</label>`).join('')}
+          </div>
+        </div>
       </div>
     </div>
     <div class="chart-grid${trendCompact?' stack':''}">
@@ -1304,7 +1343,7 @@ function renderTrend(){
         ${chartHead}
         ${trendCompact?'<span id="scopeTitle" hidden></span><span id="chartMeta" hidden></span>':''}
         <div id="chartTip" class="chart-tooltip" role="tooltip"></div>
-        <div id="chart"></div>
+        <div class="chart-scroll" id="chartScroll"><div id="chart"></div></div>
       </section>
       <aside class="notes-card${trendCompact?' below':''}">
         <h4>图例与计算说明</h4>
@@ -1318,8 +1357,25 @@ function renderTrend(){
 function setTrendScope(v){ state.trendScope = v; renderTrend(); }
 function toggleTrendGrade(g, on){
   if(on) state.trendGrades.add(g); else state.trendGrades.delete(g);
-  renderTrend();
+  const btn = document.querySelector('.grade-dd-btn');
+  if(btn){
+    const ordered = ACADEMIC.filter(x=>state.trendGrades.has(x));
+    btn.textContent = ordered.join(' · ') || '请选择等级';
+  }
+  drawChart(buildTrendSeries());
 }
+function toggleGradeDd(ev){
+  ev.stopPropagation();
+  const dd = document.getElementById('gradeDd');
+  if(!dd) return;
+  dd.classList.toggle('open');
+}
+document.addEventListener('click', (e)=>{
+  const dd = document.getElementById('gradeDd');
+  if(!dd || !dd.classList.contains('open')) return;
+  if(e.target.closest && e.target.closest('#gradeDd')) return;
+  dd.classList.remove('open');
+});
 
 function showChartTip(ev, seg, grade, count, total, pct){
   const tip = document.getElementById('chartTip');
@@ -1351,24 +1407,23 @@ function drawChart(series){
   }
 
   const compactChart = band()==='primary' || band()==='junior' || band()==='high';
-  // 右侧留白加大，避免「第6学段」被裁切；左侧与刻度右对齐
-  const W=960, H=compactChart?200:300, L=52, R=compactChart?48:28, T=compactChart?28:22, B=compactChart?36:46;
+  // 手机端：固定较宽画布 + 横向拖拽，字号按可读比例
+  const W=720, H=260, L=56, R=28, T=28, B=44;
   const x = i => L + i * (W-L-R) / Math.max(segs.length-1,1);
   const y = v => H - B - v * (H-T-B) / 100;
   const tickX = L - 8;
 
-  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="学年学术等级占比折线图">`;
-  // 「占比 %」与 Y 轴刻度同列右对齐（text-anchor=end）
-  svg += `<text x="${tickX}" y="14" text-anchor="end" fill="#8a929f" font-size="11">占比 %</text>`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="xMinYMid meet" role="img" aria-label="学年学术等级占比折线图">`;
+  svg += `<text x="${tickX}" y="16" text-anchor="end" fill="#8a929f" font-size="13">占比 %</text>`;
   for(let v=0;v<=100;v+=20){
-    svg += `<line x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}" stroke="#e9edf2"/><text x="${tickX}" y="${y(v)+3}" text-anchor="end" fill="#8a929f" font-size="10">${v}%</text>`;
+    svg += `<line x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}" stroke="#e9edf2"/><text x="${tickX}" y="${y(v)+4}" text-anchor="end" fill="#8a929f" font-size="13">${v}%</text>`;
   }
   segs.forEach((seg,i)=>{
-    svg += `<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="11" fill="#646d7b">第${seg}学段</text>`;
+    svg += `<text x="${x(i)}" y="${H-14}" text-anchor="middle" font-size="13" fill="#646d7b">第${seg}学段</text>`;
   });
 
   if(!selected.length || !state.trendGrades.size){
-    svg += `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#969eaa" font-size="14">请至少选择一个等级</text></svg>`;
+    svg += `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#969eaa" font-size="15">请至少选择一个等级</text></svg>`;
     document.getElementById('chart').innerHTML = svg;
     return;
   }
