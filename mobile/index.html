@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="v8-ability-3cols">
+<meta name="cache-bust" content="v8.1-long-ind">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端原型 · v8 能力三列）</title>
+<title>学生成长报告 · 评估报告（手机端原型 · v8.1 长指标压测）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -634,6 +634,7 @@ function termLabel(t){ return t===1 ? '上学期' : '下学期'; }
 
 /* ========== 小学能力维度 mock（主表 + 附属块） ========== */
 function primaryAbilityTable(){
+  /* v8.1-long-ind：指标文案约 2–3 倍，仅用于手机端小学压测换行；回滚可回到 v8-ability-3cols */
   const teachers = ['沈若兰','贺明川','白予安','顾清禾','江晚宁'];
   if(state.grade === 3){
     return {
@@ -642,33 +643,42 @@ function primaryAbilityTable(){
         {
           self:'M', team:'E',
           groups:[
-            {academic:'A', texts:['汉字认读与书写；能按笔顺正确书写本学段汉字','能借助拼音阅读短文并说出主要意思']},
-            {academic:'A-', texts:['能用完整句子表达见闻与感受']},
-            {academic:'B', texts:['能倾听同伴发言并做简单回应']}
+            {academic:'A', texts:[
+              '汉字认读与书写；能按笔顺正确书写本学段汉字，并在日常练习中保持卷面整洁、字形端正，逐步形成良好书写习惯',
+              '能借助拼音阅读短文并说出主要意思，尝试用自己的话概括段落大意，并与同伴交流阅读感受'
+            ]},
+            {academic:'A-', texts:['能用完整句子表达见闻与感受，说清时间、地点与经过，并倾听他人反馈后做简单补充']},
+            {academic:'B', texts:['能倾听同伴发言并做简单回应，抓住对方观点中的关键信息，礼貌地提出疑问或表示赞同']}
           ],
           writing:'M'
         },
         {
           self:'E', team:'M',
           groups:[
-            {academic:'A', texts:['认识万以内数；能进行加减运算','能解决简单实际问题']},
-            {academic:'A-', texts:['能用图形直观描述位置与方向']}
+            {academic:'A', texts:[
+              '认识万以内数；能进行加减运算，理解进位与退位含义，并能在练习中自觉检查计算结果',
+              '能解决简单实际问题，从生活情境中提取数量关系，选择合适方法列式并解释解题思路'
+            ]},
+            {academic:'A-', texts:['能用图形直观描述位置与方向，结合校园平面图说出相对位置，并尝试给同伴指路']}
           ],
           writing:'M'
         },
         {
           self:'N', team:'M',
           groups:[
-            {academic:'B', texts:['能听懂课堂指令并用简单英语回应']},
-            {academic:'A-', texts:['能认读常见单词与短语','能跟读儿歌与短对话']}
+            {academic:'B', texts:['能听懂课堂指令并用简单英语回应，在问候、请求、感谢等日常情境中完成短对话交流']},
+            {academic:'A-', texts:[
+              '能认读常见单词与短语，结合图片或动作理解词义，并在课后复习中主动朗读巩固',
+              '能跟读儿歌与短对话，模仿语音语调，尝试在小组活动中轮流扮演角色完成表演'
+            ]}
           ],
           writing:'N'
         },
         {
           self:'M', team:'M',
           groups:[
-            {academic:'A', texts:['能观察身边自然现象并记录发现']},
-            {academic:'A-', texts:['能提出简单问题并尝试验证']}
+            {academic:'A', texts:['能观察身边自然现象并记录发现，用图画或简单句子写下变化过程，并与同学分享观察结果']},
+            {academic:'A-', texts:['能提出简单问题并尝试验证，设计可操作的小实验步骤，记录现象后做出初步解释']}
           ],
           writing:'M'
         }
@@ -681,54 +691,59 @@ function primaryAbilityTable(){
       {
         self:'N', team:'U',
         groups:[
-          {academic:'B', texts:['汉字读写与运用；古诗文积累与理解','能联系语境辨析词语表达效果']},
-          {academic:'C', texts:['听故事、读文本并能概括主要意思','能抓住关键信息复述内容']},
-          {academic:'B', texts:['围绕一个话题有条理地口头表达']},
-          {academic:'B', texts:['能根据提示完成简单书面表达']}
+          {academic:'B', texts:[
+            '汉字读写与运用；古诗文积累与理解，能在阅读中主动查阅工具书，并结合课内外材料体会关键词句的表达作用',
+            '能联系语境辨析词语表达效果，比较近义说法的细微差别，并在口头与书面表达中尝试选用更贴切的词语'
+          ]},
+          {academic:'C', texts:[
+            '听故事、读文本并能概括主要意思，梳理起因—经过—结果，用简洁语句说出内容要点与人物关系',
+            '能抓住关键信息复述内容，按顺序组织语言，对遗漏处进行补充，并回应同伴提出的简单问题'
+          ]},
+          {academic:'B', texts:['围绕一个话题有条理地口头表达，先说观点再说理由，注意语音清楚、态度自然，能根据听众反应调整详略']},
+          {academic:'B', texts:['能根据提示完成简单书面表达，写清事情经过与感受，注意标点与段落，修改时能改正明显病句与错字']}
         ],
         writing:'M'
       },
       {
         self:'M', team:'U',
         groups:[
-          {academic:'B', texts:['小数运算与简单问题解决']},
-          {academic:'B', texts:['能用方程表示数量关系并求解']},
-          {academic:'C', texts:['能读懂统计图表并说明结论']}
+          {academic:'B', texts:['小数运算与简单问题解决，理解小数加减乘除的意义，能选择合理策略列式计算，并对结果进行估算与检验']},
+          {academic:'B', texts:['能用方程表示数量关系并求解，从文字题中抽象等量关系，规范书写解题步骤，并说明未知数含义']},
+          {academic:'C', texts:['能读懂统计图表并说明结论，从图中提取数据比较差异，用自己的话解释变化趋势及可能原因']}
         ],
         writing:'M'
       },
       {
         self:'M', team:'U',
         groups:[
-          {academic:'B', texts:['借助情境积累常用单词、短语与句型']},
-          {academic:'B', texts:['听懂语速适中的音频并获取关键信息']},
-          {academic:'B', texts:['能提炼文本信息并做简要归纳']},
-          {academic:'C', texts:['能在情境中完成简单写作']}
+          {academic:'B', texts:['借助情境积累常用单词、短语与句型，在听读活动中主动记录新词，尝试迁移到相似对话与课堂问答中']},
+          {academic:'B', texts:['听懂语速适中的音频并获取关键信息，抓住时间、人物与事件等要素，能用中文或英文做简要转述']},
+          {academic:'B', texts:['能提炼文本信息并做简要归纳，区分主要细节与次要信息，整理成要点列表并与同伴核对理解是否一致']},
+          {academic:'C', texts:['能在情境中完成简单写作，按提示写出完整句子或短段落，注意时态与标点，完成后能朗读并修改明显错误']}
         ],
         writing:'M'
       },
       {
         self:'N', team:'U',
         groups:[
-          {academic:'C', texts:['观察现象并提出可验证的猜想']},
-          {academic:'C', texts:['能记录实验过程中的关键变量']},
-          {academic:'B', texts:['能用图示说明简单科学原理']}
+          {academic:'C', texts:['观察现象并提出可验证的猜想，说明猜想依据，设计可操作的验证思路，并预估可能出现的结果']},
+          {academic:'C', texts:['能记录实验过程中的关键变量，按步骤填写观察表，区分变化量与不变量，保证记录清楚可复查']},
+          {academic:'B', texts:['能用图示说明简单科学原理，绘制过程示意图并标注名称，结合图示向同伴解释因果关系']}
         ],
         writing:'U'
       },
       {
         self:'N', team:'U',
         groups:[
-          {academic:'C', texts:['能从材料中提取关键信息']},
-          {academic:'C', texts:['能比较不同观点并说明理由']},
-          {academic:'C', texts:['能完成简单探究任务并汇报']}
+          {academic:'C', texts:['能从材料中提取关键信息，圈画重点语句与数据，整理成条理清晰的要点，避免遗漏或曲解原文意思']},
+          {academic:'C', texts:['能比较不同观点并说明理由，找出各方异同，结合材料证据表达自己的倾向，并尊重不同意见']},
+          {academic:'C', texts:['能完成简单探究任务并汇报，分工协作收集信息，用口头或图文方式呈现结论，回答同伴的追问']}
         ],
         writing:'N'
       }
     ]
   };
 }
-
 function primaryAbilityExtras(){
   const g3 = state.grade === 3;
   const shorts = g3
