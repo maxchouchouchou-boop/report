@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="v8.2-trend-ui">
+<meta name="cache-bust" content="v8.2.1-echo-pos">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<title>学生成长报告 · 评估报告（手机端原型 · v8.2 趋势交互）</title>
+<title>学生成长报告 · 评估报告（手机端原型 · v8.2.1 回显下移）</title>
 <style>
 :root{
   --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
@@ -256,10 +256,10 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .trend-toolbar h3{margin:0 0 6px;font-size:16px;line-height:1.35}
 .trend-toolbar p{margin:0 0 12px;font-size:12px;color:#8a8f99;line-height:1.55}
 .trend-echo{
-  display:block;margin-top:4px;font-size:12px;font-weight:600;color:#5a6170;line-height:1.45;
+  display:block;margin:0 0 12px;font-size:12px;font-weight:600;color:#5a6170;line-height:1.45;
 }
 .grade-tiles{
-  display:flex;flex-wrap:wrap;gap:8px;padding:0 0 12px;margin-bottom:4px;
+  display:flex;flex-wrap:wrap;gap:8px;padding:0 0 8px;margin-bottom:0;
 }
 .grade-tile{
   flex:0 0 auto;min-width:46px;padding:8px 12px;border-radius:999px;
@@ -1596,7 +1596,7 @@ function renderTrend(){
   wrap.innerHTML = `
     <div class="trend-toolbar">
       <div>
-        <h3>「学术等级占比」学年趋势<span class="trend-echo" id="trendEcho">${titleEcho}</span></h3>
+        <h3>「学术等级占比」学年趋势</h3>
         <p>${subtitle}</p>
       </div>
     </div>
@@ -1605,6 +1605,7 @@ function renderTrend(){
       ${scopeFilter}
       ${gradeFilter}
     </div>
+    <div class="trend-echo" id="trendEcho">${titleEcho}</div>
     <div class="chart-grid${trendCompact?' stack':''}">
       <section class="chart-card${trendCompact?' compact':''}">
         ${chartHead}
