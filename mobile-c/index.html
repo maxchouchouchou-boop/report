@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="cache-bust" content="mobile-C-v8.4-base">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>学生成长报告 · 评估报告（手机端-C）</title>
+<style>
+:root{
+  --orange:#eb6900;--orange-soft:#fff5e8;--orange-line:#f0c89a;
+  --text:#2f333c;--muted:#8a8f99;--line:#e6e7eb;--bg:#f5f6f8;--panel:#fff;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --g0:#4f6f97;--g1:#4ea398;--g2:#b49d4f;--g3:#c47f55;--g4:#9a7a98;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{
+  font:15px/1.5 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--text);
+  background:#cfd5df !important;
+  overflow:hidden;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  padding:12px;
+  box-sizing:border-box;
+}
+/* Always lock to phone width — even on wide desktop browsers / CDN previews */
+.phone-shell{
+  width:390px !important;
+  max-width:calc(100vw - 24px) !important;
+  height:min(844px, calc(100dvh - 24px)) !important;
+  background:#fff;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  border-radius:28px;
+  border:1px solid #b8bfca;
+  box-shadow:0 18px 48px rgba(20,28,45,.22);
+  transform:translateZ(0);
+  flex-shrink:0;
+}
+.phone-badge{
+  position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  z-index:100;font-size:10px;color:#6b7180;background:rgba(255,255,255,.92);
+  border:1px solid #e6e7eb;border-radius:999px;padding:2px 8px;pointer-events:none;
+}
+@media (max-width:420px){
+  body{padding:0;background:#fff !important;align-items:stretch !important}
+  .phone-shell{
+    width:100% !important;max-width:none !important;height:100% !important;
+    border-radius:0;border:0;box-shadow:none;
+  }
+  .phone-badge{display:none}
+}
+button,select{font:inherit}
+button{border:0;background:none;color:inherit;padding:0;cursor:pointer}
+select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#fff;color:#444;width:100%;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8f99' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+[hidden]{display:none!important}
+
+/* —— Home portal —— */
+#homeView{flex:1;min-height:0;height:100%;display:flex;flex-direction:column;background:#fff;overflow:auto}
+.m-status{height:calc(12px + var(--safe-t));flex-shrink:0}
+.m-nav{
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;
+  padding:10px 16px 8px;font-size:17px;font-weight:600;
+}
+.m-nav-actions{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;gap:10px;color:#666}
+.m-nav-actions span{font-size:18px;line-height:1;opacity:.7}
+.home-user{
+  display:flex;align-items:center;justify-content:space-between;padding:8px 18px 18px;gap:12px;
+}
+.home-user-left{display:flex;align-items:center;gap:10px;min-width:0}
+.home-avatar{
+  width:40px;height:40px;border-radius:50%;background:#eef1f5;color:#7a8494;
+  display:grid;place-items:center;flex-shrink:0;
+}
+.home-avatar svg{width:22px;height:22px}
+.home-name{font-size:16px;font-weight:600}
+.home-sid{font-size:12px;color:#9aa0aa;margin-top:2px}
+.home-schedule{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#6b7280;flex-shrink:0}
+.home-apps{padding:4px 8px 28px}
+.home-apps-title{
+  display:flex;align-items:center;gap:8px;padding:8px 10px 14px;font-size:16px;font-weight:650;
+}
+.home-apps-title::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--orange)}
+.app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 8px;padding:0 4px}
+.app-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px;border-radius:12px}
+.app-item:active{opacity:.75}
+.app-ico{
+  width:64px;height:64px;border-radius:16px;display:grid;place-items:center;
+}
+.app-ico svg{width:30px;height:30px}
+.app-label{font-size:13px;color:#333;text-align:center}
+.app-item.is-muted{opacity:.92}
+.app-item.is-muted .app-label{color:#555}
+
+/* —— Report app —— */
+#reportApp{flex:1;min-height:0;height:100%;display:flex;flex-direction:column;background:var(--bg)}
+.r-top{
+  flex-shrink:0;display:flex;align-items:center;gap:8px;padding:calc(8px + var(--safe-t)) 12px 10px;
+  background:#fff;border-bottom:1px solid var(--line);position:relative;
+}
+.r-back{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:22px;color:#444}
+.r-title{flex:1;text-align:center;font-size:17px;font-weight:650;margin-right:36px}
+.student-head{display:none!important}
+.report-meta-hidden{display:none!important}
+
+.avatar{
+  width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ffb26b,#eb6900);
+  color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0;
+}
+.student-meta h2{margin:0;font-size:17px;font-weight:650}
+.meta-row{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:4px;font-size:12px;color:#8a8f99}
+.meta-gender{margin-top:2px;font-size:12px;color:#8a8f99}
+.subtabs{
+  flex-shrink:0;display:flex;gap:0;padding:0 16px;background:#fff;border-bottom:1px solid var(--line);
+}
+.subtabs button{
+  flex:1;padding:12px 8px;font-size:15px;color:#8a8f99;border-bottom:2px solid transparent;font-weight:500;
+}
+.subtabs button.active{color:var(--orange);border-bottom-color:var(--orange);font-weight:650}
+.toolbar{
+  flex-shrink:0;display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:center;
+  padding:10px 12px;background:#fff;border-bottom:1px solid var(--line);
+}
+.toolbar select{
+  width:100%;min-width:0;border:0!important;border-bottom:1px solid #d9dbe1!important;border-radius:0!important;
+  background-color:#fff!important;padding:10px 28px 10px 2px!important;font-size:14px;color:var(--text);
+  box-shadow:none!important;
+}
+.btn-pdf{
+  height:40px;padding:0 12px;border-radius:8px;background:var(--orange);color:#fff;font-size:13px;font-weight:600;
+  white-space:nowrap;
+}
+.btn-pdf:disabled{opacity:.45}
+.nav-chips{
+  flex-shrink:0;display:flex;gap:8px;overflow-x:auto;padding:10px 12px;background:#fff;
+  border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.nav-chips::-webkit-scrollbar{display:none}
+.nav-chip{
+  flex:0 0 auto;padding:7px 12px;border-radius:999px;background:#f3f4f6;color:#5a6170;
+  font-size:13px;border:1px solid transparent;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.nav-chip.active{background:var(--orange-soft);color:var(--orange);border-color:var(--orange-line);font-weight:600}
+.nav-empty{font-size:12px;color:#9aa0aa;padding:4px 2px}
+.report-scroll{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:12px 12px calc(88px + var(--safe-b))}
+#trendView{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:12px 12px calc(88px + var(--safe-b));background:var(--bg)}
+#reportView{display:flex;flex-direction:column;flex:1;min-height:0}
+#reportView[hidden],#trendView[hidden]{display:none!important}
+
+.section{background:#fff;border-radius:12px;padding:14px 14px 10px;margin-bottom:12px;box-shadow:0 1px 2px rgba(20,24,40,.04)}
+.section h3{margin:0 0 12px;font-size:16px;font-weight:650;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.section h3 .tag{font-size:11px;font-weight:600;color:var(--orange);background:var(--orange-soft);border-radius:999px;padding:2px 8px}
+.course{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:visible}
+.course-head{display:flex;flex-direction:column;gap:8px;padding:12px;background:#fafbfc;border-bottom:1px solid var(--line)}
+.course-title{font-size:15px;font-weight:650}
+.course-sub,.course-sub.teacher-only{font-size:12px;color:#8a8f99;margin-top:0;font-weight:400}
+.course-head-main{display:flex;flex-direction:column;gap:8px}
+.soft-badges{display:flex;flex-wrap:wrap;gap:8px}
+.soft-item{
+  position:relative;display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;color:#3a4050;background:#fff;border:1px solid #e8eaef;border-radius:8px;
+  padding:6px 10px;font-weight:500;
+}
+.soft-val{color:#5a6170;font-weight:800;margin-left:2px;font-size:15px}
+
+.chev{width:22px;height:22px;border-radius:6px;background:#eef0f3;color:#666;font-size:11px}
+.rows{padding:4px 0}
+.row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:10px 12px;border-top:1px solid #f0f1f4}
+.row:first-child{border-top:0}
+.row .ind{flex:1;font-size:13px;color:#3a4050;line-height:1.45}
+.row.plain .ind::before{content:none}
+.grade,.cell-grade{
+  display:inline-grid;place-items:center;min-width:34px;height:26px;padding:0 8px;border-radius:6px;
+  background:#e8f1ff;color:#2f6fed;font-weight:700;font-size:13px;flex-shrink:0;
+}
+.grade.emnu,.cell-grade.emnu{background:#f1f2f4;color:#5a6170}
+
+.short-course{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden;background:#fff}
+.sc-head{display:flex;flex-direction:column;gap:8px;padding:12px;background:#fafbfc;border-bottom:1px solid var(--line)}
+.sc-teacher{font-size:12px;color:#8a8f99}
+.sc-soft{display:flex;flex-wrap:wrap;gap:8px}
+.sc-soft .soft-item{
+  font-size:13px;color:#3a4050;background:#fff;border:1px solid #e8eaef;border-radius:8px;padding:6px 10px;
+}
+.sc-soft .soft-val{color:#5a6170;font-weight:800;font-size:15px}
+
+.sc-body{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px}
+.sc-ind{font-size:14px;font-weight:650}
+.j-shorts-stack{display:flex;flex-direction:column;gap:0}
+
+/* v8-ability-3cols: fit 学术水平/自主学习/参与与合作 in one phone width (rollback: v7.1-pdf-preview) */
+.ability-teachers{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;
+  margin:0 0 8px;font-size:12px;line-height:1.4;color:#8a8f99;
+}
+.ability-teachers b{color:#3a4050;font-weight:650}
+.ability-wrap{
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  margin:0 0 10px;padding:0 0 2px;
+}
+.ability-table{
+  width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;
+  font-size:12px;border:1px solid var(--line);border-radius:10px;
+}
+.ability-table .c-ind{width:38%}
+.ability-table .c-ac,.ability-table .c-self,.ability-table .c-team{width:20.666%}
+.ability-table th,.ability-table td{
+  border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  padding:7px 4px;vertical-align:middle;background:#fff;
+  word-break:break-word;
+}
+.ability-table th:last-child,.ability-table td:last-child{border-right:1px solid var(--line)}
+.ability-table tr:last-child td{border-bottom:1px solid var(--line)}
+.ability-table thead th{
+  background:#f7f8fa;font-weight:650;text-align:center;
+  font-size:11px;line-height:1.3;padding:8px 3px;
+}
+.ability-table thead th.th-ind{text-align:left;padding-left:8px;color:#8a8f99;font-weight:600}
+.ind-cell{text-align:left;line-height:1.4;font-size:12px;padding-left:8px!important;padding-right:6px!important}
+.ind-cell .mark{color:#2f333c;margin-right:3px}
+.center{text-align:center}
+.ability-table td.center{padding-left:2px;padding-right:2px}
+.ability-table .cell-grade,.ability-table .grade{
+  min-width:28px;height:24px;padding:0 5px;font-size:12px;margin:0 auto;
+}
+
+.ability-extras{display:flex;flex-direction:column;gap:10px}
+.extra-block{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff}
+.extra-head.simple{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.extra-title{font-weight:650;font-size:14px}
+.labor-box,.kv-block{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff}
+.labor-box{display:flex;align-items:center;justify-content:space-between}
+.labor-label{font-weight:650}
+.kv-block p{margin:0;font-size:14px;color:#3a4050;line-height:1.6}
+.empty-state{text-align:center;padding:48px 20px;background:#fff;border-radius:12px}
+.empty-illu{width:72px;height:72px;margin:0 auto 14px;border-radius:18px;background:linear-gradient(135deg,#fff5e8,#ffe0bd)}
+.empty-state h4{margin:0 0 8px;font-size:16px}
+.empty-state p{margin:0;color:#8a8f99;font-size:13px;line-height:1.6}
+
+.legend{background:#fff;border-radius:12px;padding:4px 14px 12px;margin-bottom:12px;border:1px solid var(--line)}
+.legend summary{padding:12px 0;font-weight:650;cursor:pointer}
+.legend-body{display:flex;flex-direction:column;gap:12px}
+.legend-card{background:#fafbfc;border-radius:10px;padding:12px}
+.legend-card h4{margin:0 0 8px;font-size:13px}
+.legend-soft-title{display:flex;flex-direction:column;gap:2px;font-size:12px!important;color:#6b7180;font-weight:650!important}
+.legend-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:13px}
+
+/* trend */
+.trend-toolbar h3{margin:0 0 6px;font-size:16px;line-height:1.35}
+.trend-toolbar p{margin:0 0 12px;font-size:12px;color:#8a8f99;line-height:1.55}
+.trend-echo{
+  display:block;margin:0 0 12px;font-size:12px;font-weight:600;color:#5a6170;line-height:1.45;
+}
+.grade-tiles{
+  display:flex;flex-wrap:wrap;gap:8px;padding:0 0 8px;margin-bottom:0;
+}
+.filter-tile-block{margin:0 0 10px}
+.chart-grid .filter-tile-block{margin:12px 0 10px}
+.filter-tile-label{font-size:12px;color:#8a8f99;margin:0 0 6px;font-weight:500}
+.scope-tiles{display:flex;flex-wrap:wrap;gap:8px}
+.scope-tile{
+  flex:0 0 auto;padding:8px 12px;border-radius:999px;
+  border:1px solid #e1e3e8;background:#fff;color:#5a6170;font-size:13px;font-weight:650;
+}
+.scope-tile.active{border-color:var(--orange);background:var(--orange-soft);color:var(--orange)}
+.grade-tile{
+  flex:0 0 auto;min-width:46px;padding:8px 12px;border-radius:999px;
+  border:1px solid #e1e3e8;background:#fff;color:#5a6170;font-size:13px;font-weight:650;
+}
+.grade-tile.active{
+  border-color:var(--orange);background:var(--orange-soft);color:var(--orange);
+}
+.grade-tile .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.filters{
+  background:transparent;border:0;border-radius:0;padding:0 0 12px;margin-bottom:4px;
+  display:flex;flex-direction:row;align-items:center;gap:10px;
+}
+.filter-trigger{
+  flex:1;min-width:0;text-align:left;border:0;border-bottom:1px solid #d9dbe1;border-radius:0;
+  background:#fff;padding:8px 22px 8px 2px;font-size:13px;color:var(--text);position:relative;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.filter-trigger::after{
+  content:"";position:absolute;right:4px;top:50%;width:10px;height:6px;transform:translateY(-40%);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8f99' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.filter-trigger b{font-weight:650}
+.filter-sheet-list{display:flex;flex-direction:column;gap:2px;max-height:50vh;overflow:auto}
+.filter-sheet-list button,.filter-sheet-list label{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;text-align:left;padding:14px 4px;border:0;border-top:1px solid #f0f1f4;
+  background:transparent;font-size:15px;color:var(--text);
+}
+.filter-sheet-list button:first-child,.filter-sheet-list label:first-child{border-top:0}
+.filter-sheet-list button.active{color:var(--orange);font-weight:650}
+.filter-sheet-list label{justify-content:flex-start}
+.filter-sheet-list input{accent-color:var(--orange);width:18px;height:18px}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px}
+.chart-card{background:#fff;border-radius:12px;padding:12px;border:1px solid var(--line);margin-bottom:12px;position:relative}
+.chart-scroll{
+  overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;
+  margin:0 -4px;padding:4px 4px 8px;cursor:grab;
+}
+.chart-scroll:active{cursor:grabbing}
+#chart{min-width:560px}
+#chart svg{display:block;min-width:560px;height:240px}
+
+.notes-card{background:#fff;border-radius:12px;padding:12px;border:1px solid var(--line);font-size:13px;color:#5a6170;line-height:1.55}
+.notes-card h4{margin:0 0 8px;color:var(--text)}
+.notes-legend-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px}
+.notes-legend-row span{display:inline-flex;align-items:center;gap:5px}
+.chart-tooltip{
+  position:absolute;transform:translate(-50%,-120%);background:#1f2937;color:#fff;padding:8px 10px;
+  border-radius:8px;font-size:12px;line-height:1.4;pointer-events:none;opacity:0;z-index:5;min-width:120px;
+}
+.chart-tooltip.show{opacity:1}
+.chart-grid.stack{display:block}
+
+/* bottom sheet popovers */
+.sheet-mask{position:fixed;inset:0;background:rgba(15,18,28,.4);z-index:40}
+.popover{
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:#fff;border-radius:16px 16px 0 0;padding:8px 16px calc(16px + var(--safe-b));
+  box-shadow:0 -8px 28px rgba(0,0,0,.12);max-height:55vh;overflow:auto;
+}
+.popover.open{display:block}
+.sheet-handle{width:36px;height:4px;border-radius:999px;background:#d7dbe2;margin:4px auto 10px}
+.sheet-title{font-size:14px;font-weight:650;margin-bottom:8px}
+.pop-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #f0f1f4;font-size:14px}
+.pop-row:first-of-type{border-top:0}
+
+
+/* PDF preview (WeChat-style) */
+#pdfPreview{
+  display:none;position:absolute;inset:0;z-index:110;background:#111;
+  flex-direction:column;min-height:0;
+}
+#pdfPreview.open{display:flex}
+.pdf-nav{
+  flex-shrink:0;height:48px;display:flex;align-items:center;gap:8px;
+  padding:0 10px;background:#2a2a2a;color:#fff;
+}
+.pdf-nav .pdf-back,.pdf-nav .pdf-more{
+  width:36px;height:36px;border:0;border-radius:8px;background:transparent;color:#fff;font-size:22px;
+  display:grid;place-items:center;
+}
+.pdf-nav .pdf-title{
+  flex:1;min-width:0;text-align:center;font-size:14px;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px;
+}
+.pdf-stage{
+  flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;
+  background:#3a3a3a;padding:12px 8px 28px;
+}
+.pdf-page-sizer{margin:0 auto;overflow:hidden}
+.pdf-page{
+  width:920px;min-height:620px;background:#fff;color:#222;
+  box-shadow:0 8px 28px rgba(0,0,0,.35);padding:14px 16px 12px;
+  font-size:11px;line-height:1.35;transform-origin:top left;
+}
+.pdf-page h1{
+  margin:0 0 8px;text-align:center;font-size:16px;font-weight:700;
+}
+.pdf-meta{text-align:center;margin-bottom:10px;font-size:12px;color:#444}
+.pdf-a3-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.pdf-a3-table th,.pdf-a3-table td{
+  border:1px solid #333;padding:3px 4px;vertical-align:top;font-size:10px;
+}
+.pdf-a3-table th{background:#f3f4f6;font-weight:650;text-align:center}
+.pdf-a3-table .dom{font-weight:650;background:#fafafa;width:18%}
+.pdf-a3-table .course{width:14%}
+.pdf-a3-table .ind{width:36%}
+.pdf-a3-table .g{width:8%;text-align:center;font-weight:700}
+.pdf-a3-table .t{width:10%;text-align:center;color:#555}
+.pdf-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px;font-size:10px;color:#444}
+.pdf-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#666}
+.pdf-hint{text-align:center;color:#bbb;font-size:11px;margin-top:8px}
+
+/* WeChat forward sheet */
+#wxShareMask{
+  display:none;position:absolute;inset:0;z-index:120;background:rgba(0,0,0,.45);
+}
+#wxShareMask.open{display:block}
+#wxShareSheet{
+  display:none;position:absolute;left:0;right:0;bottom:0;z-index:121;
+  background:#f2f2f2;border-radius:14px 14px 0 0;padding:12px 12px calc(12px + var(--safe-b));
+}
+#wxShareSheet.open{display:block}
+.wx-share-title{font-size:13px;color:#888;margin:0 0 10px;padding:0 4px}
+.wx-row{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 12px;-webkit-overflow-scrolling:touch}
+.wx-row::-webkit-scrollbar{display:none}
+.wx-item{flex:0 0 auto;width:58px;text-align:center}
+.wx-avatar{
+  width:52px;height:52px;border-radius:8px;margin:0 auto 6px;
+  display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;
+}
+.wx-item span{display:block;font-size:11px;color:#333;line-height:1.25;max-height:2.5em;overflow:hidden}
+.wx-actions{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 14px}
+.wx-act{
+  flex:0 0 auto;width:58px;text-align:center;border:0;background:transparent;padding:0;color:#333;
+}
+.wx-act i{
+  display:grid;place-items:center;width:52px;height:52px;border-radius:12px;margin:0 auto 6px;
+  background:#fff;font-style:normal;font-size:22px;
+}
+.wx-act span{font-size:11px}
+.wx-cancel{
+  width:100%;border:0;background:#fff;border-radius:10px;padding:14px;font-size:16px;font-weight:600;color:#111;
+}
+body.pdf-open .proto-float{display:none!important}
+body.pdf-open .phone-badge{display:none!important}
+
+/* proto float */
+.proto-float{position:fixed;right:12px;bottom:calc(16px + var(--safe-b));z-index:30}
+.proto-float-btn{
+  background:#1f2937;color:#fff;border-radius:999px;padding:10px 14px;font-size:12px;font-weight:600;
+  box-shadow:0 8px 20px rgba(15,18,28,.22);
+}
+.proto-float-panel{
+  position:absolute;right:0;bottom:48px;width:240px;background:#fff;border-radius:12px;
+  padding:12px;border:1px solid var(--line);box-shadow:0 12px 28px rgba(15,18,28,.16);
+}
+.proto-float-title{font-size:13px;font-weight:650;margin-bottom:8px}
+.proto-float-hint{margin:8px 0 0;font-size:11px;color:#9aa0aa;line-height:1.45}
+.toast{
+  position:fixed;left:50%;bottom:calc(88px + var(--safe-b));transform:translateX(-50%) translateY(12px);
+  background:#1f2937;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;
+  transition:.2s;z-index:60;max-width:86%;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+body.in-report #homeView{display:none}
+body:not(.in-report) .proto-float{display:none}
+</style>
+</head>
+<body>
+<div class="phone-shell" id="phoneShell">
+<div class="phone-badge">手机端-C · 390px</div>
+<a class="variant-switch" href="../mobile-lab/" style="position:absolute;top:8px;right:10px;z-index:100;font-size:11px;color:#eb6900;background:rgba(255,255,255,.95);border:1px solid #f0c89a;border-radius:999px;padding:3px 8px;text-decoration:none">方案入口 A/B/C</a>
+<!-- HOME -->
+<div id="homeView">
+  <div class="m-status" aria-hidden="true"></div>
+  <header class="m-nav">
+    <span>云天学院</span>
+    <div class="m-nav-actions" aria-hidden="true"><span>···</span><span>◎</span></div>
+  </header>
+  <section class="home-user">
+    <div class="home-user-left">
+      <div class="home-avatar" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="#8a93a3" stroke-width="1.6"/><path d="M5 19c1.6-3.2 4-4.8 7-4.8s5.4 1.6 7 4.8" stroke="#8a93a3" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <div class="home-name">林晓晴</div>
+        <div class="home-sid">学号：000000000</div>
+      </div>
+    </div>
+    <button type="button" class="home-schedule" onclick="toast('原型：我的课表（演示）')">我的课表
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="#6b7280" stroke-width="1.6"/><path d="M4 10h16M9 3v4M15 3v4" stroke="#6b7280" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </section>
+  <section class="home-apps">
+    <div class="home-apps-title">全部应用</div>
+    <div class="app-grid">
+      <button type="button" class="app-item is-muted" onclick="toast('原型：场地预约（演示）')">
+        <div class="app-ico" style="background:#e8f1ff"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V9l8-5 8 5v11" stroke="#3B82F6" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-6h6v6" stroke="#3B82F6" stroke-width="1.8"/></svg></div>
+        <span class="app-label">场地预约</span>
+      </button>
+      <button type="button" class="app-item is-muted" onclick="toast('原型：体质测试（演示）')">
+        <div class="app-ico" style="background:#ffe8ec"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5.5" r="2.2" stroke="#E11D48" stroke-width="1.7"/><path d="M8 21l2.2-7H9l3-7 3 7h-1.2L16 21" stroke="#E11D48" stroke-width="1.7" stroke-linejoin="round"/></svg></div>
+        <span class="app-label">体质测试</span>
+      </button>
+      <button type="button" class="app-item is-muted" onclick="toast('原型：体检（演示）')">
+        <div class="app-ico" style="background:#e8f8ef"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="16" rx="3" stroke="#16A34A" stroke-width="1.7"/><path d="M12 8v8M8 12h8" stroke="#16A34A" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <span class="app-label">体检</span>
+      </button>
+      <button type="button" class="app-item is-muted" onclick="toast('原型：家校预约（演示）')">
+        <div class="app-ico" style="background:#e7f7f2"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="#0D9488" stroke-width="1.7"/><path d="M4 10h16M8 3v4M16 3v4M12 14v3M10.5 15.5h3" stroke="#0D9488" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <span class="app-label">家校预约</span>
+      </button>
+      <button type="button" class="app-item is-muted" onclick="toast('原型：在线选课（演示）')">
+        <div class="app-ico" style="background:#fff4df"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="#D97706" stroke-width="1.7"/><path d="M4 10h16M8 14h3M8 17h5" stroke="#D97706" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <span class="app-label">在线选课</span>
+      </button>
+      <button type="button" class="app-item is-muted" onclick="toast('原型：过评报告（演示）')">
+        <div class="app-ico" style="background:#e8f1ff"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3.5h7l4 4V20a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 20V5A1.5 1.5 0 0 1 7 3.5z" stroke="#3B82F6" stroke-width="1.7"/><path d="M14 3.5V8h4.5M8.5 12h7M8.5 15.5h5" stroke="#3B82F6" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <span class="app-label">过评报告</span>
+      </button>
+      <button type="button" class="app-item is-muted" onclick="toast('原型：任务（演示）')">
+        <div class="app-ico" style="background:#fff0e4"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="17" rx="2" stroke="#EA580C" stroke-width="1.7"/><path d="M9 2.5h6M9 11l2 2 4-4" stroke="#EA580C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="app-label">任务</span>
+      </button>
+      <button type="button" class="app-item" onclick="openReport()" aria-label="评估报告">
+        <div class="app-ico" style="background:#fff1e6">
+          <!-- 评估报告 icon：成绩趋势 + 报告页 -->
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7 3.5h7l4 4V20a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 20V5A1.5 1.5 0 0 1 7 3.5z" stroke="#EB6900" stroke-width="1.7"/>
+            <path d="M14 3.5V8h4.5" stroke="#EB6900" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M8.5 16.5l2.2-3.2 2.1 1.8 2.7-4.1" stroke="#EB6900" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="15.5" cy="11" r="1.1" fill="#EB6900"/>
+          </svg>
+        </div>
+        <span class="app-label">评估报告</span>
+      </button>
+    </div>
+  </section>
+</div>
+
+<!-- REPORT -->
+<div id="reportApp" hidden>
+  <header class="r-top">
+    <button type="button" class="r-back" onclick="backHome()" aria-label="返回">‹</button>
+    <div class="r-title">学生成长报告</div>
+  </header>
+  <div class="report-meta-hidden" aria-hidden="true">
+    <span id="avatarText">晓晴</span>
+    <span id="studentName">林晓晴</span>
+    <span id="metaCohort">2033届</span>
+    <span id="metaGrade">五年级</span>
+    <span id="metaSid">学号：000000000</span>
+  </div>
+  <div class="toolbar" id="historySelectors">
+    <select id="selYearTerm" aria-label="学年学期" onchange="onHistoryChange()"></select>
+    <select id="selSeg" aria-label="小学段" onchange="onHistoryChange()"></select>
+    <button type="button" class="btn-pdf" id="btnPdf" onclick="downloadPdf()">下载 PDF</button>
+  </div>
+  <div class="subtabs" role="tablist">
+    <button type="button" id="tabReport" class="active" role="tab" aria-selected="true" onclick="setMode('report')">学段报告</button>
+    <button type="button" id="tabTrend" role="tab" aria-selected="false" onclick="setMode('trend')">学年趋势</button>
+  </div>
+  <div id="reportView">
+    <nav class="nav-chips" id="sideNav" aria-label="目录"></nav>
+    <main class="report-scroll" id="reportScroll">
+      <div id="reportContent"></div>
+    </main>
+  </div>
+  <div id="trendView" hidden></div>
+</div>
+
+<div class="sheet-mask" id="sheetMask" hidden onclick="closeAllSheets()"></div>
+<div class="popover filter-sheet" id="scopeSheet" role="dialog" aria-label="统计范围"></div>
+<div class="popover filter-sheet" id="gradeSheet" role="dialog" aria-label="等级"></div>
+
+<div class="proto-float" id="protoFloat">
+  <button type="button" class="proto-float-btn" id="protoFloatBtn" aria-expanded="false" aria-controls="protoFloatPanel" onclick="toggleProtoFloat(event)">原型 · 预览年级</button>
+  <div class="proto-float-panel" id="protoFloatPanel" role="dialog" aria-label="原型演示 · 预览年级" hidden>
+    <div class="proto-float-title">原型演示</div>
+    <label for="gradePreview" style="font-size:12px;color:#9aa0aa">预览年级</label>
+    <select id="gradePreview" onchange="onGradePreview(this.value)" style="margin-top:6px">
+      <option value="5" selected>小学 · 五年级</option>
+      <option value="7">初中 · 七年级</option>
+      <option value="10">高中 · 十年级</option>
+    </select>
+    <p class="proto-float-hint">仅设计演示；正式环境按学生真实年级加载。切换年级会刷新报告结构与趋势口径。</p>
+  </div>
+</div>
+
+
+<!-- PDF preview -->
+<div id="pdfPreview" aria-hidden="true">
+  <header class="pdf-nav">
+    <button type="button" class="pdf-back" onclick="closePdfPreview()" aria-label="返回">‹</button>
+    <div class="pdf-title" id="pdfFileName">评估报告_A3打印版.pdf</div>
+    <button type="button" class="pdf-more" onclick="openWxShare(event)" aria-label="更多">⋯</button>
+  </header>
+  <div class="pdf-stage" id="pdfStage">
+    <div class="pdf-page-sizer" id="pdfSizer">
+      <div class="pdf-page" id="pdfPage"></div>
+    </div>
+    <div class="pdf-hint">A3 打印版预览 · 可左右/上下拖动查看</div>
+  </div>
+</div>
+
+<div id="wxShareMask" onclick="closeWxShare()"></div>
+<div id="wxShareSheet" role="dialog" aria-label="转发给">
+  <div class="wx-share-title">转发给</div>
+  <div class="wx-row" id="wxRecent">
+    <div class="wx-item"><div class="wx-avatar" style="background:#07c160">传</div><span>文件传输助手</span></div>
+    <div class="wx-item"><div class="wx-avatar" style="background:#4b7bec">同</div><span>同学群</span></div>
+    <div class="wx-item"><div class="wx-avatar" style="background:#eb6900">家</div><span>家长沟通</span></div>
+    <div class="wx-item"><div class="wx-avatar" style="background:#9a7a98">班</div><span>班级群</span></div>
+  </div>
+  <div class="wx-actions">
+    <button type="button" class="wx-act" onclick="toast('原型：转发给朋友（演示）')"><i>↗</i><span>转发给朋友</span></button>
+    <button type="button" class="wx-act" onclick="toast('原型：星标（演示）')"><i>★</i><span>星标</span></button>
+    <button type="button" class="wx-act" onclick="toast('原型：收藏（演示）')"><i>▣</i><span>收藏</span></button>
+    <button type="button" class="wx-act" onclick="toast('原型：用其他应用打开（演示）')"><i>▦</i><span>用其他应用打开</span></button>
+    <button type="button" class="wx-act" onclick="toast('原型：浮窗（演示）')"><i>⧉</i><span>浮窗</span></button>
+  </div>
+  <button type="button" class="wx-cancel" onclick="closeWxShare()">取消</button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const ACADEMIC = ['A+','A','A-','B','C'];
+/* 趋势折线 / 图例：明亮配色 A+ A A- B C */
+/* v8.2 折线低饱和；桌面端仍用高饱和 */
+const COLOR_HEX = ['#6B8CAE','#6F9E8C','#B8A56B','#C0926E','#B08A9E'];
+const DOMAINS = [
+  '语言、文学与艺术领域',
+  '数学与计算科学领域',
+  '道德与人文、社会领域',
+  '科学、技术与工程领域',
+  '体育、健康与生活技能领域'
+];
+/* 高中目录/趋势学科（体育统一为「体育、健康与生活技能」一项） */
+const HS_SUBJECTS = {
+  9: ['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术'],
+  10:['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术'],
+  11:['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术'],
+  12:['语文','英语','数学','政治','化学','历史','物理','生物','地理','体育、健康与生活技能','艺术','技术']
+};
+
+const state = {
+  mode: 'report',
+  grade: 5,
+  year: '2025—2026',
+  term: 1,
+  seg: 1,
+  activeNav: '',
+  openPopover: null,
+  trendScope: 'overall',
+  trendGrades: new Set(ACADEMIC),
+  trendTermContext: 1,
+  reportFs: false
+};
+
+const YEARS = ['2025—2026','2024—2025'];
+
+const availability = {
+  '2025—2026|1': 'ok',
+  '2025—2026|2': 'ok',
+  '2025—2026|3': 'empty',
+  '2025—2026|4': 'empty',
+  '2025—2026|5': 'empty',
+  '2025—2026|6': 'empty',
+  '2024—2025|1': 'ok',
+  '2024—2025|2': 'ok',
+  '2024—2025|3': 'ok',
+  '2024—2025|4': 'ok',
+  '2024—2025|5': 'ok',
+  '2024—2025|6': 'ok'
+};
+
+function yearSeg(){ return (state.term - 1) * 3 + state.seg; }
+function band(){ return state.grade <= 5 ? 'primary' : state.grade <= 8 ? 'junior' : 'high'; }
+function gradeLabel(g){
+  const map = {1:'一年级',2:'二年级',3:'三年级',4:'四年级',5:'五年级',6:'六年级',7:'七年级',8:'八年级',9:'九年级',10:'十年级',11:'十一年级',12:'十二年级'};
+  return map[g] || g + '年级';
+}
+function cohortFor(g){ return String(2038 - g); }
+function termLabel(t){ return t===1 ? '上学期' : '下学期'; }
+
+/* ========== 小学能力维度 mock（主表 + 附属块） ========== */
+function primaryAbilityTable(){
+  /* v8.1-long-ind：指标文案约 2–3 倍，仅用于手机端小学压测换行；回滚可回到 v8-ability-3cols */
+  const teachers = ['沈若兰','贺明川','白予安','顾清禾','江晚宁'];
+  if(state.grade === 3){
+    return {
+      teachers,
+      blocks: [
+        {
+          self:'M', team:'E',
+          groups:[
+            {academic:'A', texts:[
+              '汉字认读与书写；能按笔顺正确书写本学段汉字，并在日常练习中保持卷面整洁、字形端正，逐步形成良好书写习惯',
+              '能借助拼音阅读短文并说出主要意思，尝试用自己的话概括段落大意，并与同伴交流阅读感受'
+            ]},
+            {academic:'A-', texts:['能用完整句子表达见闻与感受，说清时间、地点与经过，并倾听他人反馈后做简单补充']},
+            {academic:'B', texts:['能倾听同伴发言并做简单回应，抓住对方观点中的关键信息，礼貌地提出疑问或表示赞同']}
+          ],
+          writing:'M'
+        },
+        {
+          self:'E', team:'M',
+          groups:[
+            {academic:'A', texts:[
+              '认识万以内数；能进行加减运算，理解进位与退位含义，并能在练习中自觉检查计算结果',
+              '能解决简单实际问题，从生活情境中提取数量关系，选择合适方法列式并解释解题思路'
+            ]},
+            {academic:'A-', texts:['能用图形直观描述位置与方向，结合校园平面图说出相对位置，并尝试给同伴指路']}
+          ],
+          writing:'M'
+        },
+        {
+          self:'N', team:'M',
+          groups:[
+            {academic:'B', texts:['能听懂课堂指令并用简单英语回应，在问候、请求、感谢等日常情境中完成短对话交流']},
+            {academic:'A-', texts:[
+              '能认读常见单词与短语，结合图片或动作理解词义，并在课后复习中主动朗读巩固',
+              '能跟读儿歌与短对话，模仿语音语调，尝试在小组活动中轮流扮演角色完成表演'
+            ]}
+          ],
+          writing:'N'
+        },
+        {
+          self:'M', team:'M',
+          groups:[
+            {academic:'A', texts:['能观察身边自然现象并记录发现，用图画或简单句子写下变化过程，并与同学分享观察结果']},
+            {academic:'A-', texts:['能提出简单问题并尝试验证，设计可操作的小实验步骤，记录现象后做出初步解释']}
+          ],
+          writing:'M'
+        }
+      ]
+    };
+  }
+  return {
+    teachers,
+    blocks: [
+      {
+        self:'N', team:'U',
+        groups:[
+          {academic:'B', texts:[
+            '汉字读写与运用；古诗文积累与理解，能在阅读中主动查阅工具书，并结合课内外材料体会关键词句的表达作用',
+            '能联系语境辨析词语表达效果，比较近义说法的细微差别，并在口头与书面表达中尝试选用更贴切的词语'
+          ]},
+          {academic:'C', texts:[
+            '听故事、读文本并能概括主要意思，梳理起因—经过—结果，用简洁语句说出内容要点与人物关系',
+            '能抓住关键信息复述内容，按顺序组织语言，对遗漏处进行补充，并回应同伴提出的简单问题'
+          ]},
+          {academic:'B', texts:['围绕一个话题有条理地口头表达，先说观点再说理由，注意语音清楚、态度自然，能根据听众反应调整详略']},
+          {academic:'B', texts:['能根据提示完成简单书面表达，写清事情经过与感受，注意标点与段落，修改时能改正明显病句与错字']}
+        ],
+        writing:'M'
+      },
+      {
+        self:'M', team:'U',
+        groups:[
+          {academic:'B', texts:['小数运算与简单问题解决，理解小数加减乘除的意义，能选择合理策略列式计算，并对结果进行估算与检验']},
+          {academic:'B', texts:['能用方程表示数量关系并求解，从文字题中抽象等量关系，规范书写解题步骤，并说明未知数含义']},
+          {academic:'C', texts:['能读懂统计图表并说明结论，从图中提取数据比较差异，用自己的话解释变化趋势及可能原因']}
+        ],
+        writing:'M'
+      },
+      {
+        self:'M', team:'U',
+        groups:[
+          {academic:'B', texts:['借助情境积累常用单词、短语与句型，在听读活动中主动记录新词，尝试迁移到相似对话与课堂问答中']},
+          {academic:'B', texts:['听懂语速适中的音频并获取关键信息，抓住时间、人物与事件等要素，能用中文或英文做简要转述']},
+          {academic:'B', texts:['能提炼文本信息并做简要归纳，区分主要细节与次要信息，整理成要点列表并与同伴核对理解是否一致']},
+          {academic:'C', texts:['能在情境中完成简单写作，按提示写出完整句子或短段落，注意时态与标点，完成后能朗读并修改明显错误']}
+        ],
+        writing:'M'
+      },
+      {
+        self:'N', team:'U',
+        groups:[
+          {academic:'C', texts:['观察现象并提出可验证的猜想，说明猜想依据，设计可操作的验证思路，并预估可能出现的结果']},
+          {academic:'C', texts:['能记录实验过程中的关键变量，按步骤填写观察表，区分变化量与不变量，保证记录清楚可复查']},
+          {academic:'B', texts:['能用图示说明简单科学原理，绘制过程示意图并标注名称，结合图示向同伴解释因果关系']}
+        ],
+        writing:'U'
+      },
+      {
+        self:'N', team:'U',
+        groups:[
+          {academic:'C', texts:['能从材料中提取关键信息，圈画重点语句与数据，整理成条理清晰的要点，避免遗漏或曲解原文意思']},
+          {academic:'C', texts:['能比较不同观点并说明理由，找出各方异同，结合材料证据表达自己的倾向，并尊重不同意见']},
+          {academic:'C', texts:['能完成简单探究任务并汇报，分工协作收集信息，用口头或图文方式呈现结论，回答同伴的追问']}
+        ],
+        writing:'N'
+      }
+    ]
+  };
+}
+function primaryAbilityExtras(){
+  const g3 = state.grade === 3;
+  const shorts = g3
+    ? [
+        {name:'工笔花鸟画', weeks:'1-8周', teacher:'沈若兰', self:'E', team:'M',
+          indicator:'工笔技法练习与作品完成', academic:'A'},
+        {name:'书法提包', weeks:'1-8周', teacher:'贺明川', self:'M', team:'M',
+          indicator:'笔法临摹与作品提包完成', academic:'A-'},
+        {name:'游泳', weeks:'1-8周', teacher:'白予安', self:'E', team:'E',
+          indicator:'泳姿技术优化与综合能力提升', academic:'A+'}
+      ]
+    : [
+        {name:'工笔花鸟画', weeks:'1-8周', teacher:'顾清禾', self:'E', team:'M',
+          indicator:'工笔技法练习与作品完成', academic:'A'},
+        {name:'书法提包', weeks:'1-8周', teacher:'江晚宁', self:'M', team:'U',
+          indicator:'笔法临摹与作品提包完成', academic:'B'},
+        {name:'游泳', weeks:'1-8周', teacher:'陆知夏', self:'E', team:'E',
+          indicator:'泳姿技术优化与综合能力提升', academic:'A+'},
+        {name:'跆拳道', weeks:'1-8周', teacher:'程一诺', self:'E', team:'E',
+          indicator:'基本腿法与礼仪规范', academic:'A-'}
+      ];
+  return [
+    { kind:'simple', label:'劳动教育', grade: g3 ? 'E' : 'M' },
+    { kind:'simple', label:'体质体能', text: g3 ? '良好' : '及格（72）' },
+    { kind:'simple', label:'食育', grade: g3 ? 'M' : 'E' },
+    { kind:'simple', label:'服育', grade: g3 ? 'E' : 'M' },
+    { kind:'shorts', items: shorts }
+  ];
+}
+
+function mockPrimary(){
+  return {
+    modules: [
+      {
+        id:'ability',
+        title:'能力维度',
+        abilityTable: primaryAbilityTable(),
+        abilityExtras: primaryAbilityExtras()
+      },
+      {
+        id:'cognition', title:'认知规律与思维能力', plain:true,
+        rows:[
+          ['能对材料进行归纳并建立联系','M'],
+          ['能在熟悉情境中选择合适策略','E'],
+          ['能用图示或模型表达思路','N']
+        ]
+      },
+      {
+        id:'social', title:'社会性与情感发展', plain:true,
+        rows:[
+          ['能坚持完成约定的习惯目标','M'],
+          ['能在冲突情境中表达感受并倾听他人','N'],
+          ['能与同伴分工完成小组任务','E']
+        ]
+      },
+      {
+        id:'attendance', title:'出勤情况',
+        text:'本学段出勤正常（演示数据）：缺勤 0 天，迟到 0 次，无故缺席 0 节课。'
+      }
+      // 小学：劳动教育不进左侧目录，挂在能力维度附属块
+    ],
+    legendAcademic:[
+      ['A+','超出本学段水平要求'],
+      ['A','能够达到本学段水平要求'],
+      ['A-','在老师的适度帮助下能够达到'],
+      ['B','在老师的大量帮助下能够达到'],
+      ['C','在老师的大量帮助下尚不能达到']
+    ],
+    legendSoft:[
+      ['E','超出预期'],
+      ['M','达到预期'],
+      ['N','接近预期'],
+      ['U','低于预期']
+    ]
+  };
+}
+
+function mockJunior(includeSummary){
+  // 单科领域（数学 / 道德与人文、社会 / 科学、技术与工程）：课程头不重复领域/学科名，仅任课教师
+  const courses = [
+    {domain:0,name:'语文',teacher:'方景行',self:'E',team:'M',writing:'M',
+      selfList:[{label:'阅读与写作',v:'E'}],teamList:[{label:'课堂讨论',v:'M'},{label:'小组项目',v:'E'}],
+      rows:[['准确辨析词语与修辞的表达效果','A'],['调用表达策略完成文段写作','A+'],['古诗文背诵与理解','A-'],['倾听并补充同伴发言','A']]},
+    {domain:0,name:'英语',teacher:'叶可宁',self:'N',team:'M',writing:'M',
+      selfList:[{label:'听说读写',v:'N'}],teamList:[{label:'合作任务',v:'M'}],
+      rows:[['积累常用词汇与句型','B'],['听懂语速适中的音频并回应','A-'],['提炼文本关键信息','A-'],['情境写作表达观点','A']]},
+    {domain:1,name:'数学',teacher:'宋予衡',self:'M',team:'M',writing:'M',hideCourseTitle:true,
+      selfList:[{label:'练习与订正',v:'M'}],teamList:[{label:'同伴互评',v:'M'}],
+      rows:[['理解不等式与实数概念','A'],['坐标系表示点与图形','A'],['规范完成求解与化简','A-'],['建立不等式模型并解释','A']]},
+    {domain:2,name:'道德与人文、社会',teacher:'赵知遥',self:'E',team:'M',writing:'M',hideCourseTitle:true,
+      selfList:[{label:'材料研读',v:'E'}],teamList:[{label:'议题讨论',v:'M'}],
+      rows:[['在简单场景中调用能力','A+'],['准确表述熟悉场景','A+'],['提取有效信息','A+'],['多环节递进式分析','A']]},
+    {domain:3,name:'科学、技术与工程',teacher:'周明远',self:'M',team:'E',writing:'E',hideCourseTitle:true,
+      selfList:[{label:'实验预习',v:'M'}],teamList:[{label:'实验协作',v:'E'}],
+      rows:[['辨识运动与光学基本概念','A+'],['抽象运动过程并计算','A+'],['规范开展实验并分析误差','A+'],['从图表中提取规律','A+']]},
+    // 初中游泳：与小学艺技体短周课同款卡片（非普通课程卡）
+    {domain:4,name:'游泳',weeks:'1-8周',teacher:'林晓萱',self:'E',team:'E',academic:'A+',shortCourse:true}
+  ];
+  const modules = DOMAINS.map((title,i)=>{
+    const mod = {id:'d'+i, title, courses: courses.filter(c=>c.domain===i)};
+    // 体育、健康与生活技能：领域标题下单独展示体质体能
+    if(i===4) mod.fitness = '良好（85.5）';
+    return mod;
+  });
+  // 数学与计算科学领域之前：插入 2 门艺技体短周课（不进目录）
+  const mathIdx = modules.findIndex(m=>m.id==='d1');
+  modules.splice(mathIdx < 0 ? 1 : mathIdx, 0, {
+    id:'j-shorts',
+    bareShorts:true,
+    shortCourses:[
+      {name:'陶艺创作', weeks:'1-8周', teacher:'王宁川', self:'E', team:'M', academic:'A'},
+      {name:'管乐团', weeks:'1-8周', teacher:'陈可意', self:'M', team:'E', academic:'A-'}
+    ]
+  });
+  modules.push({id:'labor',title:'劳动教育',laborGrade:'M'});
+  modules.push({
+    id:'attendance', title:'出勤情况',
+    text:'本学段出勤正常（演示数据）：缺勤 0 天，迟到 0 次，无故缺席 0 节课。'
+  });
+  if(includeSummary){
+    modules.push({
+      id:'summary', title:'学术水平单科汇总',
+      rows:[['语文','A'],['数学','A'],['英语','A-'],['科学','A+'],['人文','A'],['艺术','A'],['体育与健康','A+']]
+    });
+  }
+  return {
+    modules,
+    legendAcademic:[
+      ['A+','超出预期'],
+      ['A','达到预期'],
+      ['A-','接近预期'],
+      ['B','部分达到预期'],
+      ['C','尚未达到预期']
+    ],
+    legendSoft:[
+      ['E','超出预期'],
+      ['M','达到预期'],
+      ['N','接近预期'],
+      ['U','低于预期']
+    ]
+  };
+}
+
+function mockHigh(includeSummary){
+  // 与目录一致：语文…地理 → 体育、健康与生活技能 → 艺术 → 技术 → 劳动教育 → 出勤情况
+  // 九大学科：课程头仅小灰任课教师（不重复学科名）
+  const academic = {
+    '语文':{teacher:'赵衡远',self:'M',team:'E',writing:'M',
+      selfList:[{label:'整本书阅读',v:'M'}],teamList:[{label:'专题研讨',v:'E'}],
+      rows:[['文本细读与观点论证','A'],['书面表达结构完整、论据充分','A+'],['古诗文理解与迁移','A-']]},
+    '英语':{teacher:'沈岚溪',self:'N',team:'M',writing:'E',
+      selfList:[{label:'词汇积累',v:'N'},{label:'听力训练',v:'M'}],teamList:[{label:'口语合作',v:'M'}],
+      rows:[['听读获取关键信息','A'],['口头阐述观点','A-'],['议论文写作','A']]},
+    '数学':{teacher:'林予安',self:'E',team:'M',writing:'M',
+      selfList:[{label:'错题复盘',v:'E'}],teamList:[{label:'解题分享',v:'M'}],
+      rows:[['函数与方程综合运用','A'],['空间几何推理','A-'],['概率统计建模','A']]},
+    '政治':{teacher:'何川行',self:'M',team:'E',writing:'M',
+      selfList:[{label:'时政研读',v:'M'}],teamList:[{label:'议题辩论',v:'E'}],
+      rows:[['理解基本政治概念与原理','A'],['结合材料分析社会现象','A-'],['规范完成论述题表达','A']]},
+    '化学':{teacher:'周启明',self:'M',team:'M',writing:'',
+      selfList:[{label:'方程式练习',v:'M'}],teamList:[{label:'实验安全协作',v:'M'}],
+      rows:[['物质组成与变化','A'],['定量计算','A-'],['实验操作规范','A']]},
+    '历史':{teacher:'许晴川',self:'E',team:'M',writing:'M',
+      selfList:[{label:'史料整理',v:'E'}],teamList:[{label:'小组探究',v:'M'}],
+      rows:[['梳理重要历史线索','A'],['比较不同史料并说明依据','A+'],['完成专题小论文结构','A-']]},
+    '物理':{teacher:'戴远舟',self:'M',team:'E',writing:'',
+      selfList:[{label:'实验报告',v:'M'}],teamList:[{label:'实验协作',v:'E'}],
+      rows:[['力学概念与模型','A+'],['实验设计与误差分析','A'],['图像与公式互译','A']]},
+    '生物':{teacher:'韩川野',self:'M',team:'M',writing:'',
+      selfList:[{label:'概念图整理',v:'M'}],teamList:[{label:'实验观察协作',v:'M'}],
+      rows:[['细胞与遗传基本概念','A'],['读懂实验与图表信息','A-'],['说明生命活动调节机制','A']]},
+    '地理':{teacher:'陆行舟',self:'N',team:'M',writing:'M',
+      selfList:[{label:'图册标注',v:'N'}],teamList:[{label:'区域案例讨论',v:'M'}],
+      rows:[['判读常见地理图表','A-'],['分析区域特征与成因','A'],['提出合理的人地协调建议','A']]}
+  };
+  const peShorts = [
+    {name:'攀岩基础', weeks:'1-8周', teacher:'乔安宁', self:'E', team:'M', academic:'A+', shortCourse:true},
+    {name:'羽毛球专项', weeks:'1-8周', teacher:'阮清禾', self:'M', team:'E', academic:'A', shortCourse:true}
+  ];
+  const artShorts = [
+    {name:'油画写生', weeks:'1-8周', teacher:'穆森远', self:'E', team:'M', academic:'A', shortCourse:true},
+    {name:'戏剧工作坊', weeks:'1-8周', teacher:'纪川行', self:'M', team:'E', academic:'A-', shortCourse:true}
+  ];
+  const techShorts = [
+    {name:'机器人设计', weeks:'1-8周', teacher:'沈若兰', self:'M', team:'E', academic:'A+', shortCourse:true},
+    {name:'3D建模', weeks:'1-8周', teacher:'贺明川', self:'E', team:'M', academic:'A', shortCourse:true}
+  ];
+  const order = (HS_SUBJECTS[state.grade] || HS_SUBJECTS[10]).slice();
+  const modules = order.map((name,i)=>{
+    if(name === '体育、健康与生活技能'){
+      return {id:'s'+i, title:name, fitness:'90（优秀）', courses:peShorts.slice()};
+    }
+    if(name === '艺术'){
+      return {id:'s'+i, title:name, courses:artShorts.slice()};
+    }
+    if(name === '技术'){
+      return {id:'s'+i, title:name, courses:techShorts.slice()};
+    }
+    const base = academic[name] || {teacher:'白予安',self:'M',team:'M',writing:'',rows:[['学习目标达成','A']]};
+    const course = Object.assign({name, hideCourseTitle:true}, base);
+    return {id:'s'+i, title:name, courses:[course]};
+  });
+  modules.push({id:'labor',title:'劳动教育',laborGrade:'E'});
+  modules.push({
+    id:'attendance', title:'出勤情况',
+    text:'本学段出勤正常（演示数据）：缺勤 0 天，迟到 0 次，无故缺席 0 节课。'
+  });
+  if(includeSummary){
+    modules.push({
+      id:'summary', title:'学术水平单科汇总',
+      rows: order.map((name,i)=>[name, ['A','A','A','A-','A','A+','A+','A','A-','A+','A','A+'][i] || 'A'])
+    });
+  }
+  return {
+    modules,
+    legendAcademic:[
+      ['A+','超出预期'],
+      ['A','达到预期'],
+      ['A-','接近预期'],
+      ['B','部分达到预期'],
+      ['C','尚未达到预期']
+    ],
+    legendSoft:[
+      ['E','超出预期'],
+      ['M','达到预期'],
+      ['N','接近预期'],
+      ['U','低于预期']
+    ]
+  };
+}
+
+function currentReport(){
+  const includeSummary = state.seg === 3;
+  if(band()==='primary') return mockPrimary();
+  if(band()==='junior') return mockJunior(includeSummary);
+  return mockHigh(includeSummary);
+}
+
+function hasData(){
+  return availability[`${state.year}|${yearSeg()}`] === 'ok';
+}
+
+function buildTrendSeries(){
+  const b = band();
+  let names;
+  if(b==='primary') names = ['整体'];
+  else if(b==='junior') names = DOMAINS.slice();
+  else names = (HS_SUBJECTS[state.grade] || HS_SUBJECTS[10]).slice();
+  const seed = [
+    [2,3,1,0,0],[3,2,1,0,0],[2,2,2,0,0],[1,3,1,1,0],[3,1,1,0,0],[2,2,1,0,0]
+  ];
+  return names.map((name,i)=>{
+    const v = [];
+    for(let t=1;t<=6;t++){
+      const key = `${state.year}|${t}`;
+      if(availability[key] !== 'ok'){ v.push(null); continue; }
+      const base = seed[(i + t) % seed.length].slice();
+      base[i % 5] = Math.max(0, base[i % 5] + ((i+t)%2));
+      v.push(base);
+    }
+    return {name, v};
+  });
+}
+
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+function softBadge(label, value, list, key){
+  const multi = list && list.length > 1;
+  const id = 'pop-' + key;
+  return `<span class="soft-item">
+    ${label}<b class="soft-val">${value || '—'}</b>
+    ${multi ? `<button type="button" class="chev" aria-expanded="false" aria-controls="${id}" onclick="toggleSoftPopover(event,'${id}')" title="查看全部">▾</button>
+      <div class="popover sheet-pop" id="${id}" role="dialog"><div class="sheet-handle"></div><div class="sheet-title">${label}</div>${list.map(x=>`<div class="pop-row"><span>${x.label}</span><b>${x.v}</b></div>`).join('')}</div>` : ''}
+  </span>`;
+}
+
+function gradeClass(g){
+  // 学术 A+/A/A-/B/C 统一浅蓝徽章；非学术 E/M/N/U 用灰底
+  if(['E','M','N','U'].includes(g)) return 'grade emnu';
+  return 'grade';
+}
+
+/* ========== 选择器：学年学期合并 ========== */
+function fillSelectors(){
+  const yt = document.getElementById('selYearTerm');
+  const opts = [];
+  YEARS.forEach(y=>{
+    [1,2].forEach(t=>{
+      const val = `${y}|${t}`;
+      const label = `${y}学年 ${termLabel(t)}`;
+      opts.push(`<option value="${val}" ${state.year===y && state.term===t?'selected':''}>${label}</option>`);
+    });
+  });
+  yt.innerHTML = opts.join('');
+  const seg = document.getElementById('selSeg');
+  seg.innerHTML = [1,2,3].map(n=>{
+    const ys = (state.term-1)*3 + n;
+    const empty = availability[`${state.year}|${ys}`] !== 'ok';
+    return `<option value="${n}" ${n===state.seg?'selected':''}>第${n}小学段${empty?'（未同步）':''}</option>`;
+  }).join('');
+}
+
+function onHistoryChange(){
+  const [y,t] = document.getElementById('selYearTerm').value.split('|');
+  state.year = y;
+  state.term = Number(t);
+  state.seg = Number(document.getElementById('selSeg').value);
+  state.trendTermContext = state.term;
+  fillSelectors();
+  if(state.mode==='report') renderReport();
+  else renderTrend();
+}
+
+function onGradePreview(v){
+  state.grade = Number(v);
+  state.trendScope = 'overall';
+  state.activeNav = '';
+  const sel = document.getElementById('gradePreview');
+  if(sel && String(sel.value) !== String(v)) sel.value = String(v);
+  const mg = document.getElementById('metaGrade');
+  const mc = document.getElementById('metaCohort');
+  if(mg) mg.textContent = gradeLabel(state.grade);
+  if(mc) mc.textContent = cohortFor(state.grade) + '届';
+  if(state.mode==='report') renderReport();
+  else renderTrend();
+}
+
+function toggleProtoFloat(ev){
+  ev.stopPropagation();
+  const panel = document.getElementById('protoFloatPanel');
+  const btn = document.getElementById('protoFloatBtn');
+  const open = panel.hasAttribute('hidden');
+  if(open){
+    panel.removeAttribute('hidden');
+    btn.setAttribute('aria-expanded','true');
+    const sel = document.getElementById('gradePreview');
+    if(sel) sel.value = String(state.grade);
+  } else {
+    panel.setAttribute('hidden','');
+    btn.setAttribute('aria-expanded','false');
+  }
+}
+function closeProtoFloat(e){
+  if(e && e.target.closest && e.target.closest('#protoFloat')) return;
+  const panel = document.getElementById('protoFloatPanel');
+  const btn = document.getElementById('protoFloatBtn');
+  if(!panel || panel.hasAttribute('hidden')) return;
+  panel.setAttribute('hidden','');
+  if(btn) btn.setAttribute('aria-expanded','false');
+}
+document.addEventListener('click', closeProtoFloat);
+
+function enterReportFullscreen(){
+  const panel = document.querySelector('.panel-wrap > .panel');
+  const backdrop = document.getElementById('fsBackdrop');
+  if(!panel) return;
+  panel.classList.add('report-fs');
+  document.body.classList.add('report-fs-open');
+  if(backdrop){
+    backdrop.hidden = false;
+    requestAnimationFrame(()=>backdrop.classList.add('show'));
+  }
+  state.reportFs = true;
+}
+function exitReportFullscreen(){
+  const panel = document.querySelector('.panel-wrap > .panel');
+  const backdrop = document.getElementById('fsBackdrop');
+  if(panel) panel.classList.remove('report-fs');
+  document.body.classList.remove('report-fs-open');
+  if(backdrop){
+    backdrop.classList.remove('show');
+    backdrop.hidden = true;
+  }
+  state.reportFs = false;
+}
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    if(state.reportFs) exitReportFullscreen();
+    else closeProtoFloat();
+  }
+});
+
+function setMode(mode){
+  state.mode = mode;
+  document.getElementById('tabReport').classList.toggle('active', mode==='report');
+  document.getElementById('tabTrend').classList.toggle('active', mode==='trend');
+  document.getElementById('tabReport').setAttribute('aria-selected', mode==='report');
+  document.getElementById('tabTrend').setAttribute('aria-selected', mode==='trend');
+  document.getElementById('reportView').hidden = mode!=='report';
+  document.getElementById('trendView').hidden = mode!=='trend';
+  if(mode==='report') renderReport();
+  else renderTrend();
+}
+
+function renderSideNav(report){
+  const nav = document.getElementById('sideNav');
+  const items = report.modules.filter(m=>!m.bareShorts).map(m=>({id:m.id,title:m.title}));
+  if(!state.activeNav || !items.find(x=>x.id===state.activeNav)){
+    state.activeNav = items[0]?.id || '';
+  }
+  const chips = items.map(it=>
+    `<button type="button" class="nav-chip ${it.id===state.activeNav?'active':''}" data-nav="${it.id}" onclick="jumpNav(event,'${it.id}')">${it.title}</button>`
+  ).join('');
+  nav.innerHTML = chips || `<span class="nav-empty">暂无目录</span>`;
+}
+
+function jumpNav(ev, id){
+  ev.preventDefault();
+  state.activeNav = id;
+  document.querySelectorAll('#sideNav [data-nav]').forEach(a=>a.classList.toggle('active', a.dataset.nav===id));
+  const target = document.getElementById('sec-'+id);
+  const scroller = document.getElementById('reportScroll');
+  if(target && scroller){
+    const top = target.offsetTop - 8;
+    scroller.scrollTo({top, behavior:'smooth'});
+  } else if(target){
+    target.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function renderCourse(c, keyBase){
+  const selfVal = (c.selfList && c.selfList[0]?.v) || c.self || '—';
+  const teamVal = (c.teamList && c.teamList[0]?.v) || c.team || '—';
+  // 手机端：任课教师在上，自主学习/参与与合作在下
+  const titleHtml = c.hideCourseTitle
+    ? ''
+    : `<div class="course-title">${c.name}</div>`;
+  const teacherHtml = c.teacher ? `<div class="course-sub teacher-only">任课教师 ${c.teacher}</div>` : '';
+  const rowCls = c.rowPlain ? 'row plain' : 'row';
+  return `<article class="course">
+    <div class="course-head">
+      ${titleHtml}
+      ${teacherHtml}
+      <div class="soft-badges">
+        ${softBadge('自主学习', selfVal, c.selfList, keyBase+'-self')}
+        ${softBadge('参与与合作', teamVal, c.teamList, keyBase+'-team')}
+      </div>
+    </div>
+    <div class="rows">
+      ${(c.rows||[]).map(r=>`<div class="${rowCls}"><span class="ind">${r[0]}</span><span class="${gradeClass(r[1])}">${r[1]}</span></div>`).join('')}
+      ${c.writing ? `<div class="row"><span class="ind">书写能力</span><span class="${gradeClass(c.writing)}">${c.writing}</span></div>` : ''}
+    </div>
+  </article>`;
+}
+
+/** 艺技体短周课卡片：头栏仅任课教师；底栏大号课程名 + 学术等级（小学/初中共用结构） */
+function renderShortCourseCard(it){
+  const title = it.weeks ? `${it.name}·${it.weeks}` : it.name;
+  return `<article class="short-course">
+    <div class="sc-head">
+      <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
+      <div class="sc-soft">
+        <span class="soft-item">自主学习 <b class="soft-val">${it.self}</b></span>
+        <span class="soft-item">参与与合作 <b class="soft-val">${it.team}</b></span>
+      </div>
+    </div>
+    <div class="sc-body">
+      <span class="sc-ind">${title}</span>
+      ${chip(it.academic)}
+    </div>
+  </article>`;
+}
+
+function chip(g){
+  return `<span class="cell-grade ${gradeClass(g).replace('grade ','').trim()}">${g}</span>`;
+}
+
+/** 小学能力维度主表（v8）：一屏完整展示 学术水平 / 自主学习 / 参与与合作 */
+function renderAbilityTable(table){
+  const blocks = table.blocks || [];
+  const teachers = table.teachers || [];
+  let body = '';
+
+  // 每行四格（不用 rowspan），边框稳定；三列等级同屏可见，无需横滑才能看见软性等级
+  blocks.forEach(block=>{
+    block.groups.forEach((g)=>{
+      g.texts.forEach((text)=>{
+        body += '<tr>';
+        body += `<td class="ind-cell"><span class="mark">◇</span>${text}</td>`;
+        body += `<td class="center col-ac">${chip(g.academic)}</td>`;
+        body += `<td class="center col-soft">${chip(block.self)}</td>`;
+        body += `<td class="center col-soft">${chip(block.team)}</td>`;
+        body += '</tr>';
+      });
+    });
+    if(block.writing){
+      body += '<tr>';
+      body += `<td class="ind-cell"><span class="mark">◇</span>书写能力</td>`;
+      body += `<td class="center" colspan="3">${chip(block.writing)}</td>`;
+      body += '</tr>';
+    }
+  });
+
+  const teacherLine = `<div class="ability-teachers">任课教师 <b>${teachers.join(' · ') || '—'}</b></div>`;
+
+  return `${teacherLine}<div class="ability-wrap"><table class="ability-table" aria-label="能力维度">
+    <colgroup>
+      <col class="c-ind"><col class="c-ac"><col class="c-self"><col class="c-team">
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="th-ind" scope="col">指标</th>
+        <th scope="col">学术水平</th>
+        <th scope="col">自主学习</th>
+        <th scope="col">参与与合作</th>
+      </tr>
+    </thead>
+    <tbody>${body}</tbody>
+  </table></div>`;
+}
+
+/** 能力维度附属块：劳动 / 体质 / 食服育 / 艺技体短课 */
+function renderAbilityExtras(extras){
+  if(!extras || !extras.length) return '';
+  return `<div class="ability-extras">${extras.map(ex=>{
+    if(ex.kind==='simple'){
+      const right = ex.grade
+        ? `<span class="${gradeClass(ex.grade)}">${ex.grade}</span>`
+        : `<span style="color:#5a6170;font-weight:600">${ex.text||'—'}</span>`;
+      return `<div class="extra-block"><div class="extra-head simple"><span class="extra-title">${ex.label}</span>${right}</div></div>`;
+    }
+    if(ex.kind==='shorts'){
+      return ex.items.map(it=>{
+        const title = it.weeks ? `${it.name}·${it.weeks}` : it.name;
+        // 艺技体短周课：头栏仅小灰「任课教师」；底栏左侧课程名 + 学术等级
+        return `<article class="short-course">
+          <div class="sc-head">
+            <div class="sc-teacher">任课教师 ${it.teacher||'—'}</div>
+            <div class="sc-soft">
+              <span class="soft-item">自主学习 <b class="soft-val">${it.self}</b></span>
+              <span class="soft-item">参与与合作 <b class="soft-val">${it.team}</b></span>
+            </div>
+          </div>
+          <div class="sc-body">
+            <span class="sc-ind">${title}</span>
+            ${chip(it.academic)}
+          </div>
+        </article>`;
+      }).join('');
+    }
+    return '';
+  }).join('')}</div>`;
+}
+
+function renderLegend(report){
+  const academic = report.legendAcademic || [];
+  const soft = report.legendSoft || [];
+  const academicRows = academic.map(([g,def])=>
+    `<div class="legend-row">${chip(g)}<span>${def}</span></div>`
+  ).join('');
+  const softRows = soft.map(([g,def])=>
+    `<div class="legend-row"><b class="soft-val">${g}</b><span>${def}</span></div>`
+  ).join('');
+  return `<details class="legend" open>
+    <summary>本报告等级说明</summary>
+    <div class="legend-body">
+      <section class="legend-card">
+        <h4>学术水平</h4>
+        ${academicRows}
+      </section>
+      <section class="legend-card">
+        ${band()==='primary'
+          ? `<h4 class="legend-soft-title"><span>自主学习 参与与合作</span><span>认知与思维规律 社会性与情感发展</span></h4>`
+          : `<h4 class="legend-soft-title"><span>自主学习 参与与合作</span><span>书写等</span></h4>`}
+        ${softRows}
+      </section>
+    </div>
+  </details>`;
+}
+
+function renderReport(){
+  fillSelectors();
+  const content = document.getElementById('reportContent');
+  const pdfBtn = document.getElementById('btnPdf');
+  if(!hasData()){
+    document.getElementById('sideNav').innerHTML = `<span class="nav-empty">当前小学段无可用报告数据</span>`;
+    content.innerHTML = `<div class="empty-state"><div class="empty-illu" aria-hidden="true"></div><h4>无报告单数据</h4><p>该学年学期 / 小学段尚未同步或未发布结构化报告。<br>仍可切换其他小学段；下载 PDF 暂不可用。</p></div>`;
+    pdfBtn.disabled = true;
+    return;
+  }
+  pdfBtn.disabled = false;
+  const report = currentReport();
+  renderSideNav(report);
+
+  let html = '';
+
+  report.modules.forEach(m=>{
+    html += `<section class="section" id="sec-${m.id}">`;
+    // 初中：数学领域前的艺技体短周课夹层 — 无领域标题，仅卡片
+    if(m.bareShorts){
+      html += `<div class="j-shorts-stack">${(m.shortCourses||[]).map(c=>renderShortCourseCard(c)).join('')}</div>`;
+      html += `</section>`;
+      return;
+    }
+    html += `<h3>${m.title}${m.id==='summary'?'<span class="tag">学期末小学段</span>':''}</h3>`;
+    if(m.abilityTable){
+      html += renderAbilityTable(m.abilityTable);
+      html += renderAbilityExtras(m.abilityExtras);
+    } else if(m.laborGrade){
+      html += `<div class="labor-box"><span class="labor-label">劳动教育</span><span class="${gradeClass(m.laborGrade)}">${m.laborGrade}</span></div>`;
+    } else if(m.courses){
+      if(m.fitness){
+        // 初中/高中体质体能：白底
+        html += `<div class="extra-block fitness-block" style="margin-bottom:12px"><div class="extra-head simple"><span class="extra-title">体质体能</span><span style="color:#5a6170;font-weight:600">${m.fitness}</span></div></div>`;
+      }
+      const regular = m.courses.filter(c=>!c.shortCourse);
+      const shorts = m.courses.filter(c=>c.shortCourse);
+      regular.forEach((c,ci)=>{ html += renderCourse(c, m.id+'-'+ci); });
+      if(shorts.length){
+        html += `<div class="j-shorts-stack">${shorts.map(c=>renderShortCourseCard(c)).join('')}</div>`;
+      }
+    } else if(m.rows){
+      const plain = m.plain ? ' plain' : '';
+      html += `<div class="kv-block"><div class="rows" style="padding:0">${m.rows.map(r=>`<div class="row${plain}"><span class="ind">${r[0]}</span><span class="${gradeClass(r[1])}">${r[1]}</span></div>`).join('')}</div></div>`;
+    } else if(m.text){
+      html += `<div class="kv-block"><p>${m.text}</p></div>`;
+    }
+    html += `</section>`;
+  });
+
+  html += renderLegend(report);
+
+  content.innerHTML = html;
+  const first = report.modules[0];
+  if(first){
+    state.activeNav = first.id;
+    document.querySelectorAll('#sideNav a').forEach(a=>a.classList.toggle('active', a.dataset.nav===first.id));
+  }
+}
+
+function pdfFileTitle(){
+  const name = document.getElementById('studentName')?.textContent || '学生';
+  return `云天学院_${name}_${state.year}_${gradeLabel(state.grade)}_第${yearSeg()}学段_A3打印版.pdf`;
+}
+
+function buildA3PreviewHtml(){
+  const report = currentReport();
+  const name = document.getElementById('studentName')?.textContent || '演示学生';
+  const head = `${state.year}学年 ${gradeLabel(state.grade)}${termLabel(state.term)}第${state.seg}小学段评估报告`;
+  let rows = '';
+  (report.modules||[]).forEach(m=>{
+    if(m.bareShorts){
+      (m.shortCourses||[]).forEach(c=>{
+        rows += `<tr><td class="dom">艺技体短课</td><td class="course">${c.name||''}</td><td class="ind">学术水平</td><td class="g">${c.academic||'—'}</td><td class="g">${c.self||'—'}</td><td class="g">${c.team||'—'}</td><td class="t">${c.teacher||'演示'}</td></tr>`;
+      });
+      return;
+    }
+    if(m.abilityTable){
+      (m.abilityTable.blocks||[]).forEach((block,bi)=>{
+        const teacher = (m.abilityTable.teachers||[])[bi] || (m.abilityTable.teachers||[])[0] || '演示';
+        block.groups.forEach(g=>{
+          g.texts.forEach((text,ti)=>{
+            const first = (ti===0 && g===block.groups[0]);
+            rows += `<tr><td class="dom">${first?'能力维度':''}</td><td class="course"></td><td class="ind">${text}</td><td class="g">${g.academic||'—'}</td><td class="g">${ti===0?block.self:'—'}</td><td class="g">${ti===0?block.team:'—'}</td><td class="t">${ti===0?teacher:''}</td></tr>`;
+          });
+        });
+        if(block.writing){
+          rows += `<tr><td class="dom"></td><td class="course"></td><td class="ind">书写能力</td><td class="g" colspan="3">${block.writing}</td><td class="t"></td></tr>`;
+        }
+      });
+      return;
+    }
+    if(m.courses){
+      m.courses.forEach(c=>{
+        if(c.shortCourse){
+          rows += `<tr><td class="dom">${m.title||''}</td><td class="course">${c.name||''}</td><td class="ind">学术水平</td><td class="g">${c.academic||'—'}</td><td class="g">${c.self||'—'}</td><td class="g">${c.team||'—'}</td><td class="t">${c.teacher||'演示'}</td></tr>`;
+          return;
+        }
+        const inds = (c.rows||[]).map(r=>r[0]).join('；') || '学习目标达成';
+        const g0 = (c.rows&&c.rows[0]&&c.rows[0][1]) || 'A';
+        rows += `<tr><td class="dom">${m.title||''}</td><td class="course">${c.hideCourseTitle?'':(c.name||'')}</td><td class="ind">${inds}</td><td class="g">${g0}</td><td class="g">${c.self||'—'}</td><td class="g">${c.team||'—'}</td><td class="t">${c.teacher||'演示'}</td></tr>`;
+      });
+      if(m.fitness){
+        rows += `<tr><td class="dom">${m.title||''}</td><td class="course">体质体能</td><td class="ind">${m.fitness}</td><td class="g">—</td><td class="g">—</td><td class="g">—</td><td class="t"></td></tr>`;
+      }
+      return;
+    }
+    if(m.laborGrade){
+      rows += `<tr><td class="dom">${m.title||'劳动教育'}</td><td class="course"></td><td class="ind">劳动教育</td><td class="g">${m.laborGrade}</td><td class="g">—</td><td class="g">—</td><td class="t"></td></tr>`;
+      return;
+    }
+    if(m.text){
+      rows += `<tr><td class="dom">${m.title||''}</td><td class="course"></td><td class="ind">${m.text}</td><td class="g">—</td><td class="g">—</td><td class="g">—</td><td class="t"></td></tr>`;
+      return;
+    }
+    if(m.rows){
+      m.rows.forEach(r=>{
+        rows += `<tr><td class="dom">${m.title||''}</td><td class="course"></td><td class="ind">${r[0]}</td><td class="g">${r[1]}</td><td class="g">—</td><td class="g">—</td><td class="t"></td></tr>`;
+      });
+    }
+  });
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+  return `<h1>${head}</h1>
+    <div class="pdf-meta">学生：${name} · 云天学院 · 学号 000000000</div>
+    <table class="pdf-a3-table">
+      <thead><tr><th>领域</th><th>课程</th><th>指标</th><th>学术水平</th><th>自主学习</th><th>参与与合作</th><th>任课教师</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="7" style="text-align:center;padding:20px">无报告数据</td></tr>'}</tbody>
+    </table>
+    <div class="pdf-legend">
+      <span>学术水平：A+ 超出 / A 达到 / A- 接近 / B 部分达到 / C 尚未达到</span>
+      <span>自主学习·参与与合作：E 超出预期 / M 达到预期 / N 接近预期 / U 低于预期</span>
+    </div>
+    <div class="pdf-foot"><span>A3 打印版（原型预览）</span><span>云天学院教育教学平台 · ${dateStr}</span></div>`;
+}
+
+function openPdfPreview(){
+  const preview = document.getElementById('pdfPreview');
+  const page = document.getElementById('pdfPage');
+  const sizer = document.getElementById('pdfSizer');
+  const file = document.getElementById('pdfFileName');
+  if(!preview || !page) return;
+  file.textContent = pdfFileTitle();
+  page.innerHTML = buildA3PreviewHtml();
+  page.style.transform = 'none';
+  preview.classList.add('open');
+  preview.setAttribute('aria-hidden','false');
+  document.body.classList.add('pdf-open');
+  const fit = ()=>{
+    const stage = document.getElementById('pdfStage');
+    if(!stage || !sizer) return;
+    const pad = 16;
+    const scale = Math.max(0.35, Math.min(1, (stage.clientWidth - pad) / 920));
+    page.style.transform = `scale(${scale})`;
+    page.style.transformOrigin = 'top left';
+    const h = Math.max(page.scrollHeight, 620);
+    sizer.style.width = `${Math.round(920 * scale)}px`;
+    sizer.style.height = `${Math.round(h * scale)}px`;
+    stage.scrollLeft = 0;
+    stage.scrollTop = 0;
+  };
+  requestAnimationFrame(()=>requestAnimationFrame(fit));
+}
+function closePdfPreview(){
+  closeWxShare();
+  const preview = document.getElementById('pdfPreview');
+  if(preview){
+    preview.classList.remove('open');
+    preview.setAttribute('aria-hidden','true');
+  }
+  document.body.classList.remove('pdf-open');
+}
+function openWxShare(ev){
+  if(ev) ev.stopPropagation();
+  document.getElementById('wxShareMask')?.classList.add('open');
+  document.getElementById('wxShareSheet')?.classList.add('open');
+}
+function closeWxShare(){
+  document.getElementById('wxShareMask')?.classList.remove('open');
+  document.getElementById('wxShareSheet')?.classList.remove('open');
+}
+
+function downloadPdf(){
+  if(!hasData()){
+    toast('无报告单数据，无法下载');
+    return;
+  }
+  openPdfPreview();
+}
+function axisSegments(){
+  // 小学 / 初中 / 高中：横轴固定第1–6学段
+  if(band()==='primary' || band()==='junior' || band()==='high') return [1,2,3,4,5,6];
+  if(state.trendTermContext === 1) return [1,2,3];
+  return [1,2,3,4,5,6];
+}
+
+function renderTrend(){
+  fillSelectors();
+  // 轴口径跟随顶栏学年学期选择（已删独立「轴口径学期」控件）
+  state.trendTermContext = state.term;
+  if(band()==='primary') state.trendScope = 'overall';
+  const series = buildTrendSeries();
+  const b = band();
+  // 小学 / 初中 / 高中：标题旁免责声明、图例在下、紧凑图；初高中保留统计范围
+  const trendCompact = b==='primary' || b==='junior' || b==='high';
+  const wrap = document.getElementById('trendView');
+  const scopeChoices = [['overall','总体']].concat(b==='primary' ? [] : series.map(s=>[s.name, s.name]));
+  state._scopeChoices = scopeChoices;
+  const scopeLabel = (scopeChoices.find(x=>x[0]===state.trendScope)||['overall','总体'])[1];
+  const gradeLabel = ACADEMIC.filter(x=>state.trendGrades.has(x)).join(' · ') || '请选择';
+  const titleEcho = b==='primary'
+    ? `已选等级 ${gradeLabel}`
+    : `统计范围 ${scopeLabel} · 等级 ${gradeLabel}`;
+  // 手机端-B：小学只平铺等级；初中/高中统计范围+等级全部平铺（不下拉）
+  const scopeFilter = '';
+  const gradeFilter = '';
+  const scopeTiles = (b==='junior' || b==='high')
+    ? `<div class="filter-tile-block"><div class="filter-tile-label">统计范围</div><div class="scope-tiles" id="scopeTiles" role="group" aria-label="统计范围">${scopeChoices.map(([v,lab])=>{
+        const on = state.trendScope===v;
+        return `<button type="button" class="scope-tile${on?' active':''}" data-scope="${v}" onclick="setTrendScope('${v}')">${lab}</button>`;
+      }).join('')}</div></div>`
+    : '';
+  const gradeTiles = `<div class="filter-tile-block"><div class="filter-tile-label">等级</div><div class="grade-tiles" id="gradeTiles" role="group" aria-label="等级">${ACADEMIC.map((g,i)=>{
+        const on = state.trendGrades.has(g);
+        return `<button type="button" class="grade-tile${on?' active':''}" data-grade="${g}" onclick="toggleTrendGrade('${g}', ${on?'false':'true'})"><i class="dot" style="background:${COLOR_HEX[i]}"></i>${g}</button>`;
+      }).join('')}</div></div>`;
+
+  const chartHead = trendCompact ? '' : `<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:4px">
+          <strong id="scopeTitle">总体等级分布</strong>
+          <span style="color:#9097a2;font-size:12px" id="chartMeta"></span>
+        </div>`;
+
+  const subtitle = trendCompact
+    ? '不同学段下，学习目标、难度及等级记录数量可能不同，本趋势图仅呈现占比分布变化，不能直接认定能力进退'
+    : '仅统计学术水平 A+/A/A-/B/C；空等级与「学术水平单科汇总」不计入。缺失学段留空、不连线。';
+  // 小学：固定总体分母；初中：总体/领域；高中：总体/学科（均用「小学段」口径）
+  let notesExtra;
+  if(b==='primary'){
+    notesExtra = `<p><strong>该等级占比</strong>＝该等级数量 ÷ 该小学段「学术水平」总数 × 100%。</p>`;
+  } else if(b==='junior'){
+    const denom = state.trendScope==='overall'
+      ? '该小学段「学术水平」总数'
+      : '该小学段该领域的「学术水平」总数';
+    notesExtra = `<p><strong>该等级占比</strong>＝该等级数量 ÷ ${denom} × 100%。</p>`;
+  } else if(b==='high'){
+    const denom = state.trendScope==='overall'
+      ? '该小学段「学术水平」总数'
+      : '该小学段该学科的「学术水平」总数';
+    notesExtra = `<p><strong>该等级占比</strong>＝该等级数量 ÷ ${denom} × 100%。</p>`;
+  } else {
+    notesExtra = `<p><strong>占比</strong>＝该等级记录数 ÷ 所选范围有效学术评价记录总数 × 100%。</p>
+        <p>总体为合并计数，非等权平均。等级筛选只改曲线，不改分母。</p>
+        <p>未同步 / 无数据学段不打点、不跨空段连线。</p>`;
+  }
+
+  const notesLegend = trendCompact
+    ? `<div class="notes-legend-row">${ACADEMIC.map((g,i)=>`<span><i class="swatch" style="background:${COLOR_HEX[i]}"></i><strong>${g}</strong></span>`).join('')}</div>`
+    : ACADEMIC.map((g,i)=>`<p><span class="swatch" style="background:${COLOR_HEX[i]}"></span> <strong>${g}</strong></p>`).join('') + '<hr>';
+
+  // 手机端-B：初中/高中把统计范围+等级放到折线图下方、图例上方；小学仍在图上方
+  const filtersAbove = b==='primary' ? gradeTiles : '';
+  const filtersBelow = (b==='junior' || b==='high') ? `${scopeTiles}${gradeTiles}` : '';
+
+  wrap.classList.toggle('compact', trendCompact);
+  wrap.innerHTML = `
+    <div class="trend-toolbar">
+      <div>
+        <h3>「学术等级占比」学年趋势</h3>
+        <p>${subtitle}</p>
+      </div>
+    </div>
+    ${filtersAbove}
+    <div class="filters" hidden>
+      ${scopeFilter}
+      ${gradeFilter}
+    </div>
+    <div class="trend-echo" id="trendEcho">${titleEcho}</div>
+    <div class="chart-grid${trendCompact?' stack':''}">
+      <section class="chart-card${trendCompact?' compact':''}">
+        ${chartHead}
+        ${trendCompact?'<span id="scopeTitle" hidden></span><span id="chartMeta" hidden></span>':''}
+        <div id="chartTip" class="chart-tooltip" role="tooltip"></div>
+        <div class="chart-scroll" id="chartScroll"><div id="chart"></div></div>
+      </section>
+      ${filtersBelow}
+      <aside class="notes-card${trendCompact?' below':''}">
+        <h4>图例与计算说明</h4>
+        ${notesLegend}
+        ${notesExtra}
+      </aside>
+    </div>`;
+  drawChart(series);
+}
+
+function setTrendScope(v){
+  state.trendScope = v;
+  closeAllSheets();
+  renderTrend();
+}
+function selectedGradeLabel(){
+  return ACADEMIC.filter(x=>state.trendGrades.has(x)).join(' · ') || '请选择';
+}
+function selectedScopeLabel(){
+  const choices = state._scopeChoices || [['overall','总体']];
+  return (choices.find(x=>x[0]===state.trendScope)||['overall','总体'])[1];
+}
+function updateTrendEcho(){
+  const echo = document.getElementById('trendEcho');
+  if(!echo) return;
+  const grades = selectedGradeLabel();
+  if(band()==='primary'){
+    echo.textContent = `已选等级 ${grades}`;
+  } else {
+    echo.textContent = `统计范围 ${selectedScopeLabel()} · 等级 ${grades}`;
+  }
+}
+function syncGradeTiles(){
+  const tiles = document.getElementById('gradeTiles');
+  if(!tiles) return;
+  tiles.querySelectorAll('.grade-tile').forEach(btn=>{
+    const g = btn.getAttribute('data-grade');
+    const on = state.trendGrades.has(g);
+    btn.classList.toggle('active', on);
+    btn.setAttribute('onclick', `toggleTrendGrade('${g}', ${on?'false':'true'})`);
+  });
+}
+function toggleTrendGrade(g, on){
+  if(on) state.trendGrades.add(g); else state.trendGrades.delete(g);
+  const btn = document.getElementById('gradeTrigger');
+  if(btn){
+    btn.innerHTML = `<span>等级</span> <b>${selectedGradeLabel()}</b>`;
+  }
+  updateTrendEcho();
+  syncGradeTiles();
+  // keep sheet open; refresh checklist active state
+  const sheet = document.getElementById('gradeSheet');
+  if(sheet && sheet.classList.contains('open')) fillGradeSheet();
+  drawChart(buildTrendSeries());
+}
+function closeAllSheets(){
+  document.querySelectorAll('.popover.open,.filter-sheet.open').forEach(p=>p.classList.remove('open'));
+  state.openPopover = null;
+  const mask = document.getElementById('sheetMask');
+  if(mask) mask.hidden = true;
+}
+function openScopeSheet(ev){
+  if(ev) ev.stopPropagation();
+  const choices = state._scopeChoices || [['overall','总体']];
+  const sheet = document.getElementById('scopeSheet');
+  const mask = document.getElementById('sheetMask');
+  if(!sheet) return;
+  closeAllSheets();
+  sheet.innerHTML = `<div class="sheet-handle"></div><div class="sheet-title">统计范围</div>
+    <div class="filter-sheet-list">` + choices.map(([v,lab])=>{
+      const active = state.trendScope===v;
+      return `<button type="button" class="${active?'active':''}" data-scope="${v}">${lab}${active?' ✓':''}</button>`;
+    }).join('') + `</div>`;
+  sheet.querySelectorAll('[data-scope]').forEach(btn=>{
+    btn.addEventListener('click', ()=>setTrendScope(btn.getAttribute('data-scope')));
+  });
+  sheet.classList.add('open');
+  if(mask) mask.hidden = false;
+}
+function fillGradeSheet(){
+  const sheet = document.getElementById('gradeSheet');
+  if(!sheet) return;
+  sheet.innerHTML = `<div class="sheet-handle"></div><div class="sheet-title">等级</div>
+    <div class="filter-sheet-list">
+      ${ACADEMIC.map((g,i)=>`<label><input type="checkbox" ${state.trendGrades.has(g)?'checked':''} onchange="toggleTrendGrade('${g}',this.checked)"><span class="swatch" style="background:${COLOR_HEX[i]};margin:0 8px 0 4px"></span>${g}</label>`).join('')}
+    </div>`;
+}
+function openGradeSheet(ev){
+  if(ev) ev.stopPropagation();
+  const sheet = document.getElementById('gradeSheet');
+  const mask = document.getElementById('sheetMask');
+  if(!sheet) return;
+  closeAllSheets();
+  fillGradeSheet();
+  sheet.classList.add('open');
+  if(mask) mask.hidden = false;
+}
+
+function showChartTip(ev, seg, grade, count, total, pct){
+  const tip = document.getElementById('chartTip');
+  const card = tip?.closest('.chart-card');
+  const svg = document.querySelector('#chart svg');
+  if(!tip || !card || !svg) return;
+  const pt = ev.currentTarget?.querySelector('circle[stroke]') || ev.currentTarget;
+  const rect = card.getBoundingClientRect();
+  const cRect = pt.getBoundingClientRect();
+  tip.innerHTML = `<strong>第${seg}学段 · ${grade}</strong><br>${count} 个 / 共 ${total} 个<br>占比 ${pct.toFixed(1)}%`;
+  tip.style.left = (cRect.left + cRect.width/2 - rect.left) + 'px';
+  tip.style.top = (cRect.top - rect.top) + 'px';
+  tip.classList.add('show');
+}
+function hideChartTip(){
+  document.getElementById('chartTip')?.classList.remove('show');
+}
+
+function drawChart(series){
+  const segs = axisSegments();
+  const selected = state.trendScope==='overall' ? series : series.filter(s=>s.name===state.trendScope);
+  const scopeTitle = document.getElementById('scopeTitle');
+  const chartMeta = document.getElementById('chartMeta');
+  if(scopeTitle && !scopeTitle.hidden){
+    scopeTitle.textContent = state.trendScope==='overall' ? '总体等级分布' : state.trendScope + '等级分布';
+  }
+  if(chartMeta && !chartMeta.hidden){
+    chartMeta.textContent = `${state.trendScope==='overall'?'总体合并': '单范围'} · ${state.trendGrades.size} 个等级`;
+  }
+
+  const compactChart = band()==='primary' || band()==='junior' || band()==='high';
+  // 手机端：固定较宽画布 + 横向拖拽，字号按可读比例
+  const W=720, H=260, L=56, R=28, T=28, B=44;
+  const x = i => L + i * (W-L-R) / Math.max(segs.length-1,1);
+  const y = v => H - B - v * (H-T-B) / 100;
+  const tickX = L - 8;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="xMinYMid meet" role="img" aria-label="学年学术等级占比折线图">`;
+  svg += `<text x="${tickX}" y="16" text-anchor="end" fill="#8a929f" font-size="13">占比 %</text>`;
+  for(let v=0;v<=100;v+=20){
+    svg += `<line x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}" stroke="#e9edf2"/><text x="${tickX}" y="${y(v)+4}" text-anchor="end" fill="#8a929f" font-size="13">${v}%</text>`;
+  }
+  segs.forEach((seg,i)=>{
+    svg += `<text x="${x(i)}" y="${H-14}" text-anchor="middle" font-size="13" fill="#646d7b">第${seg}学段</text>`;
+  });
+
+  if(!selected.length || !state.trendGrades.size){
+    svg += `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#969eaa" font-size="15">请至少选择一个等级</text></svg>`;
+    document.getElementById('chart').innerHTML = svg;
+    return;
+  }
+
+  ACADEMIC.forEach((g, gi)=>{
+    if(!state.trendGrades.has(g)) return;
+    let poly = [];
+    const flush = ()=>{
+      if(poly.length>=2){
+        svg += `<polyline points="${poly.map(p=>`${p.x},${p.y}`).join(' ')}" fill="none" stroke="${COLOR_HEX[gi]}" stroke-width="2.4"/>`;
+      }
+      poly = [];
+    };
+    segs.forEach((seg, i)=>{
+      const vectors = selected.map(s=>s.v[seg-1]);
+      if(vectors.some(v=>v==null)){ flush(); return; }
+      const total = vectors.reduce((n,v)=>n+v.reduce((a,b)=>a+b,0),0);
+      if(total===0){ flush(); return; }
+      const count = vectors.reduce((n,v)=>n+v[gi],0);
+      const pct = 100 * count / total;
+      const px = x(i), py = y(pct);
+      poly.push({x:px,y:py});
+      const handler = `showChartTip(event,${seg},'${g}',${count},${total},${pct})`;
+      svg += `<g tabindex="0" role="button" aria-label="第${seg}学段 ${g} ${count}个 占比${pct.toFixed(1)}%" onfocus="${handler}" onmouseenter="${handler}" onmouseleave="hideChartTip()">
+        <circle cx="${px}" cy="${py}" r="12" fill="transparent"/>
+        <circle cx="${px}" cy="${py}" r="4.4" fill="#fff" stroke="${COLOR_HEX[gi]}" stroke-width="2.4"/>
+      </g>`;
+    });
+    flush();
+  });
+
+  svg += '</svg>';
+  document.getElementById('chart').innerHTML = svg;
+  hideChartTip();
+}
+
+function showHome(){
+  document.getElementById('homeView').hidden = false;
+  document.getElementById('reportApp').hidden = true;
+  document.body.classList.remove('in-report');
+}
+function openReport(){
+  document.getElementById('homeView').hidden = true;
+  document.getElementById('reportApp').hidden = false;
+  document.body.classList.add('in-report');
+  fillSelectors();
+  if(state.mode==='report') renderReport();
+  else renderTrend();
+}
+function backHome(){
+  showHome();
+}
+function toggleSoftPopover(ev, id){
+  ev.stopPropagation();
+  const el = document.getElementById(id);
+  const mask = document.getElementById('sheetMask');
+  const willOpen = !el.classList.contains('open');
+  closeAllSheets();
+  if(willOpen){
+    el.classList.add('open');
+    state.openPopover = id;
+    if(mask) mask.hidden = false;
+  }
+}
+function closePopovers(e){
+  if(e && e.target.closest && (e.target.closest('.soft-item') || e.target.closest('.filter-sheet') || e.target.closest('.filter-trigger'))) return;
+  closeAllSheets();
+}
+document.addEventListener('click', closePopovers);
+
+showHome();
+
+</script>
+</div><!-- /.phone-shell -->
+</body>
+</html>
