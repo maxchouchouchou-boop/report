@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="mobile-b-v9-grade9">
+<meta name="cache-bust" content="mobile-b-v9.1-pdf-actions">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>学生成长报告 · 评估报告（手机端-B · 筛选在图下）</title>
 <style>
@@ -383,6 +383,17 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .pdf-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px;font-size:10px;color:#444}
 .pdf-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#666}
 .pdf-hint{text-align:center;color:#bbb;font-size:11px;margin-top:8px}
+/* PDF 预览底栏：转发 / 复制下载地址（v9.1；回滚 cache-bust → mobile-b-v9-grade9） */
+.pdf-actions{
+  flex-shrink:0;display:flex;gap:10px;
+  padding:10px 12px calc(10px + var(--safe-b));
+  background:#2a2a2a;border-top:1px solid #3f3f3f;
+}
+.pdf-act-btn{
+  flex:1;height:42px;border:0;border-radius:10px;
+  background:#3d3d3d;color:#fff;font-size:15px;font-weight:600;
+}
+.pdf-act-btn:active{background:#4a4a4a}
 
 /* WeChat forward sheet */
 #wxShareMask{
@@ -433,8 +444,9 @@ body.pdf-open .phone-badge{display:none!important}
 .toast{
   position:fixed;left:50%;bottom:calc(88px + var(--safe-b));transform:translateX(-50%) translateY(12px);
   background:#1f2937;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;
-  transition:.2s;z-index:60;max-width:86%;text-align:center;
+  transition:.2s;z-index:200;max-width:86%;text-align:center;
 }
+body.pdf-open .toast{bottom:calc(108px + var(--safe-b))}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 body.in-report #homeView{display:none}
 body:not(.in-report) .proto-float{display:none}
@@ -576,6 +588,10 @@ body:not(.in-report) .proto-float{display:none}
     </div>
     <div class="pdf-hint">A3 打印版预览 · 可左右/上下拖动查看</div>
   </div>
+  <footer class="pdf-actions" aria-label="PDF 操作">
+    <button type="button" class="pdf-act-btn" onclick="openWxShare(event)">转发</button>
+    <button type="button" class="pdf-act-btn" onclick="copyPdfDownloadUrl()">复制下载地址</button>
+  </footer>
 </div>
 
 <div id="wxShareMask" onclick="closeWxShare()"></div>
@@ -1543,6 +1559,38 @@ function openWxShare(ev){
 function closeWxShare(){
   document.getElementById('wxShareMask')?.classList.remove('open');
   document.getElementById('wxShareSheet')?.classList.remove('open');
+}
+function pdfDemoDownloadUrl(){
+  const name = (document.getElementById('pdfFileName')?.textContent || '评估报告_A3打印版.pdf').trim();
+  const base = location.href.split('#')[0].replace(/\/?$/,'/');
+  return base + 'demo/' + encodeURIComponent(name);
+}
+function copyPdfDownloadUrl(){
+  const url = pdfDemoDownloadUrl();
+  const done = ()=>toast('地址已复制');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(done).catch(()=>{
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = url; ta.setAttribute('readonly','');
+        ta.style.position='fixed'; ta.style.left='-9999px';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }catch(e){}
+      done();
+    });
+    return;
+  }
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = url; ta.setAttribute('readonly','');
+    ta.style.position='fixed'; ta.style.left='-9999px';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }catch(e){}
+  done();
 }
 
 function downloadPdf(){
