@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="mobile-b-v9.1-pdf-actions">
+<meta name="cache-bust" content="mobile-b-v9.2-drop-pdf-hint">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>学生成长报告 · 评估报告（手机端-B · 筛选在图下）</title>
 <style>
@@ -358,7 +358,7 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 }
 .pdf-stage{
   flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;
-  background:#3a3a3a;padding:12px 8px 28px;
+  background:#3a3a3a;padding:12px 8px 16px;
 }
 .pdf-page-sizer{margin:0 auto;overflow:hidden}
 .pdf-page{
@@ -382,8 +382,7 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .pdf-a3-table .t{width:10%;text-align:center;color:#555}
 .pdf-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px;font-size:10px;color:#444}
 .pdf-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#666}
-.pdf-hint{text-align:center;color:#bbb;font-size:11px;margin-top:8px}
-/* PDF 预览底栏：转发 / 复制下载地址（v9.1；回滚 cache-bust → mobile-b-v9-grade9） */
+/* PDF 预览底栏：转发 / 复制下载地址（v9.2 去掉拖动提示；回滚 → mobile-b-v9.1-pdf-actions） */
 .pdf-actions{
   flex-shrink:0;display:flex;gap:10px;
   padding:10px 12px calc(10px + var(--safe-b));
@@ -586,7 +585,6 @@ body:not(.in-report) .proto-float{display:none}
     <div class="pdf-page-sizer" id="pdfSizer">
       <div class="pdf-page" id="pdfPage"></div>
     </div>
-    <div class="pdf-hint">A3 打印版预览 · 可左右/上下拖动查看</div>
   </div>
   <footer class="pdf-actions" aria-label="PDF 操作">
     <button type="button" class="pdf-act-btn" onclick="openWxShare(event)">转发</button>
