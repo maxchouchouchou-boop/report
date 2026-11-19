@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="cache-bust" content="mobile-b-v9.2-drop-pdf-hint">
+<meta name="cache-bust" content="mobile-b-v9.3-pdf-choice-sheet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>学生成长报告 · 评估报告（手机端-B · 筛选在图下）</title>
 <style>
@@ -358,7 +358,7 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 }
 .pdf-stage{
   flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;
-  background:#3a3a3a;padding:12px 8px 16px;
+  background:#3a3a3a;padding:12px 8px 20px;
 }
 .pdf-page-sizer{margin:0 auto;overflow:hidden}
 .pdf-page{
@@ -382,17 +382,31 @@ select{border:1px solid #d9dbe1;border-radius:8px;padding:10px 12px;background:#
 .pdf-a3-table .t{width:10%;text-align:center;color:#555}
 .pdf-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px;font-size:10px;color:#444}
 .pdf-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#666}
-/* PDF 预览底栏：转发 / 复制下载地址（v9.2 去掉拖动提示；回滚 → mobile-b-v9.1-pdf-actions） */
-.pdf-actions{
-  flex-shrink:0;display:flex;gap:10px;
-  padding:10px 12px calc(10px + var(--safe-b));
-  background:#2a2a2a;border-top:1px solid #3f3f3f;
+/* v9.3：下载 PDF 先出选择弹层；预览页无自定义底栏（回滚 → mobile-b-v9.2-drop-pdf-hint） */
+#pdfChoiceMask{
+  display:none;position:absolute;inset:0;z-index:115;background:rgba(0,0,0,.45);
 }
-.pdf-act-btn{
-  flex:1;height:42px;border:0;border-radius:10px;
-  background:#3d3d3d;color:#fff;font-size:15px;font-weight:600;
+#pdfChoiceMask.open{display:block}
+#pdfChoiceSheet{
+  display:none;position:absolute;left:0;right:0;bottom:0;z-index:116;
+  background:transparent;padding:0 8px calc(8px + var(--safe-b));
 }
-.pdf-act-btn:active{background:#4a4a4a}
+#pdfChoiceSheet.open{display:block}
+.pdf-choice-group{
+  background:#fff;border-radius:12px;overflow:hidden;margin-bottom:8px;
+}
+.pdf-choice-btn{
+  display:block;width:100%;border:0;background:#fff;padding:16px 12px;
+  font-size:16px;font-weight:500;color:#111;text-align:center;
+}
+.pdf-choice-btn + .pdf-choice-btn{border-top:1px solid #ececec}
+.pdf-choice-btn:active{background:#f5f5f5}
+.pdf-choice-cancel{
+  display:block;width:100%;border:0;background:#fff;border-radius:12px;
+  padding:16px 12px;font-size:16px;font-weight:650;color:#111;
+}
+.pdf-choice-cancel:active{background:#f5f5f5}
+.pdf-nav .pdf-more{visibility:hidden;pointer-events:none}
 
 /* WeChat forward sheet */
 #wxShareMask{
@@ -574,22 +588,29 @@ body:not(.in-report) .proto-float{display:none}
 </div>
 
 
-<!-- PDF preview -->
+<!-- PDF preview（干净预览：仅返回关闭） -->
 <div id="pdfPreview" aria-hidden="true">
   <header class="pdf-nav">
     <button type="button" class="pdf-back" onclick="closePdfPreview()" aria-label="返回">‹</button>
     <div class="pdf-title" id="pdfFileName">评估报告_A3打印版.pdf</div>
-    <button type="button" class="pdf-more" onclick="openWxShare(event)" aria-label="更多">⋯</button>
+    <span class="pdf-more" aria-hidden="true"></span>
   </header>
   <div class="pdf-stage" id="pdfStage">
     <div class="pdf-page-sizer" id="pdfSizer">
       <div class="pdf-page" id="pdfPage"></div>
     </div>
   </div>
-  <footer class="pdf-actions" aria-label="PDF 操作">
-    <button type="button" class="pdf-act-btn" onclick="openWxShare(event)">转发</button>
-    <button type="button" class="pdf-act-btn" onclick="copyPdfDownloadUrl()">复制下载地址</button>
-  </footer>
+</div>
+
+<!-- 下载 PDF 选择弹层 -->
+<div id="pdfChoiceMask" onclick="closePdfChoice()"></div>
+<div id="pdfChoiceSheet" role="dialog" aria-label="下载 PDF">
+  <div class="pdf-choice-group">
+    <button type="button" class="pdf-choice-btn" onclick="onPdfChoicePreview()">预览PDF文件</button>
+    <button type="button" class="pdf-choice-btn" onclick="onPdfChoiceForward()">转发</button>
+    <button type="button" class="pdf-choice-btn" onclick="onPdfChoiceCopyLink()">复制下载链接</button>
+  </div>
+  <button type="button" class="pdf-choice-cancel" onclick="closePdfChoice()">取消</button>
 </div>
 
 <div id="wxShareMask" onclick="closeWxShare()"></div>
@@ -1542,6 +1563,7 @@ function openPdfPreview(){
 }
 function closePdfPreview(){
   closeWxShare();
+  closePdfChoice();
   const preview = document.getElementById('pdfPreview');
   if(preview){
     preview.classList.remove('open');
@@ -1551,6 +1573,7 @@ function closePdfPreview(){
 }
 function openWxShare(ev){
   if(ev) ev.stopPropagation();
+  closePdfChoice();
   document.getElementById('wxShareMask')?.classList.add('open');
   document.getElementById('wxShareSheet')?.classList.add('open');
 }
@@ -1558,14 +1581,23 @@ function closeWxShare(){
   document.getElementById('wxShareMask')?.classList.remove('open');
   document.getElementById('wxShareSheet')?.classList.remove('open');
 }
+function openPdfChoice(){
+  closeWxShare();
+  document.getElementById('pdfChoiceMask')?.classList.add('open');
+  document.getElementById('pdfChoiceSheet')?.classList.add('open');
+}
+function closePdfChoice(){
+  document.getElementById('pdfChoiceMask')?.classList.remove('open');
+  document.getElementById('pdfChoiceSheet')?.classList.remove('open');
+}
 function pdfDemoDownloadUrl(){
   const name = (document.getElementById('pdfFileName')?.textContent || '评估报告_A3打印版.pdf').trim();
   const base = location.href.split('#')[0].replace(/\/?$/,'/');
   return base + 'demo/' + encodeURIComponent(name);
 }
-function copyPdfDownloadUrl(){
+function copyPdfDownloadUrl(msg){
   const url = pdfDemoDownloadUrl();
-  const done = ()=>toast('地址已复制');
+  const done = ()=>toast(msg || '链接已复制，请前往浏览器粘贴并下载');
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(url).then(done).catch(()=>{
       try{
@@ -1590,13 +1622,25 @@ function copyPdfDownloadUrl(){
   }catch(e){}
   done();
 }
+function onPdfChoicePreview(){
+  closePdfChoice();
+  openPdfPreview();
+}
+function onPdfChoiceForward(){
+  closePdfChoice();
+  openWxShare();
+}
+function onPdfChoiceCopyLink(){
+  closePdfChoice();
+  copyPdfDownloadUrl('链接已复制，请前往浏览器粘贴并下载');
+}
 
 function downloadPdf(){
   if(!hasData()){
     toast('无报告单数据，无法下载');
     return;
   }
-  openPdfPreview();
+  openPdfChoice();
 }
 function axisSegments(){
   // 小学 / 初中 / 高中：横轴固定第1–6学段
